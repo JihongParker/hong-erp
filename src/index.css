@@ -1,0 +1,35 @@
+:root {
+  --bg: #f7f7f5;
+  --panel: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6b6b6b;
+  --line: #e4e4e0;
+  --accent: #b4232a; /* 홍(紅) */
+  --accent-soft: #fbeaea;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16161a;
+    --panel: #1f1f24;
+    --text: #ececec;
+    --muted: #9a9aa2;
+    --line: #2c2c33;
+    --accent: #e05b62;
+    --accent-soft: #3a2426;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  font-family:
+    'Pretendard', 'Apple SD Gothic Neo', -apple-system, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
