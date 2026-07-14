@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { ENGINE_VERSION, solveEquilibrium, type ModelParams } from '../engine/model'
+import { solveEquilibrium, type ModelParams } from '../engine/model'
 import './Scenario.css'
 
 // Division colors — validated palette, assigned to entities in fixed order;
@@ -51,12 +51,6 @@ export default function Scenario() {
 
   return (
     <div className="sc">
-      <div className="sc-banner">
-        Engine <code>{ENGINE_VERSION}</code> — the same frozen engine as the
-        Decision Dashboard, run per division. Parameters are arbitrary inputs,
-        not data.
-      </div>
-
       <div className="sc-grid">
         <div className="sc-panel">
           <h3>Division parameters</h3>

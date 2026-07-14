@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  ENGINE_VERSION,
   hedgeAt,
   lambdaOf,
   solveEquilibrium,
@@ -125,12 +124,6 @@ export default function Dashboard() {
           allocator split <strong>{(spine.budgetW1 * 100).toFixed(1)}% / {(spine.budgetW2 * 100).toFixed(1)}%</strong> WTI/FX
         </Chip>
       </div>
-      <div className="db-banner">
-        Engine <code>{ENGINE_VERSION}</code> — closed form certified against an
-        independent minimizer on 200 random draws (worst gap 3×10⁻⁶). Values are
-        illustrative, not advice.
-      </div>
-
       <div className="db-grid">
         <div className="db-tiles">
           <div className="tile">

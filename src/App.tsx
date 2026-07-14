@@ -9,6 +9,7 @@ import Instruments from './modules/Instruments'
 import Budget from './modules/Budget'
 import Accounting from './modules/Accounting'
 import { SpineProvider } from './state/spine'
+import Backdrop from './components/Backdrop'
 import './App.css'
 
 // Sidebar = the product map. Groups tell a first-time visitor what kind of
@@ -52,36 +53,39 @@ const ALL = GROUPS.flatMap((g) => g.items)
 
 // Guided walkthrough — five moves that show the whole system without any
 // finance background. Each step lands on a module and says exactly what to drag.
-const TOUR: { module: string; title: string; body: string; target: string }[] = [
+const TOUR: { module: string; title: string; body: string; target: string; lift?: string }[] = [
   {
     module: 'decision',
     target: '[data-tour="floor"]',
-    title: 'Force the disclosure floor',
-    body: 'Drag "d̲ mandated floor" (Regulation, right end of the deck) past ~0.9. The badge flips to floor binding and both hedge bars shrink — forced disclosure buys penalty relief and crowds out hedging. That is the paper\'s §3.6 prediction, computed live.',
+    lift: '.db-tiles',
+    title: 'Turn up forced disclosure',
+    body: 'Drag the mandated floor slider to the right and watch the numbers above. The hedge ratios fall — when a regulator forces a company to disclose more, hedging quietly follows it down.',
   },
   {
     module: 'budget',
     target: '[data-tour="budget-b"]',
-    title: 'Squeeze the ₩45bn budget',
-    body: 'Pull "Budget B" down toward ₩35bn. The optimum walks along the red cost boundary, but the 97/3 WTI-FX split barely moves — the asymmetry is structural (σ₁²/σ₂² ≈ 18×), not budgetary.',
+    lift: '.bg-tiles',
+    title: 'Tighten the budget',
+    body: 'Pull the budget slider down. The plan spends less, but the split between oil and currency barely moves — the shape of the market decides it, not the size of the wallet.',
   },
   {
     module: 'instruments',
     target: '[data-tour="cap"]',
-    title: 'Price a free hedge',
-    body: 'On the Zero-cost collar tab, raise "Cap strike Kc". The solver instantly finds the floor whose written put finances the bought call — net premium pinned at $0.00. This is how refiners actually hedge.',
+    lift: '.ins-tiles',
+    title: 'Build a free hedge',
+    body: 'Raise the cap slider. The desk instantly finds the floor that pays for it — and the net premium stays at zero. This is how oil refiners actually hedge.',
   },
   {
     module: 'instruments',
     target: '[data-tour="exotic-tab"]',
     title: 'Walk into the barrier',
-    body: 'Switch to the Double-KO quanto tab and push "WTI spot" toward $115. The Barrier Risk Monitor escalates to Critical, KO odds jump past 80%, and Δ flips sign — the exact place where textbook delta hedging breaks.',
+    body: 'Open this tab, then push the WTI spot slider up. The risk monitor climbs to Critical and the hedge starts working backwards — the exact place where textbook methods break.',
   },
   {
     module: 'accounting',
     target: '[data-tour="chips"]',
-    title: 'Watch the number travel',
-    body: 'The KO odds you just set arrived here on their own — see the EXOTIC DESK chip at the top. That number decides how noisy the split designation\'s books get after a knock-out. The sidebar really is a data flow.',
+    title: 'Follow the number',
+    body: 'The knock-out odds you just set traveled here by themselves — top of the screen. One shared state, every screen connected. That is the whole idea.',
   },
 ]
 
@@ -93,6 +97,7 @@ export default function App() {
   // spotlight the tour step's control: soft glow + arrow, scrolled into view
   useEffect(() => {
     document.querySelectorAll('.tour-glow').forEach((el) => el.classList.remove('tour-glow'))
+    document.querySelectorAll('.tour-lift').forEach((el) => el.classList.remove('tour-lift'))
     if (tour === null) return
     const t = setTimeout(() => {
       const el = document.querySelector(TOUR[tour].target)
@@ -100,6 +105,8 @@ export default function App() {
         el.classList.add('tour-glow')
         el.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
+      const lift = TOUR[tour].lift
+      if (lift) document.querySelector(lift)?.classList.add('tour-lift')
     }, 420)
     return () => clearTimeout(t)
   }, [tour, active])
@@ -124,6 +131,7 @@ export default function App() {
   return (
     <SpineProvider>
     <div className="app">
+      <Backdrop />
       <aside className="sidebar">
         <button className="brand" onClick={() => setActive('overview')}>
           <span className="brand-mark">홍</span>
@@ -157,7 +165,6 @@ export default function App() {
         {mod.id !== 'overview' && (
           <header>
             <h1>{mod.name}</h1>
-            <p className="desc">{mod.desc}</p>
           </header>
         )}
         {mod.id === 'overview' ? (
@@ -181,6 +188,7 @@ export default function App() {
         )}
       </main>
 
+      {tour !== null && <div className="tour-backdrop" />}
       {tour !== null && (
         <aside className="tour-card" role="dialog" aria-label="Guided tour">
           <div className="tour-head">

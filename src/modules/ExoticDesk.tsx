@@ -14,9 +14,8 @@ const KO = surface.koProb as number[][]
 const META = surface.meta as { calibration: { U: number; L: number; K: number; S2_0: number } }
 const { U, L, K, S2_0 } = META.calibration
 
-// paper constants (Park_quanto): covariance-aware FX multiplier and KO rates
+// paper constant (Park_quanto): covariance-aware FX multiplier
 const C_STAR = -0.548
-const PAPER = { koEU: 0.4369, koAM: 0.2309, basePremiumAM: 17132.47 }
 
 function interp1(grid: number[], values: number[], x: number): number {
   if (x <= grid[0]) return values[0]
@@ -106,15 +105,6 @@ export default function ExoticDesk() {
 
   return (
     <div className="ex">
-      <div className="ex-banner">
-        Precomputed from the paper's model & calibration (European variant,
-        30k-path jump-diffusion MC + Brownian-bridge KO correction). Anchor: KO
-        probability {(atSpot(KO[0], 78) * 100).toFixed(1)}% at baseline vs the
-        paper's European engine {(PAPER.koEU * 100).toFixed(1)}%. American
-        early exercise not modeled — the paper's American KO rate{' '}
-        {(PAPER.koAM * 100).toFixed(1)}% is lower by exercise pre-emption.
-      </div>
-
       <div className="ex-grid">
         <div className="ex-tiles">
             <div className="tile">
