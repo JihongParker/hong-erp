@@ -21,7 +21,7 @@ const MODULES = [
     id: 'instruments',
     name: 'Hedge Instruments',
     desc: 'Zero-cost collar (industry standard) · double-KO quanto (research) · forward baseline',
-    status: 'building',
+    status: 'live',
     note: '',
   },
   {

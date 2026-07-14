@@ -1,0 +1,148 @@
+.ex {
+  display: grid;
+  gap: 16px;
+}
+
+.ex-banner {
+  font-size: 12.5px;
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--panel);
+}
+
+.ex-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.ex-panel {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  padding: 16px 18px;
+  margin: 0;
+}
+
+.ex-panel h3 {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.ex-panel svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.ex-panel label {
+  display: grid;
+  grid-template-columns: 110px 1fr 52px;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.ex-plabel {
+  color: var(--muted);
+}
+
+.ex-panel input[type='range'] {
+  accent-color: var(--accent);
+  min-width: 0;
+}
+
+.ex-pval {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.ex-main {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.ex-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.ex-cap {
+  font-size: 11.5px;
+  color: var(--muted);
+  padding-top: 8px;
+}
+
+/* barrier monitor — status colors always carry icon + label, never color alone */
+.ex-monitor {
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.ex-monitor-head {
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ex-monitor.ok .ex-monitor-head { color: #2e7d52; background: #2e7d5214; }
+.ex-monitor.warn .ex-monitor-head { color: #b3610f; background: #b3610f14; }
+.ex-monitor.serious .ex-monitor-head { color: #b4232a; background: #b4232a14; }
+.ex-monitor.critical .ex-monitor-head { color: #fff; background: #b4232a; }
+
+.ex-monitor-body {
+  padding: 10px 12px;
+  font-size: 12.5px;
+}
+
+.ex-gauge {
+  height: 10px;
+  border-radius: 99px;
+  background: var(--bg);
+  overflow: hidden;
+  margin: 8px 0;
+}
+
+.ex-gauge-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 120ms ease;
+}
+
+.ex-gauge-fill.ok { background: #2e7d52; }
+.ex-gauge-fill.warn { background: #b3610f; }
+.ex-gauge-fill.serious,
+.ex-gauge-fill.critical { background: #b4232a; }
+
+.ex-dist {
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.ex-contingency {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+  border-left: 3px solid #b3610f;
+  padding-left: 10px;
+}
+
+@media (max-width: 1000px) {
+  .ex-grid {
+    grid-template-columns: 1fr;
+  }
+  .ex-tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

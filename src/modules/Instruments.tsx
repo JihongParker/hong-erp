@@ -5,6 +5,7 @@ import {
   solveZeroCostFloor,
   type MarketParams,
 } from '../engine/instruments'
+import ExoticDesk from './ExoticDesk'
 import './Instruments.css'
 
 // Series colors — validated palette, fixed assignment: the collar is the hero.
@@ -79,22 +80,7 @@ export default function Instruments() {
       </div>
 
       {tab === 'exotic' ? (
-        <div className="ins-panel ins-placeholder">
-          <p>
-            <strong>Building.</strong> The exotic desk — the double knock-out
-            quanto of the delta-hedging paper — ships with precomputed
-            price/delta/KO-probability surfaces from the paper's own simulation
-            engine, plus a Barrier Risk Monitor: KO-probability gauge, delta
-            explosion warnings near the barriers, and a knock-out contingency
-            plan that hands the residual exposure back to the budget allocator.
-          </p>
-          <p className="ins-muted">
-            Why it matters here: barriers are how a collar's "zero cost" gets
-            quietly financed in structured retail variants — Korea's 2008 KIKO
-            losses were exactly collar + barriers. The monitor exists so that
-            trade-off is visible before it binds.
-          </p>
-        </div>
+        <ExoticDesk />
       ) : (
         <>
           <div className="ins-grid">
