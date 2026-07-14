@@ -9,6 +9,7 @@ import Instruments from './modules/Instruments'
 import Budget from './modules/Budget'
 import Accounting from './modules/Accounting'
 import { SpineProvider } from './state/spine'
+import { ErpProvider, useErp } from './state/erp'
 import Backdrop from './components/Backdrop'
 import './App.css'
 
@@ -90,6 +91,19 @@ const TOUR: { module: string; title: string; body: string; target: string; lift?
   },
 ]
 
+function ResetDemo() {
+  const { dispatch } = useErp()
+  return (
+    <button
+      className="sidebar-reset"
+      title="Restore the seeded demo ledgers"
+      onClick={() => dispatch({ type: 'reset' })}
+    >
+      Reset demo data
+    </button>
+  )
+}
+
 export default function App() {
   const [active, setActive] = useState<string>('overview')
   const [tour, setTour] = useState<number | null>(null)
@@ -139,6 +153,7 @@ export default function App() {
   }
 
   return (
+    <ErpProvider>
     <SpineProvider>
     <div className="app">
       {active === 'overview' && <Backdrop />}
@@ -167,6 +182,7 @@ export default function App() {
           ))}
         </nav>
         <footer className="sidebar-foot">
+          <ResetDemo />
           v1 · <a href="https://github.com/JihongParker/hong-erp" target="_blank" rel="noreferrer">GitHub</a>
         </footer>
       </aside>
@@ -219,5 +235,6 @@ export default function App() {
       )}
     </div>
     </SpineProvider>
+    </ErpProvider>
   )
 }

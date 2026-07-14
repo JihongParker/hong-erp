@@ -213,3 +213,172 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── ERP operations layer ── */
+.me-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.me-tab {
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.me-tab.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.me-formrow {
+  display: flex;
+  gap: 18px;
+  align-items: end;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.me-inline {
+  display: grid;
+  gap: 4px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.me-inline input,
+.me-inline select {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  width: 140px;
+}
+
+.me-err {
+  font-size: 12.5px;
+  color: #b4232a;
+  margin-bottom: 8px;
+}
+
+.me-flash {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.me-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  margin-left: 6px;
+  border-radius: 99px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+}
+
+.me-empty {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.me-qitem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.me-qbody {
+  display: grid;
+  gap: 2px;
+  font-size: 13px;
+  min-width: 0;
+}
+
+.me-qval {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.me-qmeta {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.me-qact {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.me-btn.sm {
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+.me-h3gap {
+  margin-top: 18px;
+}
+
+.me-ledger {
+  overflow-x: auto;
+}
+
+.me-ledger table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.me-ledger th,
+.me-ledger td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.me-ledger th {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.me-ledger .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.me-unitsm {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.me-status {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.me-status.approved { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
+.me-status.pending { background: #b3610f1a; color: #b3610f; }
+.me-status.rejected { background: #b4232a1a; color: #b4232a; }

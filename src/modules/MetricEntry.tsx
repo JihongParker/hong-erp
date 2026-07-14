@@ -1,226 +1,197 @@
 import { useMemo, useState } from 'react'
 import { TAXONOMY, type Datapoint } from '../data/taxonomy'
 import { Chip, useSpine } from '../state/spine'
+import { timeAgo, useErp } from '../state/erp'
+import Activity from '../components/Activity'
 import './MetricEntry.css'
 
-// Metrics-entry mockup — state lives in browser memory only (no backend).
-// What it demonstrates: values must pass validation rules before they can
-// enter the approval chain.
-
-interface Row {
-  year: number
-  value: string // kept as typed; parsed at validation
-  evidence: boolean
-}
-
-type Stage = 'draft' | 'review' | 'approved'
-
-const YEARS = [2024, 2025, 2026]
-
-const STAGE_LABELS: Record<Stage, string> = {
-  draft: 'Draft',
-  review: 'Review',
-  approved: 'Approved',
-}
+// Division-level metrics operations: submit → validation → approval queue →
+// ledger. All records live in the ERP store (seeded history + your actions),
+// and every step lands in the audit trail.
 
 function flatDatapoints(): { dp: Datapoint; path: string }[] {
   const out: { dp: Datapoint; path: string }[] = []
   for (const p of TAXONOMY)
     for (const c of p.categories)
       for (const a of c.accounts)
-        for (const dp of a.datapoints)
-          out.push({ dp, path: `${p.name} › ${c.name} › ${a.name}` })
+        for (const dp of a.datapoints) out.push({ dp, path: `${p.name} › ${c.name} › ${a.name}` })
   return out
 }
-
 const ALL_DPS = flatDatapoints()
 
-interface Violation {
-  level: 'error' | 'warn'
-  msg: string
-}
-
-// Validation rules — three demo rules. A real product keys these per datapoint.
-function validate(rows: Row[]): Violation[] {
-  const v: Violation[] = []
-  const nums = rows.map((r) => (r.value.trim() === '' ? null : Number(r.value)))
-
-  rows.forEach((r, i) => {
-    if (r.value.trim() === '') {
-      v.push({ level: 'error', msg: `${r.year}: value is empty` })
-      return
-    }
-    const n = nums[i]
-    if (n === null || Number.isNaN(n))
-      v.push({ level: 'error', msg: `${r.year}: value is not a number` })
-    else if (n < 0) v.push({ level: 'error', msg: `${r.year}: negative — absolute metrics cannot be negative` })
-    if (!r.evidence) v.push({ level: 'error', msg: `${r.year}: no evidence attached — unevidenced values cannot be submitted` })
-  })
-
-  for (let i = 1; i < rows.length; i++) {
-    const prev = nums[i - 1]
-    const cur = nums[i]
-    if (prev != null && cur != null && !Number.isNaN(prev) && !Number.isNaN(cur) && prev > 0) {
-      const chg = (cur - prev) / prev
-      if (Math.abs(chg) > 0.5)
-        v.push({
-          level: 'warn',
-          msg: `${rows[i].year}: ${(chg * 100).toFixed(0)}% change vs prior year — explanation required`,
-        })
-    }
-  }
-  return v
-}
+const STATUS_LABEL = { pending: 'Pending review', approved: 'Approved', rejected: 'Rejected' } as const
 
 export default function MetricEntry() {
   const spine = useSpine()
+  const { state, dispatch } = useErp()
+  const [division, setDivision] = useState(state.divisions[0].id)
   const [dpCode, setDpCode] = useState(ALL_DPS[0].dp.code)
-  const [rows, setRows] = useState<Row[]>(
-    YEARS.map((year) => ({ year, value: '', evidence: false })),
-  )
-  const [stage, setStage] = useState<Stage>('draft')
+  const [year, setYear] = useState(2026)
+  const [value, setValue] = useState('')
+  const [evidence, setEvidence] = useState(false)
+  const [flash, setFlash] = useState<string | null>(null)
 
+  const div = state.divisions.find((d) => d.id === division)!
   const sel = ALL_DPS.find((d) => d.dp.code === dpCode)!
-  const violations = useMemo(() => validate(rows), [rows])
-  const errors = violations.filter((v) => v.level === 'error')
+  const numeric = value.trim() !== '' && !Number.isNaN(Number(value)) && Number(value) >= 0
+  const canSubmit = numeric && evidence
 
-  const setRow = (i: number, patch: Partial<Row>) => {
-    setStage('draft') // any change restarts the approval chain
-    setRows((prev) => prev.map((r, j) => (j === i ? { ...r, ...patch } : r)))
-  }
+  const pending = state.metrics.filter((m) => m.status === 'pending')
+  const ledger = useMemo(
+    () => state.metrics.filter((m) => m.division === division).slice(0, 8),
+    [state.metrics, division],
+  )
 
-  const pickDp = (code: string) => {
-    setDpCode(code)
-    setRows(YEARS.map((year) => ({ year, value: '', evidence: false })))
-    setStage('draft')
+  const submit = () => {
+    dispatch({
+      type: 'submitMetric',
+      rec: {
+        division,
+        datapoint: sel.dp.code,
+        name: sel.dp.name,
+        year,
+        value: Number(value),
+        unit: sel.dp.unit ?? '',
+        by: div.head,
+      },
+    })
+    setValue('')
+    setEvidence(false)
+    setFlash(`Submitted — ${sel.dp.name} FY${year} is now in the approval queue`)
+    setTimeout(() => setFlash(null), 3500)
   }
 
   return (
     <div className="me">
       <div className="spine-row">
         <Chip from="Decision Dashboard">
-          approved values feed disclosure intensity — current target d* = <strong>{spine.dStar.toFixed(2)}</strong>{spine.floorBinding ? ' (floor binding)' : ''}
+          approved values feed disclosure intensity — current target d* = <strong>{spine.dStar.toFixed(2)}</strong>
         </Chip>
-      </div>
-      <div className="me-head">
-        <label className="me-select">
-          Datapoint
-          <select value={dpCode} onChange={(e) => pickDp(e.target.value)}>
-            {ALL_DPS.map(({ dp }) => (
-              <option key={dp.code} value={dp.code}>
-                {dp.code} · {dp.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <div className="me-path">
-          {sel.path} {sel.dp.unit && <span className="me-unit">Unit: {sel.dp.unit}</span>}
-        </div>
+        <Chip from="Audit trail">
+          <strong>{pending.length}</strong> submissions awaiting review across {state.divisions.length} divisions
+        </Chip>
       </div>
 
       <div className="me-grid">
+        {/* ── submit ── */}
         <div className="me-panel">
-          <h3>Annual values</h3>
+          <h3>New submission</h3>
+          <div className="me-tabs">
+            {state.divisions.map((d) => (
+              <button key={d.id} className={d.id === division ? 'me-tab active' : 'me-tab'} onClick={() => setDivision(d.id)}>
+                {d.name}
+              </button>
+            ))}
+          </div>
+          <label className="me-select">
+            Datapoint
+            <select value={dpCode} onChange={(e) => setDpCode(e.target.value)}>
+              {ALL_DPS.map(({ dp }) => (
+                <option key={dp.code} value={dp.code}>
+                  {dp.code} · {dp.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <p className="me-path">
+            {sel.path} {sel.dp.unit && <span className="me-unit">Unit: {sel.dp.unit}</span>}
+          </p>
+          <div className="me-formrow">
+            <label className="me-inline">
+              Year
+              <select value={year} onChange={(e) => setYear(Number(e.target.value))}>
+                {[2024, 2025, 2026].map((y) => (
+                  <option key={y}>{y}</option>
+                ))}
+              </select>
+            </label>
+            <label className="me-inline">
+              Value
+              <input type="text" inputMode="decimal" value={value} placeholder="0" onChange={(e) => setValue(e.target.value)} />
+            </label>
+            <label className="me-evidence">
+              <input type="checkbox" checked={evidence} onChange={(e) => setEvidence(e.target.checked)} />
+              Evidence attached (mockup)
+            </label>
+          </div>
+          {!numeric && value.trim() !== '' && <p className="me-err">✕ Value must be a non-negative number</p>}
+          <button className="me-btn" disabled={!canSubmit} onClick={submit}>
+            Submit for review
+          </button>
+          {flash && <p className="me-flash">✓ {flash}</p>}
+          <p className="me-note">
+            Submitted as {div.head} ({div.name}). Approved values feed the
+            division's exposure parameters and the firm's disclosure intensity.
+          </p>
+        </div>
+
+        {/* ── approval queue + heartbeat ── */}
+        <div className="me-panel">
+          <h3>
+            Approval queue <span className="me-count">{pending.length}</span>
+          </h3>
+          {pending.length === 0 ? (
+            <p className="me-empty">Queue is clear.</p>
+          ) : (
+            pending.map((m) => (
+              <div key={m.id} className="me-qitem">
+                <div className="me-qbody">
+                  <strong>{state.divisions.find((d) => d.id === m.division)?.name}</strong> · {m.name} FY{m.year}
+                  <span className="me-qval">
+                    {m.value.toLocaleString()} {m.unit}
+                  </span>
+                  <span className="me-qmeta">
+                    by {m.by} · {timeAgo(m.ts)}
+                  </span>
+                </div>
+                <div className="me-qact">
+                  <button className="me-btn sm" onClick={() => dispatch({ type: 'reviewMetric', id: m.id, status: 'approved', actor: 'J. Kim (audit)' })}>
+                    Approve
+                  </button>
+                  <button className="me-btn sm ghost" onClick={() => dispatch({ type: 'reviewMetric', id: m.id, status: 'rejected', actor: 'J. Kim (audit)' })}>
+                    Reject
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+          <h3 className="me-h3gap">Recent activity</h3>
+          <Activity limit={5} />
+        </div>
+      </div>
+
+      {/* ── division ledger ── */}
+      <div className="me-panel">
+        <h3>{div.name} — submission ledger</h3>
+        <div className="me-ledger">
           <table>
             <thead>
               <tr>
-                <th>Year</th>
-                <th>Value {sel.dp.unit && `(${sel.dp.unit})`}</th>
-                <th>Evidence</th>
+                <th>Datapoint</th>
+                <th>FY</th>
+                <th className="num">Value</th>
+                <th>By</th>
+                <th>When</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((r, i) => (
-                <tr key={r.year}>
-                  <td>{r.year}</td>
-                  <td>
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={r.value}
-                      placeholder="0"
-                      disabled={stage === 'approved'}
-                      onChange={(e) => setRow(i, { value: e.target.value })}
-                    />
+              {ledger.map((m) => (
+                <tr key={m.id}>
+                  <td>{m.name}</td>
+                  <td>{m.year}</td>
+                  <td className="num">
+                    {m.value.toLocaleString()} <span className="me-unitsm">{m.unit}</span>
                   </td>
+                  <td>{m.by}</td>
+                  <td>{timeAgo(m.ts)}</td>
                   <td>
-                    <label className="me-evidence">
-                      <input
-                        type="checkbox"
-                        checked={r.evidence}
-                        disabled={stage === 'approved'}
-                        onChange={(e) => setRow(i, { evidence: e.target.checked })}
-                      />
-                      Attached (mockup)
-                    </label>
+                    <span className={`me-status ${m.status}`}>{STATUS_LABEL[m.status]}</span>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-
-          <div className="me-validations">
-            {violations.length === 0 ? (
-              <p className="ok">✓ All 3 validation rules pass</p>
-            ) : (
-              violations.map((v, i) => (
-                <p key={i} className={v.level}>
-                  {v.level === 'error' ? '✕' : '△'} {v.msg}
-                </p>
-              ))
-            )}
-          </div>
-        </div>
-
-        <div className="me-panel">
-          <h3>Approval</h3>
-          <ol className="me-stepper">
-            {(['draft', 'review', 'approved'] as Stage[]).map((s, i) => {
-              const idx = ['draft', 'review', 'approved'].indexOf(stage)
-              const state = i < idx ? 'done' : i === idx ? 'now' : 'todo'
-              return (
-                <li key={s} className={state}>
-                  <span className="step-dot">{i + 1}</span>
-                  {STAGE_LABELS[s]}
-                </li>
-              )
-            })}
-          </ol>
-
-          {stage === 'draft' && (
-            <button
-              className="me-btn"
-              disabled={errors.length > 0}
-              onClick={() => setStage('review')}
-            >
-              Request review
-            </button>
-          )}
-          {stage === 'review' && (
-            <div className="me-btnrow">
-              <button className="me-btn" onClick={() => setStage('approved')}>
-                Approve
-              </button>
-              <button className="me-btn ghost" onClick={() => setStage('draft')}>
-                Reject
-              </button>
-            </div>
-          )}
-          {stage === 'approved' && (
-            <p className="me-approved">
-              Approved — values are locked. Changing them requires drafting a
-              new version (an audit-trail concept, mocked).
-            </p>
-          )}
-          {stage === 'draft' && errors.length > 0 && (
-            <p className="me-hint">Resolve {errors.length} error(s) to request review.</p>
-          )}
-          <p className="me-note">
-            Three demo validation rules: numeric/negative checks, mandatory
-            evidence, ±50% year-over-year change warning. This layer is exactly
-            what incumbent solutions' quantitative modules do — HongERP does not
-            stop here: approved values feed the Decision Dashboard as inputs.
-          </p>
         </div>
       </div>
     </div>

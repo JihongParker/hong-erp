@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Chip, useSpine } from '../state/spine'
+import { timeAgo, useErp, type Designation } from '../state/erp'
 import cfh from '../data/cfh_summary.json'
 import './Accounting.css'
 
@@ -79,6 +80,7 @@ function Chart({
 export default function Accounting() {
   const [view, setView] = useState<'oci' | 'ineff'>('ineff')
   const spine = useSpine()
+  const { state: erp, dispatch } = useErp()
 
   return (
     <div className="ac">
@@ -90,6 +92,51 @@ export default function Accounting() {
           {spine.budgetRegime === 'american' ? 'American KO structure selected upstream' : 'European vanilla structure selected upstream'}
         </Chip>
       </div>
+      <div className="ac-panel">
+        <h3>Trade blotter <span className="ac-count">{erp.trades.length}</span></h3>
+        <div className="ac-blotter">
+          <table>
+            <thead>
+              <tr>
+                <th>Division</th>
+                <th>Instrument</th>
+                <th>Terms</th>
+                <th className="num">Notional</th>
+                <th>Booked</th>
+                <th>Designation</th>
+              </tr>
+            </thead>
+            <tbody>
+              {erp.trades.map((t) => (
+                <tr key={t.id}>
+                  <td>{erp.divisions.find((d) => d.id === t.division)?.name}</td>
+                  <td>{t.instrument}</td>
+                  <td className="ac-terms">{t.terms}</td>
+                  <td className="num">{t.notional}</td>
+                  <td>{timeAgo(t.ts)}</td>
+                  <td>
+                    <select
+                      className="ac-desig"
+                      value={t.designation}
+                      onChange={(e) => dispatch({ type: 'designate', id: t.id, designation: e.target.value as Designation })}
+                    >
+                      <option value="CFH-A">CFH-A (combined)</option>
+                      <option value="CFH-B">CFH-B (split)</option>
+                      <option value="FVTPL">FVTPL</option>
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="ac-note">
+          Book structures on the instrument desks and they land here; the
+          designation choice decides which of the two ledger regimes below
+          governs each trade's earnings path.
+        </p>
+      </div>
+
       <div className="ac-banner">
         The question IFRS 9 forces: designate the quanto as{' '}
         <strong>one combined hedge (A)</strong> or <strong>split it into two
