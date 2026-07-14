@@ -56,28 +56,29 @@ const ALL = GROUPS.flatMap((g) => g.items)
 const TOUR: { module: string; title: string; body: string; target: string; lift?: string }[] = [
   {
     module: 'decision',
-    target: '[data-tour="floor"]',
+    target: '.db-params',
     lift: '.db-tiles',
     title: 'Turn up forced disclosure',
     body: 'Drag the mandated floor slider to the right and watch the numbers above. The hedge ratios fall — when a regulator forces a company to disclose more, hedging quietly follows it down.',
   },
   {
     module: 'budget',
-    target: '[data-tour="budget-b"]',
+    target: '.bg-deck',
     lift: '.bg-tiles',
     title: 'Tighten the budget',
     body: 'Pull the budget slider down. The plan spends less, but the split between oil and currency barely moves — the shape of the market decides it, not the size of the wallet.',
   },
   {
     module: 'instruments',
-    target: '[data-tour="cap"]',
+    target: '.ins-deck',
     lift: '.ins-tiles',
     title: 'Build a free hedge',
     body: 'Raise the cap slider. The desk instantly finds the floor that pays for it — and the net premium stays at zero. This is how oil refiners actually hedge.',
   },
   {
     module: 'instruments',
-    target: '[data-tour="exotic-tab"]',
+    target: '.ins-tabs',
+    lift: '.ex-deck',
     title: 'Walk into the barrier',
     body: 'Open this tab, then push the WTI spot slider up. The risk monitor climbs to Critical and the hedge starts working backwards — the exact place where textbook methods break.',
   },
@@ -99,16 +100,25 @@ export default function App() {
     document.querySelectorAll('.tour-glow').forEach((el) => el.classList.remove('tour-glow'))
     document.querySelectorAll('.tour-lift').forEach((el) => el.classList.remove('tour-lift'))
     if (tour === null) return
-    const t = setTimeout(() => {
+    let tries = 0
+    let scrolled = false
+    const apply = () => {
       const el = document.querySelector(TOUR[tour].target)
-      if (el) {
+      if (el && !el.classList.contains('tour-glow')) {
         el.classList.add('tour-glow')
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        if (!scrolled) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          scrolled = true
+        }
       }
       const lift = TOUR[tour].lift
       if (lift) document.querySelector(lift)?.classList.add('tour-lift')
-    }, 420)
-    return () => clearTimeout(t)
+    }
+    const t = setInterval(() => {
+      apply()
+      if (++tries > 25) clearInterval(t)
+    }, 400)
+    return () => clearInterval(t)
   }, [tour, active])
 
   const startTour = () => {
@@ -131,7 +141,7 @@ export default function App() {
   return (
     <SpineProvider>
     <div className="app">
-      <Backdrop />
+      {active === 'overview' && <Backdrop />}
       <aside className="sidebar">
         <button className="brand" onClick={() => setActive('overview')}>
           <span className="brand-mark">홍</span>

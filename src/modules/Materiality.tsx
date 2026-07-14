@@ -181,7 +181,7 @@ export default function Materiality() {
                 .map((i) => (
                   <tr
                     key={i.id}
-                    className={hover?.id === i.id ? 'hl' : ''}
+                    className={`${isMaterial(i) ? 'mat-row' : ''} ${hover?.id === i.id ? 'hl' : ''}`}
                     onMouseEnter={() => setHover(i)}
                     onMouseLeave={() => setHover(null)}
                   >
@@ -195,7 +195,7 @@ export default function Materiality() {
                     </td>
                     <td className="num">{i.financial.toFixed(1)}</td>
                     <td className="num">{i.impact.toFixed(1)}</td>
-                    <td>{isMaterial(i) ? <strong className="mat-yes">Material</strong> : <span className="mat-no">—</span>}</td>
+                    <td>{isMaterial(i) ? <span className="mat-badge">Material</span> : <span className="mat-no">—</span>}</td>
                   </tr>
                 ))}
             </tbody>

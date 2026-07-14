@@ -1,3 +1,4 @@
+import HeroScene from '../components/HeroScene'
 import './Overview.css'
 
 // The landing page: a researcher or recruiter should get the whole idea in
@@ -51,6 +52,8 @@ export default function Overview({
 }) {
   return (
     <div className="ov">
+      <div className="ov-top">
+      <div className="ov-top-left">
       <section className="ov-hero">
         <h2 className="rise" style={{ animationDelay: '60ms' }}>
           The decision layer that ESG platforms{' '}
@@ -100,6 +103,12 @@ export default function Overview({
           post-KO exposure — and the disclosure optimum closes the loop.
         </p>
       </section>
+      </div>
+
+      <div className="ov-stage rise" style={{ animationDelay: '200ms' }}>
+        <HeroScene />
+      </div>
+      </div>
 
       <section>
         <h3>Four papers, four screens</h3>
