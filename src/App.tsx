@@ -4,6 +4,7 @@ import Materiality from './modules/Materiality'
 import MetricEntry from './modules/MetricEntry'
 import Scenario from './modules/Scenario'
 import Dashboard from './modules/Dashboard'
+import Instruments from './modules/Instruments'
 import './App.css'
 
 // The module map is the product roadmap. Keep status honest:
@@ -14,6 +15,13 @@ const MODULES = [
     name: 'Decision Dashboard',
     desc: 'Optimal disclosure d* and hedge ratios h* — live from the frozen engine',
     status: 'live',
+    note: '',
+  },
+  {
+    id: 'instruments',
+    name: 'Hedge Instruments',
+    desc: 'Zero-cost collar (industry standard) · double-KO quanto (research) · forward baseline',
+    status: 'building',
     note: '',
   },
   {
@@ -84,6 +92,8 @@ export default function App() {
         </header>
         {mod.id === 'decision' ? (
           <Dashboard />
+        ) : mod.id === 'instruments' ? (
+          <Instruments />
         ) : mod.id === 'cosa' ? (
           <AccountTree />
         ) : mod.id === 'materiality' ? (
