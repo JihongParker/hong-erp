@@ -4,11 +4,68 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="HongERP — an ESG ERP prototype with the disclosure-and-hedging decision layer" />
-    <title>HongERP</title>
+    <title>HongERP — the ESG decision layer</title>
+    <meta
+      name="description"
+      content="An ESG ERP prototype with the decision layer incumbent platforms leave empty: optimal disclosure d* and hedge ratios h* solved as one problem, on the actual engines of a four-paper research program (WTI×FX budget allocation, double-KO quanto delta hedging, IFRS 9 cash-flow-hedge accounting, ESG disclosure & hedging)."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jihongparker.github.io/hong-erp/" />
+    <meta property="og:title" content="HongERP — the ESG decision layer" />
+    <meta
+      property="og:description"
+      content="One position, four papers, one operating system. Disclosure as a control variable: Λ(d) = φ + λe^(−kd). Optimal hedge and optimal disclosure solved together — every number anchored to the papers' own engines."
+    />
+    <meta property="og:image" content="https://jihongparker.github.io/hong-erp/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static fallback: rendered for crawlers, AI readers, and no-JS
+           clients; replaced by the React app the moment it mounts. -->
+      <main style="max-width: 760px; margin: 0 auto; padding: 48px 24px; font-family: sans-serif; line-height: 1.6">
+        <h1>HongERP — the ESG decision layer</h1>
+        <p>
+          <em>One position · four papers · one operating system.</em> This is an
+          interactive prototype (it requires JavaScript; you are reading the
+          static summary). Source:
+          <a href="https://github.com/JihongParker/hong-erp">github.com/JihongParker/hong-erp</a>.
+        </p>
+        <p>
+          Incumbent ESG software collects disclosures and stops. HongERP treats
+          disclosure as a <strong>control variable</strong> that lowers the shadow
+          price of residual risk, Λ(d) = φ + λe<sup>−kd</sup>, and solves the
+          optimal hedge ratios h* and the optimal disclosure intensity d* as one
+          problem — for a Korean crude-oil importer's joint WTI × USD/KRW
+          exposure, grounded in a four-paper research program by Jihong Park.
+        </p>
+        <h2>Modules (all live)</h2>
+        <ul>
+          <li><strong>Decision Dashboard</strong> — d*, h_f*, h_c* live from a frozen transcription of the ESG-disclosure paper's §3: hedges solve 2Λ(d)Σu = p with KKT corner handling; the voluntary d* solves 2ad = kλe<sup>−kd</sup>R; a mandate is a floor d ≥ d̲ (binding floors crowd out hedging). Closed form certified against an independent numerical minimizer on 200 random draws, worst objective gap 3×10⁻⁶.</li>
+          <li><strong>Hedge Budget</strong> — the budget-allocation paper's convex program verbatim: min σ_res subject to premium + stress ledger ≤ ₩45bn. Reproduces the paper's vertex optimum (97.05% WTI / 2.95% FX coverage, σ 0.0916, budget-exact).</li>
+          <li><strong>Hedge Instruments</strong> — a zero-cost collar desk (Black-76, put–call parity residual 10⁻¹⁴; pick the cap, the solver finds the self-financing floor) beside the research instrument: a double knock-out quanto priced on surfaces precomputed from the paper's own jump-diffusion engine (KO probability anchored 43.5% vs the paper's 43.7%), with a Barrier Risk Monitor and knock-out contingency plan.</li>
+          <li><strong>Hedge Accounting</strong> — IFRS 9 cash-flow-hedge designation, combined vs split, on the paper engine's 218-step ledgers: mean ineffectiveness ₩23.4bn (combined) vs ₩6.4bn (split), with the split structure's post-knock-out FVTPL noise of ₩71.9bn as the counterweight.</li>
+          <li><strong>Chart of Accounts / Materiality / Metrics Entry</strong> — the reporting layer: a sustainability account tree mapped to GRI/KSSB/KCGS/MSCI datapoints, an interactive double-materiality matrix, and a validation-and-approval mockup.</li>
+          <li><strong>Scenarios</strong> — division-level parameters through the same frozen engine.</li>
+        </ul>
+        <h2>The position spine</h2>
+        <p>
+          The modules share one firm-level state: material risks feed the
+          exposure parameters, the budget split lands on the instrument desks,
+          the exotic desk's live knock-out odds drive the accounting module's
+          post-KO exposure, and the disclosure optimum closes the loop. Every
+          screen carries provenance chips saying where each number came from.
+        </p>
+        <h2>The four papers</h2>
+        <ol>
+          <li>Optimal WTI–FX hedge ratios under a fixed budget (budget allocation)</li>
+          <li>Covariance-aware delta hedging of a quanto knock-out (delta hedging)</li>
+          <li>IFRS 9 cash-flow-hedge accounting: combined vs split designation</li>
+          <li>ESG disclosure mandates and corporate hedging (Korea / KSSB, staggered DiD)</li>
+        </ol>
+        <p>Values shown are illustrative, never advice.</p>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

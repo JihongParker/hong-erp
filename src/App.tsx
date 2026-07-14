@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Overview from './modules/Overview'
 import AccountTree from './modules/AccountTree'
 import Materiality from './modules/Materiality'
 import MetricEntry from './modules/MetricEntry'
@@ -10,105 +11,91 @@ import Accounting from './modules/Accounting'
 import { SpineProvider } from './state/spine'
 import './App.css'
 
-// The module map is the product roadmap. Keep status honest:
-// planned (design agreed) → building → live.
-const MODULES = [
+// Sidebar = the product map. Groups tell a first-time visitor what kind of
+// layer each module belongs to; order within "Decision layer" is the data flow.
+const GROUPS: {
+  title: string | null
+  items: { id: string; name: string; desc: string }[]
+}[] = [
   {
-    id: 'decision',
-    name: 'Decision Dashboard',
-    desc: 'Optimal disclosure d* and hedge ratios h* — live from the frozen engine',
-    status: 'live',
-    note: '',
+    title: null,
+    items: [
+      { id: 'overview', name: 'Overview', desc: '' },
+    ],
   },
   {
-    id: 'budget',
-    name: 'Hedge Budget',
-    desc: 'Fixed budget → optimal WTI/FX coverage split (constrained minimum variance)',
-    status: 'live',
-    note: '',
+    title: 'Decision layer',
+    items: [
+      { id: 'decision', name: 'Decision Dashboard', desc: 'Optimal disclosure d* and hedge ratios h* — live from the frozen engine' },
+      { id: 'budget', name: 'Hedge Budget', desc: 'Fixed budget → optimal WTI/FX coverage split (constrained minimum variance)' },
+      { id: 'instruments', name: 'Hedge Instruments', desc: 'Zero-cost collar (industry standard) · double-KO quanto (research) · forward baseline' },
+      { id: 'accounting', name: 'Hedge Accounting', desc: 'IFRS 9 CFH designation: combined vs split — OCI, ineffectiveness, KO aftermath' },
+    ],
   },
   {
-    id: 'instruments',
-    name: 'Hedge Instruments',
-    desc: 'Zero-cost collar (industry standard) · double-KO quanto (research) · forward baseline',
-    status: 'live',
-    note: '',
+    title: 'Reporting layer',
+    items: [
+      { id: 'cosa', name: 'Chart of Accounts', desc: 'Sustainability account tree → framework datapoint mapping' },
+      { id: 'materiality', name: 'Materiality', desc: 'IRO register → double materiality matrix (interactive)' },
+      { id: 'metrics', name: 'Metrics Entry', desc: 'Quantitative metrics → validation rules → approval (mockup)' },
+    ],
   },
   {
-    id: 'accounting',
-    name: 'Hedge Accounting',
-    desc: 'IFRS 9 CFH designation: combined vs split — OCI, ineffectiveness, KO aftermath',
-    status: 'live',
-    note: '',
+    title: 'What-if',
+    items: [
+      { id: 'scenario', name: 'Scenarios', desc: 'Division-level parameters → strategy comparison' },
+    ],
   },
-  {
-    id: 'cosa',
-    name: 'Chart of Accounts',
-    desc: 'Sustainability account tree → framework datapoint mapping',
-    status: 'live',
-    note: '',
-  },
-  {
-    id: 'materiality',
-    name: 'Materiality',
-    desc: 'IRO register → double materiality matrix (interactive)',
-    status: 'live',
-    note: '',
-  },
-  {
-    id: 'metrics',
-    name: 'Metrics Entry',
-    desc: 'Quantitative metrics → validation rules → approval (mockup)',
-    status: 'live',
-    note: '',
-  },
-  {
-    id: 'scenario',
-    name: 'Scenarios',
-    desc: 'Division-level parameters → strategy comparison',
-    status: 'live',
-    note: '',
-  },
-] as const
+]
+
+const ALL = GROUPS.flatMap((g) => g.items)
 
 export default function App() {
-  const [active, setActive] = useState<string>('decision')
-  const mod = MODULES.find((m) => m.id === active)!
+  const [active, setActive] = useState<string>('overview')
+  const mod = ALL.find((m) => m.id === active)!
 
   return (
     <SpineProvider>
     <div className="app">
       <aside className="sidebar">
-        <div className="brand">
+        <button className="brand" onClick={() => setActive('overview')}>
           <span className="brand-mark">홍</span>
           <div>
             <div className="brand-name">HongERP</div>
             <div className="brand-sub">ESG decision layer</div>
           </div>
-        </div>
+        </button>
         <nav>
-          {MODULES.map((m) => (
-            <button
-              key={m.id}
-              className={m.id === active ? 'nav-item active' : 'nav-item'}
-              onClick={() => setActive(m.id)}
-            >
-              {m.name}
-              <span className={`badge ${m.status}`}>{m.status}</span>
-            </button>
+          {GROUPS.map((g) => (
+            <div key={g.title ?? 'top'} className="nav-group">
+              {g.title && <div className="nav-group-title">{g.title}</div>}
+              {g.items.map((m) => (
+                <button
+                  key={m.id}
+                  className={m.id === active ? 'nav-item active' : 'nav-item'}
+                  onClick={() => setActive(m.id)}
+                >
+                  {m.name}
+                </button>
+              ))}
+            </div>
           ))}
         </nav>
         <footer className="sidebar-foot">
-          v1 · <a href="https://github.com">GitHub</a>
+          v1 · <a href="https://github.com/JihongParker/hong-erp" target="_blank" rel="noreferrer">GitHub</a>
         </footer>
       </aside>
 
       <main className="content">
-        <header>
-          <h1>{mod.name}</h1>
-          <p className="desc">{mod.desc}</p>
-        </header>
-        {mod.id === 'decision' ? (
+        {mod.id !== 'overview' && (
+          <header>
+            <h1>{mod.name}</h1>
+            <p className="desc">{mod.desc}</p>
+          </header>
+        )}
+        {mod.id === 'overview' ? (
+          <Overview onNavigate={setActive} />
+        ) : mod.id === 'decision' ? (
           <Dashboard />
         ) : mod.id === 'budget' ? (
           <Budget />
