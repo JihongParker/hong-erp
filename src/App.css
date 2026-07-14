@@ -18,6 +18,13 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  padding: 0;
+  cursor: pointer;
 }
 
 .brand-mark {
@@ -44,13 +51,27 @@
 nav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 18px;
   flex: 1;
+}
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nav-group-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  padding: 0 12px 4px;
 }
 
 .nav-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 8px;
   padding: 9px 12px;
@@ -99,7 +120,8 @@ nav {
 }
 
 .content h1 {
-  font-size: 24px;
+  font-size: 27px;
+  letter-spacing: -0.015em;
   margin-bottom: 4px;
 }
 
