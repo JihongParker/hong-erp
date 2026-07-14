@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ENGINE_VERSION,
   hedgeAt,
@@ -6,6 +6,7 @@ import {
   solveEquilibrium,
   type ModelParams,
 } from '../engine/model'
+import { Chip, useSpine } from '../state/spine'
 import './Dashboard.css'
 
 // Series colors — from the validated palette; color follows the entity
@@ -74,6 +75,12 @@ export default function Dashboard() {
   const svgRef = useRef<SVGSVGElement | null>(null)
 
   const eq = useMemo(() => solveEquilibrium(p), [p])
+  const spine = useSpine()
+
+  useEffect(() => {
+    spine.publish({ dStar: eq.dStar, floorBinding: eq.floorBinding })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eq.dStar, eq.floorBinding])
 
   const dMax = Math.max(2.5 * Math.max(eq.dStar, p.dFloor, 0.8), 2)
   const curve = useMemo(() => {
@@ -110,6 +117,14 @@ export default function Dashboard() {
 
   return (
     <div className="db">
+      <div className="spine-row">
+        <Chip from="Materiality">
+          <strong>{spine.materialCount}</strong> material risks (≥{spine.materialityThreshold.toFixed(1)}) feed the exposure parameters
+        </Chip>
+        <Chip from="Budget">
+          allocator split <strong>{(spine.budgetW1 * 100).toFixed(1)}% / {(spine.budgetW2 * 100).toFixed(1)}%</strong> WTI/FX
+        </Chip>
+      </div>
       <div className="db-banner">
         Engine <code>{ENGINE_VERSION}</code> — closed form certified against an
         independent minimizer on 200 random draws (worst gap 3×10⁻⁶). Values are

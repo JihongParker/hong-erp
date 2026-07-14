@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   P1_INPUTS,
   solveBudget,
   totalCost,
   type Regime,
 } from '../engine/budget'
+import { Chip, useSpine } from '../state/spine'
 import './Budget.css'
 
 const C_WTI = '#2f6db4'
@@ -25,6 +26,12 @@ export default function Budget() {
 
   const p = { regime, B, stressWTI, stressKRW: 1550 }
   const sol = useMemo(() => solveBudget(p), [regime, B, stressWTI])
+  const spine = useSpine()
+
+  useEffect(() => {
+    if (sol.feasible) spine.publish({ budgetW1: sol.w1, budgetW2: sol.w2, budgetRegime: regime })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sol.w1, sol.w2, regime])
 
   const x = (w1: number) => PAD.left + ((w1 - W1_MIN) / (1 - W1_MIN)) * (CW - PAD.left - PAD.right)
   const y = (w2: number) => CH - PAD.bottom - (w2 / 0.2) * (CH - PAD.top - PAD.bottom)
@@ -58,6 +65,14 @@ export default function Budget() {
 
   return (
     <div className="bg">
+      <div className="spine-row">
+        <Chip from="Materiality">
+          <strong>{spine.materialCount}</strong> material risks upstream — this split covers the market-risk pair
+        </Chip>
+        <Chip from="Exotic Desk">
+          live barrier odds <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong> at spot ${spine.exoticSpot.toFixed(1)}
+        </Chip>
+      </div>
       <div className="bg-banner">
         The paper's convex program verbatim: min σ_res s.t. premium + stress
         ledger ≤ B, w₁+w₂ ≤ 1. Reproduces the paper's vertex optimum

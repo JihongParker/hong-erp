@@ -7,6 +7,7 @@ import Dashboard from './modules/Dashboard'
 import Instruments from './modules/Instruments'
 import Budget from './modules/Budget'
 import Accounting from './modules/Accounting'
+import { SpineProvider } from './state/spine'
 import './App.css'
 
 // The module map is the product roadmap. Keep status honest:
@@ -75,6 +76,7 @@ export default function App() {
   const mod = MODULES.find((m) => m.id === active)!
 
   return (
+    <SpineProvider>
     <div className="app">
       <aside className="sidebar">
         <div className="brand">
@@ -125,5 +127,6 @@ export default function App() {
         )}
       </main>
     </div>
+    </SpineProvider>
   )
 }

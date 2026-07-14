@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import surface from '../data/exotic_surface.json'
+import { useSpine } from '../state/spine'
 import './ExoticDesk.css'
 
 // Precomputed from the paper's own model & calibration (see meta in the JSON;
@@ -94,6 +95,11 @@ export default function ExoticDesk() {
   const dWti = atSpot(row.delta, spot)
   const koP = atSpot(row.ko, spot)
   const dFx = v / S2_0 // homogeneity theorem: structural FX delta = V/S2
+  const spine = useSpine()
+  useEffect(() => {
+    spine.publish({ exoticKo: koP, exoticSpot: spot })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [koP, spot])
   const risk = koRisk(koP)
   const distU = ((U - spot) / spot) * 100
   const distL = ((spot - L) / spot) * 100
