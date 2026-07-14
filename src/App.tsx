@@ -2,6 +2,7 @@ import { useState } from 'react'
 import AccountTree from './modules/AccountTree'
 import Materiality from './modules/Materiality'
 import MetricEntry from './modules/MetricEntry'
+import Scenario from './modules/Scenario'
 import './App.css'
 
 // 모듈 지도 = 제품 로드맵. status는 정직하게 유지한다:
@@ -39,8 +40,8 @@ const MODULES = [
     id: 'scenario',
     name: '시나리오',
     desc: 'division-level 임의 파라미터 → 전략 배분 비교',
-    status: 'planned',
-    note: '',
+    status: 'building',
+    note: '잠정 엔진 — 논문 동결 후 수식 교체',
   },
 ] as const
 
@@ -86,6 +87,8 @@ export default function App() {
           <Materiality />
         ) : mod.id === 'metrics' ? (
           <MetricEntry />
+        ) : mod.id === 'scenario' ? (
+          <Scenario />
         ) : (
           <section className="placeholder">
             <p>
