@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Overview from './modules/Overview'
 import AccountTree from './modules/AccountTree'
 import Materiality from './modules/Materiality'
@@ -52,29 +52,34 @@ const ALL = GROUPS.flatMap((g) => g.items)
 
 // Guided walkthrough — five moves that show the whole system without any
 // finance background. Each step lands on a module and says exactly what to drag.
-const TOUR: { module: string; title: string; body: string }[] = [
+const TOUR: { module: string; title: string; body: string; target: string }[] = [
   {
     module: 'decision',
+    target: '[data-tour="floor"]',
     title: 'Force the disclosure floor',
     body: 'Drag "d̲ mandated floor" (Regulation, right end of the deck) past ~0.9. The badge flips to floor binding and both hedge bars shrink — forced disclosure buys penalty relief and crowds out hedging. That is the paper\'s §3.6 prediction, computed live.',
   },
   {
     module: 'budget',
+    target: '[data-tour="budget-b"]',
     title: 'Squeeze the ₩45bn budget',
     body: 'Pull "Budget B" down toward ₩35bn. The optimum walks along the red cost boundary, but the 97/3 WTI-FX split barely moves — the asymmetry is structural (σ₁²/σ₂² ≈ 18×), not budgetary.',
   },
   {
     module: 'instruments',
+    target: '[data-tour="cap"]',
     title: 'Price a free hedge',
     body: 'On the Zero-cost collar tab, raise "Cap strike Kc". The solver instantly finds the floor whose written put finances the bought call — net premium pinned at $0.00. This is how refiners actually hedge.',
   },
   {
     module: 'instruments',
+    target: '[data-tour="exotic-tab"]',
     title: 'Walk into the barrier',
     body: 'Switch to the Double-KO quanto tab and push "WTI spot" toward $115. The Barrier Risk Monitor escalates to Critical, KO odds jump past 80%, and Δ flips sign — the exact place where textbook delta hedging breaks.',
   },
   {
     module: 'accounting',
+    target: '[data-tour="chips"]',
     title: 'Watch the number travel',
     body: 'The KO odds you just set arrived here on their own — see the EXOTIC DESK chip at the top. That number decides how noisy the split designation\'s books get after a knock-out. The sidebar really is a data flow.',
   },
@@ -84,6 +89,20 @@ export default function App() {
   const [active, setActive] = useState<string>('overview')
   const [tour, setTour] = useState<number | null>(null)
   const mod = ALL.find((m) => m.id === active)!
+
+  // spotlight the tour step's control: soft glow + arrow, scrolled into view
+  useEffect(() => {
+    document.querySelectorAll('.tour-glow').forEach((el) => el.classList.remove('tour-glow'))
+    if (tour === null) return
+    const t = setTimeout(() => {
+      const el = document.querySelector(TOUR[tour].target)
+      if (el) {
+        el.classList.add('tour-glow')
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }, 420)
+    return () => clearTimeout(t)
+  }, [tour, active])
 
   const startTour = () => {
     setTour(0)

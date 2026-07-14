@@ -167,13 +167,12 @@ export default function Materiality() {
           <table>
             <thead>
               <tr>
-                <th>ID</th>
+                <th>#</th>
                 <th>Issue</th>
-                <th>Pillar</th>
-                <th>Type</th>
+                <th>P</th>
                 <th className="num">Fin</th>
                 <th className="num">Imp</th>
-                <th>Verdict</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -186,12 +185,14 @@ export default function Materiality() {
                     onMouseEnter={() => setHover(i)}
                     onMouseLeave={() => setHover(null)}
                   >
-                    <td><code>{i.id}</code></td>
-                    <td>{i.name}</td>
+                    <td><code>{i.id.replace('IRO-', '')}</code></td>
                     <td>
-                      <span className="dot" style={{ background: PILLAR_COLORS[i.pillar] }} /> {i.pillar}
+                      {i.name}
+                      <span className="mat-type"> · {IRO_TYPE_LABELS[i.type]}</span>
                     </td>
-                    <td>{IRO_TYPE_LABELS[i.type]}</td>
+                    <td>
+                      <span className="dot" style={{ background: PILLAR_COLORS[i.pillar] }} title={PILLAR_LABELS[i.pillar]} /> {i.pillar}
+                    </td>
                     <td className="num">{i.financial.toFixed(1)}</td>
                     <td className="num">{i.impact.toFixed(1)}</td>
                     <td>{isMaterial(i) ? <strong className="mat-yes">Material</strong> : <span className="mat-no">—</span>}</td>

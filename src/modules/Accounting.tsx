@@ -82,7 +82,7 @@ export default function Accounting() {
 
   return (
     <div className="ac">
-      <div className="spine-row">
+      <div className="spine-row" data-tour="chips">
         <Chip from="Exotic Desk">
           live barrier odds <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong> — drives B's post-KO FVTPL exposure
         </Chip>

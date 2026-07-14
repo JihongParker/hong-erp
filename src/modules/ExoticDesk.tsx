@@ -116,9 +116,29 @@ export default function ExoticDesk() {
       </div>
 
       <div className="ex-grid">
+        <div className="ex-tiles">
+            <div className="tile">
+              <span className="tile-label">Value (KRW / unit)</span>
+              <span className="tile-value">{v.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+            </div>
+            <div className="tile">
+              <span className="tile-label">Δ WTI (regression-grid FD)</span>
+              <span className="tile-value">{dWti.toFixed(0)}</span>
+            </div>
+            <div className="tile">
+              <span className="tile-label">Δ FX = V/S₂ (homogeneity thm)</span>
+              <span className="tile-value">{dFx.toFixed(2)}</span>
+            </div>
+            <div className="tile">
+              <span className="tile-label">c* covariance multiplier</span>
+              <span className="tile-value">{C_STAR}</span>
+              <span className="tile-badge">paper §c* — vs c=1 naive</span>
+            </div>
+          </div>
+
         <div className="ex-panel ex-deck">
           <h3>Position &amp; barrier monitor</h3>
-          <label>
+          <label data-tour="spot">
             <span className="ex-plabel">WTI spot S₁</span>
             <input type="range" min={S_GRID[0]} max={S_GRID[S_GRID.length - 1]} step={0.5} value={spot} onChange={(e) => setSpot(Number(e.target.value))} />
             <span className="ex-pval">${spot.toFixed(1)}</span>
@@ -152,26 +172,6 @@ export default function ExoticDesk() {
             day — the plan exists <em>before</em> the barrier is hit.
           </div>
         </div>
-
-        <div className="ex-tiles">
-            <div className="tile">
-              <span className="tile-label">Value (KRW / unit)</span>
-              <span className="tile-value">{v.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
-            </div>
-            <div className="tile">
-              <span className="tile-label">Δ WTI (regression-grid FD)</span>
-              <span className="tile-value">{dWti.toFixed(0)}</span>
-            </div>
-            <div className="tile">
-              <span className="tile-label">Δ FX = V/S₂ (homogeneity thm)</span>
-              <span className="tile-value">{dFx.toFixed(2)}</span>
-            </div>
-            <div className="tile">
-              <span className="tile-label">c* covariance multiplier</span>
-              <span className="tile-value">{C_STAR}</span>
-              <span className="tile-badge">paper §c* — vs c=1 naive</span>
-            </div>
-          </div>
 
         <div className="ex-charts">
           <figure className="ex-panel">
