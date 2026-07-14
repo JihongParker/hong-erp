@@ -91,10 +91,9 @@ export default function Accounting() {
         </Chip>
       </div>
       <div className="ac-banner">
-        Precomputed from the CFH paper's engine (218-step designation ledgers,
-        downsampled ×5). The question IFRS 9 forces: designate the quanto as{' '}
+        The question IFRS 9 forces: designate the quanto as{' '}
         <strong>one combined hedge (A)</strong> or <strong>split it into two
-        vanilla-style lines (B)</strong>? Same economics, very different books.
+        lines (B)</strong>? Same economics — very different books.
       </div>
 
       <div className="ac-tiles">

@@ -4,6 +4,8 @@
 }
 
 .sidebar {
+  position: relative;
+  z-index: 2;
   width: 240px;
   flex-shrink: 0;
   border-right: 1px solid var(--line);
@@ -114,9 +116,10 @@ nav {
 
 .content {
   flex: 1;
-  padding: 36px 44px;
-  max-width: 1100px;
+  padding: 36px 48px 48px;
   min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .content h1 {
@@ -163,8 +166,13 @@ nav {
 /* spine chips — cross-module data provenance */
 .spine-row {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
+}
+
+.spine-row .spine-chip {
+  flex: 1 1 240px;
+  justify-content: flex-start;
 }
 
 .spine-chip {
@@ -434,4 +442,29 @@ input[type='range']::-moz-range-thumb {
   .tour-glow::before {
     animation: none;
   }
+}
+
+
+/* tour dim: everything fades behind a translucent wash; only the glowing
+   controls, lifted results, and the tour card stay bright */
+.tour-backdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, #3a3f3c 38%, transparent);
+  backdrop-filter: saturate(0.55);
+  z-index: 20;
+  pointer-events: none;
+  animation: fade-in 0.35s ease both;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+.tour-glow,
+.tour-lift {
+  position: relative;
+  z-index: 25;
+  background: var(--panel);
+  border-radius: 12px;
 }

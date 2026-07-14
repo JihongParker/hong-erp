@@ -4,8 +4,8 @@
   --text: #1a1a1a;
   --muted: #6b6b6b;
   --line: #e4e4e0;
-  --accent: #b4232a; /* 홍(紅) */
-  --accent-soft: #fbeaea;
+  --accent: #237a55; /* soft ESG green */
+  --accent-soft: #e6f2ec;
   color-scheme: light dark;
 }
 
@@ -16,8 +16,8 @@
     --text: #ececec;
     --muted: #9a9aa2;
     --line: #2c2c33;
-    --accent: #e05b62;
-    --accent-soft: #3a2426;
+    --accent: #55b98a;
+    --accent-soft: #223229;
   }
 }
 

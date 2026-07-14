@@ -73,12 +73,6 @@ export default function Budget() {
           live barrier odds <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong> at spot ${spine.exoticSpot.toFixed(1)}
         </Chip>
       </div>
-      <div className="bg-banner">
-        The paper's convex program verbatim: min σ_res s.t. premium + stress
-        ledger ≤ B, w₁+w₂ ≤ 1. Reproduces the paper's vertex optimum
-        (0.9705, 0.0295) European at defaults.
-      </div>
-
       <div className="bg-grid">
         <div className="bg-tiles">
             <div className="tile">
