@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   IRO_ITEMS,
   IRO_TYPE_LABELS,
@@ -7,6 +7,7 @@ import {
   type IroItem,
   type IroType,
 } from '../data/iro'
+import { useSpine } from '../state/spine'
 import './Materiality.css'
 
 // fixed viewBox, responsive via CSS
@@ -45,12 +46,18 @@ function Marker({ item, sel }: { item: IroItem; sel: boolean }) {
 export default function Materiality() {
   const [threshold, setThreshold] = useState(3.5)
   const [hover, setHover] = useState<IroItem | null>(null)
+  const spine = useSpine()
 
   const material = useMemo(
     () => IRO_ITEMS.filter((i) => i.financial >= threshold || i.impact >= threshold),
     [threshold],
   )
   const isMaterial = (i: IroItem) => i.financial >= threshold || i.impact >= threshold
+
+  useEffect(() => {
+    spine.publish({ materialCount: material.length, materialityThreshold: threshold })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [material.length, threshold])
 
   return (
     <div className="mat">

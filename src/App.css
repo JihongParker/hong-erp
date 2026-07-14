@@ -137,3 +137,34 @@ nav {
     padding: 24px 18px;
   }
 }
+
+/* spine chips — cross-module data provenance */
+.spine-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.spine-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 3px 10px;
+  background: var(--panel);
+}
+
+.spine-chip strong {
+  color: var(--text);
+}
+
+.spine-from {
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}

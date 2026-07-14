@@ -6,6 +6,7 @@ import {
   type MarketParams,
 } from '../engine/instruments'
 import ExoticDesk from './ExoticDesk'
+import { Chip, useSpine } from '../state/spine'
 import './Instruments.css'
 
 // Series colors — validated palette, fixed assignment: the collar is the hero.
@@ -26,6 +27,7 @@ export default function Instruments() {
   const svgRef = useRef<SVGSVGElement | null>(null)
 
   const collar = useMemo(() => solveZeroCostFloor(capK, mkt), [capK, mkt])
+  const spine = useSpine()
   const capOnlyPremium = useMemo(() => black76Call(capK, mkt), [capK, mkt])
 
   const sMin = 0.4 * mkt.F
@@ -83,6 +85,14 @@ export default function Instruments() {
         <ExoticDesk />
       ) : (
         <>
+          <div className="spine-row">
+            <Chip from="Budget">
+              allocator says cover <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> of the WTI leg — {(spine.budgetW1 * 2.0).toFixed(2)}M bbl through this desk
+            </Chip>
+            <Chip from="Decision Dashboard">
+              disclosure d* = <strong>{spine.dStar.toFixed(2)}</strong> sets the residual-risk price the hedge answers to
+            </Chip>
+          </div>
           <div className="ins-grid">
             <div className="ins-panel">
               <h3>Market & structure</h3>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Chip, useSpine } from '../state/spine'
 import cfh from '../data/cfh_summary.json'
 import './Accounting.css'
 
@@ -77,9 +78,18 @@ function Chart({
 
 export default function Accounting() {
   const [view, setView] = useState<'oci' | 'ineff'>('ineff')
+  const spine = useSpine()
 
   return (
     <div className="ac">
+      <div className="spine-row">
+        <Chip from="Exotic Desk">
+          live barrier odds <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong> — drives B's post-KO FVTPL exposure
+        </Chip>
+        <Chip from="Budget">
+          {spine.budgetRegime === 'american' ? 'American KO structure selected upstream' : 'European vanilla structure selected upstream'}
+        </Chip>
+      </div>
       <div className="ac-banner">
         Precomputed from the CFH paper's engine (218-step designation ledgers,
         downsampled ×5). The question IFRS 9 forces: designate the quanto as{' '}

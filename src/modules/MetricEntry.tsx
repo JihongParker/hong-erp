@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { TAXONOMY, type Datapoint } from '../data/taxonomy'
+import { Chip, useSpine } from '../state/spine'
 import './MetricEntry.css'
 
 // Metrics-entry mockup — state lives in browser memory only (no backend).
@@ -72,6 +73,7 @@ function validate(rows: Row[]): Violation[] {
 }
 
 export default function MetricEntry() {
+  const spine = useSpine()
   const [dpCode, setDpCode] = useState(ALL_DPS[0].dp.code)
   const [rows, setRows] = useState<Row[]>(
     YEARS.map((year) => ({ year, value: '', evidence: false })),
@@ -95,6 +97,11 @@ export default function MetricEntry() {
 
   return (
     <div className="me">
+      <div className="spine-row">
+        <Chip from="Decision Dashboard">
+          approved values feed disclosure intensity — current target d* = <strong>{spine.dStar.toFixed(2)}</strong>{spine.floorBinding ? ' (floor binding)' : ''}
+        </Chip>
+      </div>
       <div className="me-head">
         <label className="me-select">
           Datapoint
