@@ -1,0 +1,188 @@
+import { useState } from 'react'
+import cfh from '../data/cfh_summary.json'
+import './Accounting.css'
+
+// Precomputed from the CFH paper's own engine (cfh_data.json, Spec v3.1) —
+// Structure A: one combined quanto CFH designation; Structure B: split
+// WTI KO call + Garman-Kohlhagen FX call, two hedge lines.
+const S = cfh.stats as {
+  premium: number
+  ineffA: number
+  ineffB: number
+  sigmaEconA: number
+  sigmaEconB: number
+  koProb: number
+  ociReclassA: number
+  postKoFvtplStdB: number
+}
+const SERIES = cfh.series as {
+  t: number
+  aOCI: number
+  aCumIneff: number
+  alive: number
+  b1OCI: number
+  b1CumIneff: number
+}[]
+
+const C_A = '#2f6db4'
+const C_B = '#2e7d52'
+const bn = (v: number) => `₩${(v / 1e9).toFixed(1)}bn`
+
+const CW = 620
+const CH = 240
+const PAD = { top: 14, right: 96, bottom: 32, left: 60 }
+
+function Chart({
+  a,
+  b,
+  fmt,
+  labelA,
+  labelB,
+}: {
+  a: number[]
+  b: number[]
+  fmt: (v: number) => string
+  labelA: string
+  labelB: string
+}) {
+  const all = [...a, ...b]
+  const yMax = Math.max(...all) * 1.08
+  const yMin = Math.min(0, ...all) * 1.08
+  const x = (i: number) => PAD.left + (i / (SERIES.length - 1)) * (CW - PAD.left - PAD.right)
+  const y = (v: number) => CH - PAD.bottom - ((v - yMin) / (yMax - yMin)) * (CH - PAD.top - PAD.bottom)
+  const line = (vals: number[]) => vals.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('')
+  return (
+    <svg viewBox={`0 0 ${CW} ${CH}`} role="img">
+      {[0, 0.5, 1].map((f) => {
+        const v = yMin + f * (yMax - yMin)
+        return (
+          <g key={f}>
+            <line x1={PAD.left} y1={y(v)} x2={CW - PAD.right} y2={y(v)} stroke="var(--line)" strokeWidth={1} />
+            <text x={PAD.left - 6} y={y(v) + 4} textAnchor="end" className="tick">{fmt(v)}</text>
+          </g>
+        )
+      })}
+      {[0.25, 0.5, 0.75, 1].map((f) => (
+        <text key={f} x={x(f * (SERIES.length - 1))} y={CH - PAD.bottom + 16} textAnchor="middle" className="tick">
+          {(SERIES[Math.round(f * (SERIES.length - 1))].t).toFixed(2)}y
+        </text>
+      ))}
+      <path d={line(a)} fill="none" stroke={C_A} strokeWidth={2} />
+      <path d={line(b)} fill="none" stroke={C_B} strokeWidth={2} />
+      <text x={CW - PAD.right + 6} y={y(a[a.length - 1]) + 4} className="series-label" fill={C_A}>{labelA}</text>
+      <text x={CW - PAD.right + 6} y={y(b[b.length - 1]) + 4} className="series-label" fill={C_B}>{labelB}</text>
+    </svg>
+  )
+}
+
+export default function Accounting() {
+  const [view, setView] = useState<'oci' | 'ineff'>('ineff')
+
+  return (
+    <div className="ac">
+      <div className="ac-banner">
+        Precomputed from the CFH paper's engine (218-step designation ledgers,
+        downsampled ×5). The question IFRS 9 forces: designate the quanto as{' '}
+        <strong>one combined hedge (A)</strong> or <strong>split it into two
+        vanilla-style lines (B)</strong>? Same economics, very different books.
+      </div>
+
+      <div className="ac-tiles">
+        <div className="tile">
+          <span className="tile-label">Mean |ineffectiveness| — A combined</span>
+          <span className="tile-value" style={{ color: C_A }}>{bn(S.ineffA)}</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">Mean |ineffectiveness| — B split</span>
+          <span className="tile-value" style={{ color: C_B }}>{bn(S.ineffB)}</span>
+          <span className="tile-badge">3.7× cleaner in P&L</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">Economic σ — A vs B</span>
+          <span className="tile-value">{bn(S.sigmaEconA)} / {bn(S.sigmaEconB)}</span>
+          <span className="tile-badge">≈ same economics</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">KO probability (engine)</span>
+          <span className="tile-value">{(S.koProb * 100).toFixed(1)}%</span>
+        </div>
+      </div>
+
+      <figure className="ac-panel">
+        <div className="ac-head">
+          <h3>{view === 'ineff' ? 'Cumulative ineffectiveness charged to P&L' : 'OCI hedge reserve path'}</h3>
+          <div className="ac-toggle">
+            <button className={view === 'ineff' ? 'active' : ''} onClick={() => setView('ineff')}>P&L ineffectiveness</button>
+            <button className={view === 'oci' ? 'active' : ''} onClick={() => setView('oci')}>OCI reserve</button>
+          </div>
+        </div>
+        {view === 'ineff' ? (
+          <Chart
+            a={SERIES.map((r) => r.aCumIneff)}
+            b={SERIES.map((r) => r.b1CumIneff)}
+            fmt={bn}
+            labelA="A combined"
+            labelB="B split (WTI)"
+          />
+        ) : (
+          <Chart
+            a={SERIES.map((r) => r.aOCI)}
+            b={SERIES.map((r) => r.b1OCI)}
+            fmt={bn}
+            labelA="A combined"
+            labelB="B split (WTI)"
+          />
+        )}
+        <figcaption className="ac-legend">
+          <span className="lg-item"><span className="dot" style={{ background: C_A }} /> Structure A — one combined quanto CFH line</span>
+          <span className="lg-item"><span className="dot" style={{ background: C_B }} /> Structure B — split WTI leg (of two lines)</span>
+        </figcaption>
+      </figure>
+
+      <div className="ac-grid2">
+        <div className="ac-panel">
+          <h3>The designation trade-off</h3>
+          <table>
+            <thead>
+              <tr><th></th><th>A — combined</th><th>B — split</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Hedge lines to document</td><td>1</td><td>2 (WTI + FX)</td></tr>
+              <tr><td>Mean |ineffectiveness|</td><td>{bn(S.ineffA)}</td><td><strong>{bn(S.ineffB)}</strong></td></tr>
+              <tr><td>Economic cash-flow σ</td><td>{bn(S.sigmaEconA)}</td><td>{bn(S.sigmaEconB)}</td></tr>
+              <tr><td>OCI → P&L reclass at maturity</td><td>{bn(S.ociReclassA)}</td><td>—</td></tr>
+              <tr><td>Post-KO FVTPL noise (σ)</td><td>—</td><td>{bn(S.postKoFvtplStdB)}</td></tr>
+            </tbody>
+          </table>
+          <p className="ac-note">
+            The economics barely differ; the accounting does. Splitting (B)
+            cuts P&L ineffectiveness 3.7× — but if the KO leg dies (
+            {(S.koProb * 100).toFixed(0)}% probability), its replacement
+            trades at FVTPL and injects {bn(S.postKoFvtplStdB)} of earnings
+            noise. Designation is a risk decision, not paperwork.
+          </p>
+        </div>
+        <div className="ac-panel">
+          <h3>Where this connects</h3>
+          <ul className="ac-links">
+            <li>
+              <strong>Hedge Instruments →</strong> a collar's aligned time value
+              goes to OCI under IFRS 9 — the same designation machinery, on the
+              instrument desks actually use.
+            </li>
+            <li>
+              <strong>Exotic Desk →</strong> the KO probability driving B's
+              post-knock-out FVTPL noise is the Barrier Risk Monitor's number.
+            </li>
+            <li>
+              <strong>Decision Dashboard →</strong> hedge-accounting adoption is
+              the ESG paper's outcome variable: the precisely-estimated null on
+              disclosure mandates was measured on exactly this designation
+              choice.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  )
+}

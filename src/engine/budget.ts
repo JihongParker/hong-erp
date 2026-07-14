@@ -1,0 +1,143 @@
+// FROZEN — Park, "Optimal WTI–FX hedge ratios under a fixed budget" (P1).
+// Equations transcribed verbatim from §3 (eq. gmvp, costeu, costam, constraints)
+// and Table 1 inputs. Anchors: European risk-min optimum (0.970486, 0.029514),
+// sigma_res = 0.0916021, budget-exact at KRW 45bn; American (0.971581, 0.028419).
+
+export type Regime = 'european' | 'american'
+
+// Table 1 — every downstream number comes from these and nothing else
+export const P1_INPUTS = {
+  S_WTI: 78.94,
+  S_KRW: 1540.64,
+  Q_oil: 2_000_000,
+  Q_USD: 157_880_000,
+  r_w: 0.07,
+  B: 45_000_000_000,
+  T1: 0.833,
+  T2: 0.5,
+  stressWTI: 113,
+  stressKRW: 1550,
+  sigma1EU: 0.39455,
+  sigma1AM: 0.32419,
+  sigma2: 0.09258,
+  rho: 0.08763,
+  P_B76: 12.6524, // USD/bbl
+  P_GK: 84.667, // KRW/USD
+  P_Sh_WTI: 15_093.75, // KRW/bbl
+  P_Sh_FX: 2_038.72, // KRW/USD
+  // §7-8: stress-conditional KO survival analysis
+  p_KO_stress: 0.8925, // measured stress KO probability (200k paths)
+  p_KO_breakeven: 0.0616, // p̄ above which vanilla dominates KO
+} as const
+
+export interface BudgetParams {
+  regime: Regime
+  B: number
+  stressWTI: number
+  stressKRW: number
+}
+
+export function sigmaRes(w1: number, w2: number, regime: Regime): number {
+  const s1 = regime === 'european' ? P1_INPUTS.sigma1EU : P1_INPUTS.sigma1AM
+  const s2 = P1_INPUTS.sigma2
+  const u = 1 - w1
+  const v = 1 - w2
+  return Math.sqrt(u * u * s1 * s1 + v * v * s2 * s2 + 2 * u * v * s1 * s2 * P1_INPUTS.rho)
+}
+
+export function premiumCost(w1: number, w2: number, regime: Regime): number {
+  const I = P1_INPUTS
+  if (regime === 'european')
+    return (
+      w1 * I.Q_oil * I.P_B76 * I.S_KRW * (1 + I.r_w * I.T1) +
+      w2 * I.Q_USD * I.P_GK * (1 + I.r_w * I.T2)
+    )
+  return (
+    w1 * I.Q_oil * I.P_Sh_WTI * Math.exp(I.r_w * I.T1) +
+    w2 * I.Q_USD * I.P_Sh_FX * Math.exp(I.r_w * I.T2)
+  )
+}
+
+export function stressLoss(w1: number, w2: number, p: BudgetParams): number {
+  const I = P1_INPUTS
+  return (
+    (1 - w1) * I.Q_oil * Math.max(0, p.stressWTI - I.S_WTI) * p.stressKRW +
+    (1 - w2) * I.Q_USD * Math.max(0, p.stressKRW - I.S_KRW)
+  )
+}
+
+export function totalCost(w1: number, w2: number, p: BudgetParams): number {
+  return premiumCost(w1, w2, p.regime) + stressLoss(w1, w2, p)
+}
+
+export interface BudgetSolution {
+  w1: number
+  w2: number
+  sigma: number
+  cost: number
+  premium: number
+  stress: number
+  feasible: boolean
+  budgetBinding: boolean
+}
+
+// Constraint set (eq. constraints): 0≤w≤1, w1+w2≤1, C(w)≤B.
+// sigma_res is strictly decreasing in both w's over the box, so the optimum
+// lies on the north-east boundary of the feasible polygon: scan its edges
+// (total-cost-binding line, allocation line, box edges) densely + refine.
+export function solveBudget(p: BudgetParams): BudgetSolution {
+  const feasible = (w1: number, w2: number) =>
+    w1 >= 0 && w1 <= 1 && w2 >= 0 && w2 <= 1 && w1 + w2 <= 1 + 1e-12 && totalCost(w1, w2, p) <= p.B + 1e-3
+
+  let best: { w1: number; w2: number; sigma: number } | null = null
+  const consider = (w1: number, w2: number) => {
+    if (!feasible(w1, w2)) return
+    const s = sigmaRes(w1, w2, p.regime)
+    if (!best || s < best.sigma) best = { w1, w2, sigma: s }
+  }
+
+  const N = 4000
+  // edge 1: cost-binding line — for each w2, largest w1 with C ≤ B (C affine,
+  // decreasing in w1 iff avoided stress loss > premium; bisect either way)
+  for (let j = 0; j <= N; j++) {
+    const w2 = j / N
+    let lo = 0
+    let hi = 1
+    // find max feasible w1 for this w2 (allocation cap first)
+    hi = Math.min(1, 1 - w2)
+    if (totalCost(hi, w2, p) <= p.B) {
+      consider(hi, w2) // NE corner of this column
+      continue
+    }
+    if (totalCost(lo, w2, p) > p.B) continue // whole column infeasible
+    for (let it = 0; it < 60; it++) {
+      const mid = (lo + hi) / 2
+      if (totalCost(mid, w2, p) <= p.B) lo = mid
+      else hi = mid
+    }
+    consider(lo, w2)
+  }
+  // corners of the box for completeness
+  for (const [a, b] of [[1, 0], [0, 1], [0, 0]] as const) consider(a, b)
+
+  if (!best) {
+    const sigma = sigmaRes(0, 0, p.regime)
+    return {
+      w1: 0, w2: 0, sigma,
+      cost: totalCost(0, 0, p),
+      premium: 0,
+      stress: stressLoss(0, 0, p),
+      feasible: false,
+      budgetBinding: false,
+    }
+  }
+  const { w1, w2, sigma } = best as { w1: number; w2: number; sigma: number }
+  const cost = totalCost(w1, w2, p)
+  return {
+    w1, w2, sigma, cost,
+    premium: premiumCost(w1, w2, p.regime),
+    stress: stressLoss(w1, w2, p),
+    feasible: true,
+    budgetBinding: Math.abs(cost - p.B) < p.B * 1e-4,
+  }
+}

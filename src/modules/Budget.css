@@ -1,0 +1,154 @@
+.bg {
+  margin-top: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.bg-banner {
+  font-size: 12.5px;
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--panel);
+}
+
+.bg-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.bg-panel {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  padding: 16px 18px;
+  margin: 0;
+}
+
+.bg-panel h3 {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.bg-tabs {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.bg-tab {
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.bg-tab.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.bg-panel label {
+  display: grid;
+  grid-template-columns: 84px 1fr 62px;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.bg-plabel {
+  color: var(--muted);
+}
+
+.bg-panel input[type='range'] {
+  accent-color: var(--accent);
+  min-width: 0;
+}
+
+.bg-pval {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.bg-muted {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.bg-ko {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+  border-left: 3px solid #b3610f;
+  padding-left: 10px;
+}
+
+.bg-main {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.bg-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.bg-row {
+  display: grid;
+  grid-template-columns: 70px 1fr 56px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.bg-name {
+  color: var(--muted);
+}
+
+.bg-track {
+  height: 22px;
+  border-radius: 6px;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.bg-fill {
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  transition: width 120ms ease;
+}
+
+.bg-num {
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.bg-plot svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 1000px) {
+  .bg-grid {
+    grid-template-columns: 1fr;
+  }
+  .bg-tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
