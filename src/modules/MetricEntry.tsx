@@ -2,12 +2,13 @@ import { useMemo, useState } from 'react'
 import { TAXONOMY, type Datapoint } from '../data/taxonomy'
 import './MetricEntry.css'
 
-// 지표 입력 목업 — 상태는 브라우저 메모리뿐이다 (백엔드 없음).
-// 보여주려는 것: 입력값이 검증 규칙을 통과해야 결재선에 오르는 흐름.
+// Metrics-entry mockup — state lives in browser memory only (no backend).
+// What it demonstrates: values must pass validation rules before they can
+// enter the approval chain.
 
 interface Row {
   year: number
-  value: string // 입력 그대로 보관, 검증 시 파싱
+  value: string // kept as typed; parsed at validation
   evidence: boolean
 }
 
@@ -16,9 +17,9 @@ type Stage = 'draft' | 'review' | 'approved'
 const YEARS = [2024, 2025, 2026]
 
 const STAGE_LABELS: Record<Stage, string> = {
-  draft: '작성',
-  review: '검토',
-  approved: '승인',
+  draft: 'Draft',
+  review: 'Review',
+  approved: 'Approved',
 }
 
 function flatDatapoints(): { dp: Datapoint; path: string }[] {
@@ -38,21 +39,21 @@ interface Violation {
   msg: string
 }
 
-// 검증 규칙 — 데모용 3종. 실제 제품이라면 datapoint별 규칙 테이블이 된다.
+// Validation rules — three demo rules. A real product keys these per datapoint.
 function validate(rows: Row[]): Violation[] {
   const v: Violation[] = []
   const nums = rows.map((r) => (r.value.trim() === '' ? null : Number(r.value)))
 
   rows.forEach((r, i) => {
     if (r.value.trim() === '') {
-      v.push({ level: 'error', msg: `${r.year}년 값이 비어 있음` })
+      v.push({ level: 'error', msg: `${r.year}: value is empty` })
       return
     }
     const n = nums[i]
     if (n === null || Number.isNaN(n))
-      v.push({ level: 'error', msg: `${r.year}년 값이 숫자가 아님` })
-    else if (n < 0) v.push({ level: 'error', msg: `${r.year}년 값이 음수 — 절대량 지표는 음수 불가` })
-    if (!r.evidence) v.push({ level: 'error', msg: `${r.year}년 증빙 미첨부 — 증빙 없는 값은 제출 불가` })
+      v.push({ level: 'error', msg: `${r.year}: value is not a number` })
+    else if (n < 0) v.push({ level: 'error', msg: `${r.year}: negative — absolute metrics cannot be negative` })
+    if (!r.evidence) v.push({ level: 'error', msg: `${r.year}: no evidence attached — unevidenced values cannot be submitted` })
   })
 
   for (let i = 1; i < rows.length; i++) {
@@ -63,7 +64,7 @@ function validate(rows: Row[]): Violation[] {
       if (Math.abs(chg) > 0.5)
         v.push({
           level: 'warn',
-          msg: `${rows[i].year}년 값이 전년 대비 ${(chg * 100).toFixed(0)}% 변동 — 사유 소명 필요`,
+          msg: `${rows[i].year}: ${(chg * 100).toFixed(0)}% change vs prior year — explanation required`,
         })
     }
   }
@@ -82,7 +83,7 @@ export default function MetricEntry() {
   const errors = violations.filter((v) => v.level === 'error')
 
   const setRow = (i: number, patch: Partial<Row>) => {
-    setStage('draft') // 값이 바뀌면 결재는 처음부터
+    setStage('draft') // any change restarts the approval chain
     setRows((prev) => prev.map((r, j) => (j === i ? { ...r, ...patch } : r)))
   }
 
@@ -96,7 +97,7 @@ export default function MetricEntry() {
     <div className="me">
       <div className="me-head">
         <label className="me-select">
-          데이터포인트
+          Datapoint
           <select value={dpCode} onChange={(e) => pickDp(e.target.value)}>
             {ALL_DPS.map(({ dp }) => (
               <option key={dp.code} value={dp.code}>
@@ -106,19 +107,19 @@ export default function MetricEntry() {
           </select>
         </label>
         <div className="me-path">
-          {sel.path} {sel.dp.unit && <span className="me-unit">단위: {sel.dp.unit}</span>}
+          {sel.path} {sel.dp.unit && <span className="me-unit">Unit: {sel.dp.unit}</span>}
         </div>
       </div>
 
       <div className="me-grid">
         <div className="me-panel">
-          <h3>연도별 입력</h3>
+          <h3>Annual values</h3>
           <table>
             <thead>
               <tr>
-                <th>연도</th>
-                <th>값 {sel.dp.unit && `(${sel.dp.unit})`}</th>
-                <th>증빙</th>
+                <th>Year</th>
+                <th>Value {sel.dp.unit && `(${sel.dp.unit})`}</th>
+                <th>Evidence</th>
               </tr>
             </thead>
             <tbody>
@@ -143,7 +144,7 @@ export default function MetricEntry() {
                         disabled={stage === 'approved'}
                         onChange={(e) => setRow(i, { evidence: e.target.checked })}
                       />
-                      첨부됨 (목업)
+                      Attached (mockup)
                     </label>
                   </td>
                 </tr>
@@ -153,7 +154,7 @@ export default function MetricEntry() {
 
           <div className="me-validations">
             {violations.length === 0 ? (
-              <p className="ok">✓ 검증 규칙 3종 통과</p>
+              <p className="ok">✓ All 3 validation rules pass</p>
             ) : (
               violations.map((v, i) => (
                 <p key={i} className={v.level}>
@@ -165,7 +166,7 @@ export default function MetricEntry() {
         </div>
 
         <div className="me-panel">
-          <h3>결재</h3>
+          <h3>Approval</h3>
           <ol className="me-stepper">
             {(['draft', 'review', 'approved'] as Stage[]).map((s, i) => {
               const idx = ['draft', 'review', 'approved'].indexOf(stage)
@@ -185,35 +186,36 @@ export default function MetricEntry() {
               disabled={errors.length > 0}
               onClick={() => setStage('review')}
             >
-              검토 요청
+              Request review
             </button>
           )}
           {stage === 'review' && (
             <div className="me-btnrow">
               <button className="me-btn" onClick={() => setStage('approved')}>
-                승인
+                Approve
               </button>
               <button className="me-btn ghost" onClick={() => setStage('draft')}>
-                반려
+                Reject
               </button>
             </div>
           )}
           {stage === 'approved' && (
             <p className="me-approved">
-              승인 완료 — 값이 잠겼습니다. 수정하려면 새 버전을 작성해야 합니다
-              (Audit Trail 개념의 목업).
+              Approved — values are locked. Changing them requires drafting a
+              new version (an audit-trail concept, mocked).
             </p>
           )}
           {stage === 'draft' && errors.length > 0 && (
-            <p className="me-hint">오류 {errors.length}건을 해소해야 검토 요청이 가능합니다.</p>
+            <p className="me-hint">Resolve {errors.length} error(s) to request review.</p>
           )}
         </div>
       </div>
 
       <p className="me-note">
-        검증 규칙 데모 3종: 숫자·음수 검사, 증빙 필수, 전년 대비 ±50% 변동 경고.
-        기존 솔루션의 정량 모듈이 하는 일이 정확히 이 층이다 — 홍ERP는 여기서
-        멈추지 않고, 승인된 값이 결정 대시보드의 입력이 되도록 연결한다.
+        Three demo validation rules: numeric/negative checks, mandatory evidence,
+        ±50% year-over-year change warning. This layer is exactly what incumbent
+        solutions' quantitative modules do — HongERP does not stop here: approved
+        values feed the Decision Dashboard as inputs.
       </p>
     </div>
   )
