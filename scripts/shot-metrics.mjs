@@ -1,0 +1,13 @@
+import { chromium } from 'playwright'
+const browser = await chromium.launch()
+const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
+await page.goto('http://localhost:4199/', { waitUntil: 'networkidle' })
+await page.click('text=지표 입력')
+await page.fill('table input[type=text] >> nth=0', '1250')
+await page.fill('table input[type=text] >> nth=1', '2400')
+await page.fill('table input[type=text] >> nth=2', '2500')
+await page.check('table input[type=checkbox] >> nth=0')
+await page.check('table input[type=checkbox] >> nth=1')
+await page.waitForTimeout(300)
+await page.screenshot({ path: process.argv[2] + '/metrics.png' })
+await browser.close()
