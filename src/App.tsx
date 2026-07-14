@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import AccountTree from './modules/AccountTree'
 import Materiality from './modules/Materiality'
+import MetricEntry from './modules/MetricEntry'
 import './App.css'
 
 // 모듈 지도 = 제품 로드맵. status는 정직하게 유지한다:
@@ -31,7 +32,7 @@ const MODULES = [
     id: 'metrics',
     name: '지표 입력',
     desc: '정량지표 입력 → 검증 규칙 → 결재 (UI 목업)',
-    status: 'planned',
+    status: 'live',
     note: '',
   },
   {
@@ -83,6 +84,8 @@ export default function App() {
           <AccountTree />
         ) : mod.id === 'materiality' ? (
           <Materiality />
+        ) : mod.id === 'metrics' ? (
+          <MetricEntry />
         ) : (
           <section className="placeholder">
             <p>
