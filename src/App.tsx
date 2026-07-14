@@ -50,9 +50,57 @@ const GROUPS: {
 
 const ALL = GROUPS.flatMap((g) => g.items)
 
+// Guided walkthrough — five moves that show the whole system without any
+// finance background. Each step lands on a module and says exactly what to drag.
+const TOUR: { module: string; title: string; body: string }[] = [
+  {
+    module: 'decision',
+    title: 'Force the disclosure floor',
+    body: 'Drag "d̲ mandated floor" (Regulation, right end of the deck) past ~0.9. The badge flips to floor binding and both hedge bars shrink — forced disclosure buys penalty relief and crowds out hedging. That is the paper\'s §3.6 prediction, computed live.',
+  },
+  {
+    module: 'budget',
+    title: 'Squeeze the ₩45bn budget',
+    body: 'Pull "Budget B" down toward ₩35bn. The optimum walks along the red cost boundary, but the 97/3 WTI-FX split barely moves — the asymmetry is structural (σ₁²/σ₂² ≈ 18×), not budgetary.',
+  },
+  {
+    module: 'instruments',
+    title: 'Price a free hedge',
+    body: 'On the Zero-cost collar tab, raise "Cap strike Kc". The solver instantly finds the floor whose written put finances the bought call — net premium pinned at $0.00. This is how refiners actually hedge.',
+  },
+  {
+    module: 'instruments',
+    title: 'Walk into the barrier',
+    body: 'Switch to the Double-KO quanto tab and push "WTI spot" toward $115. The Barrier Risk Monitor escalates to Critical, KO odds jump past 80%, and Δ flips sign — the exact place where textbook delta hedging breaks.',
+  },
+  {
+    module: 'accounting',
+    title: 'Watch the number travel',
+    body: 'The KO odds you just set arrived here on their own — see the EXOTIC DESK chip at the top. That number decides how noisy the split designation\'s books get after a knock-out. The sidebar really is a data flow.',
+  },
+]
+
 export default function App() {
   const [active, setActive] = useState<string>('overview')
+  const [tour, setTour] = useState<number | null>(null)
   const mod = ALL.find((m) => m.id === active)!
+
+  const startTour = () => {
+    setTour(0)
+    setActive(TOUR[0].module)
+  }
+  const stepTour = (dir: 1 | -1) => {
+    if (tour === null) return
+    const next = tour + dir
+    if (next < 0) return
+    if (next >= TOUR.length) {
+      setTour(null)
+      setActive('overview')
+      return
+    }
+    setTour(next)
+    setActive(TOUR[next].module)
+  }
 
   return (
     <SpineProvider>
@@ -94,7 +142,7 @@ export default function App() {
           </header>
         )}
         {mod.id === 'overview' ? (
-          <Overview onNavigate={setActive} />
+          <Overview onNavigate={setActive} onStartTour={startTour} />
         ) : mod.id === 'decision' ? (
           <Dashboard />
         ) : mod.id === 'budget' ? (
@@ -113,6 +161,25 @@ export default function App() {
           <Scenario />
         )}
       </main>
+
+      {tour !== null && (
+        <aside className="tour-card" role="dialog" aria-label="Guided tour">
+          <div className="tour-head">
+            <span className="tour-step">Step {tour + 1} / {TOUR.length}</span>
+            <button className="tour-close" onClick={() => setTour(null)} aria-label="End tour">✕</button>
+          </div>
+          <h4>{TOUR[tour].title}</h4>
+          <p>{TOUR[tour].body}</p>
+          <div className="tour-actions">
+            {tour > 0 && (
+              <button className="tour-btn ghost" onClick={() => stepTour(-1)}>← Back</button>
+            )}
+            <button className="tour-btn" onClick={() => stepTour(1)}>
+              {tour === TOUR.length - 1 ? 'Finish' : 'Next →'}
+            </button>
+          </div>
+        </aside>
+      )}
     </div>
     </SpineProvider>
   )

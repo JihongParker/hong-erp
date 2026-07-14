@@ -42,16 +42,33 @@ const FLOW = [
   { id: 'decision', label: 'Disclosure', sub: 'd* × h*' },
 ]
 
-export default function Overview({ onNavigate }: { onNavigate: (id: string) => void }) {
+const TECH = ['React 19', 'TypeScript', 'Vite', 'hand-rolled SVG dataviz', 'Context state spine', '100% client-side', 'GitHub Actions → Pages']
+
+export default function Overview({
+  onNavigate,
+  onStartTour,
+}: {
+  onNavigate: (id: string) => void
+  onStartTour: () => void
+}) {
   return (
     <div className="ov">
       <section className="ov-hero">
-        <p className="ov-kicker">One position · four papers · one operating system</p>
-        <h2>
+        <div className="ov-tech rise" style={{ animationDelay: '0ms' }}>
+          <span className="ov-tech-name">HongERP</span>
+          <span className="ov-tech-tag">a financial-engineering ESG decision simulator</span>
+          <span className="ov-tech-chips">
+            {TECH.map((t) => (
+              <span key={t} className="ov-chip">{t}</span>
+            ))}
+          </span>
+        </div>
+        <p className="ov-kicker rise" style={{ animationDelay: '80ms' }}>One position · four papers · one operating system</p>
+        <h2 className="rise" style={{ animationDelay: '140ms' }}>
           The decision layer that ESG platforms{' '}
           <span className="ov-accent">leave empty</span>
         </h2>
-        <p className="ov-lede">
+        <p className="ov-lede rise" style={{ animationDelay: '220ms' }}>
           Incumbent ESG software collects disclosures and stops. HongERP treats
           disclosure as a <strong>control variable</strong> that lowers the
           shadow price of residual risk, Λ(d) = φ + λe<sup>−kd</sup>, and solves
@@ -60,8 +77,11 @@ export default function Overview({ onNavigate }: { onNavigate: (id: string) => v
           WTI × USD/KRW exposure, on the actual engines of a four-paper research
           program.
         </p>
-        <div className="ov-cta">
-          <button className="ov-btn primary" onClick={() => onNavigate('decision')}>
+        <div className="ov-cta rise" style={{ animationDelay: '300ms' }}>
+          <button className="ov-btn primary" onClick={onStartTour}>
+            ▶ Take the 90-second tour
+          </button>
+          <button className="ov-btn" onClick={() => onNavigate('decision')}>
             Open the Decision Dashboard →
           </button>
           <a className="ov-btn" href="https://github.com/JihongParker/hong-erp" target="_blank" rel="noreferrer">
@@ -74,7 +94,7 @@ export default function Overview({ onNavigate }: { onNavigate: (id: string) => v
         <h3>The sidebar is a data flow, not a menu</h3>
         <div className="ov-flow-row">
           {FLOW.map((f, i) => (
-            <div key={f.id} className="ov-flow-item">
+            <div key={f.id} className="ov-flow-item rise" style={{ animationDelay: `${380 + i * 90}ms` }}>
               <button className="ov-node" onClick={() => onNavigate(f.id)}>
                 <span className="ov-node-label">{f.label}</span>
                 <span className="ov-node-sub">{f.sub}</span>
