@@ -190,3 +190,167 @@ nav {
   letter-spacing: 0.04em;
   color: var(--accent);
 }
+
+/* ── readability & polish pass ─────────────────────────────── */
+
+/* grid blowout guard: a grid child may never exceed its track —
+   wide tables scroll inside their own wrapper, never the page */
+.mat-grid > *,
+.me-grid > *,
+.ac-grid2 > *,
+.sc-grid > *,
+.ex-charts > *,
+.ex-deck > *,
+.bg-deck > *,
+.db-grid > *,
+.ins-grid > * {
+  min-width: 0;
+}
+
+/* parameter controls: larger, higher-contrast labels; emphasized values */
+.db-group label,
+.sc-sliders label,
+.ex-panel label,
+.ins-panel label,
+.bg-panel label {
+  font-size: 13px;
+}
+
+.db-plabel,
+.sc-param,
+.ex-plabel,
+.ins-plabel,
+.bg-plabel {
+  color: var(--text);
+  opacity: 0.78;
+  font-weight: 500;
+}
+
+.db-pval,
+.sc-val,
+.ex-pval,
+.ins-pval,
+.bg-pval {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+input[type='range'] {
+  cursor: pointer;
+}
+
+/* panels get gentle depth so the layout reads as cards, not wireframe */
+.db-panel,
+.bg-panel,
+.ins-panel,
+.ex-panel,
+.ac-panel,
+.sc-panel,
+.me-panel,
+.mat-plot,
+.mat-table-wrap,
+.cosa-tree,
+.cosa-detail,
+.tile,
+.ov-paper,
+.ov-proof-item,
+.ov-node {
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
+}
+
+/* charts: larger ticks & axis titles */
+.tick {
+  font-size: 11px !important;
+}
+
+.axis-title {
+  font-size: 12px !important;
+}
+
+.series-label {
+  font-size: 12px !important;
+}
+
+/* tables: one notch up */
+.mat-table-wrap table,
+.sc-table-wrap table,
+.ins-table-wrap table,
+.ac-panel table,
+.cosa-detail table {
+  font-size: 13px;
+}
+
+/* guided tour card */
+.tour-card {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 340px;
+  max-width: calc(100vw - 48px);
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 14px;
+  box-shadow: 0 10px 34px rgb(0 0 0 / 0.18);
+  padding: 16px 18px;
+  z-index: 50;
+  animation: ov-rise 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tour-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.tour-step {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.tour-close {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tour-card h4 {
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.tour-card p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.tour-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.tour-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tour-btn.ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text);
+}

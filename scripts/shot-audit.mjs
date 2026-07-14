@@ -14,12 +14,12 @@ for (const width of [1440, 1100]) {
     ['metrics', 'Metrics Entry'],
     ['scen', 'Scenarios'],
   ]) {
-    await page.getByRole('button', { name: label }).click()
+    await page.locator('.nav-item', { hasText: label }).click()
     await page.waitForTimeout(300)
     await page.screenshot({ path: `${out}/audit-${width}-${name}.png`, fullPage: true })
   }
   // exotic tab
-  await page.getByRole('button', { name: 'Hedge Instruments' }).click()
+  await page.locator('.nav-item', { hasText: 'Hedge Instruments' }).click()
   await page.getByRole('button', { name: /Double-KO quanto/ }).click()
   await page.waitForTimeout(300)
   await page.screenshot({ path: `${out}/audit-${width}-exotic.png`, fullPage: true })

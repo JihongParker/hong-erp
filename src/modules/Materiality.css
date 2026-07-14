@@ -158,8 +158,15 @@
 .mat-table-wrap th,
 .mat-table-wrap td {
   text-align: left;
-  padding: 7px 8px;
+  padding: 8px 9px;
   border-bottom: 1px solid var(--line);
+}
+
+.mat-table-wrap .num,
+.mat-table-wrap td:first-child,
+.mat-table-wrap td:nth-child(3),
+.mat-table-wrap td:nth-child(4),
+.mat-table-wrap td:last-child {
   white-space: nowrap;
 }
 
