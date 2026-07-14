@@ -5,6 +5,8 @@ import MetricEntry from './modules/MetricEntry'
 import Scenario from './modules/Scenario'
 import Dashboard from './modules/Dashboard'
 import Instruments from './modules/Instruments'
+import Budget from './modules/Budget'
+import Accounting from './modules/Accounting'
 import './App.css'
 
 // The module map is the product roadmap. Keep status honest:
@@ -18,9 +20,23 @@ const MODULES = [
     note: '',
   },
   {
+    id: 'budget',
+    name: 'Hedge Budget',
+    desc: 'Fixed budget → optimal WTI/FX coverage split (constrained minimum variance)',
+    status: 'live',
+    note: '',
+  },
+  {
     id: 'instruments',
     name: 'Hedge Instruments',
     desc: 'Zero-cost collar (industry standard) · double-KO quanto (research) · forward baseline',
+    status: 'live',
+    note: '',
+  },
+  {
+    id: 'accounting',
+    name: 'Hedge Accounting',
+    desc: 'IFRS 9 CFH designation: combined vs split — OCI, ineffectiveness, KO aftermath',
     status: 'live',
     note: '',
   },
@@ -92,8 +108,12 @@ export default function App() {
         </header>
         {mod.id === 'decision' ? (
           <Dashboard />
+        ) : mod.id === 'budget' ? (
+          <Budget />
         ) : mod.id === 'instruments' ? (
           <Instruments />
+        ) : mod.id === 'accounting' ? (
+          <Accounting />
         ) : mod.id === 'cosa' ? (
           <AccountTree />
         ) : mod.id === 'materiality' ? (
