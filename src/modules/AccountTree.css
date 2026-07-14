@@ -100,9 +100,10 @@
   color: #fff;
 }
 
+/* 필라 팔레트 — dataviz 검증 통과(라이트·다크, CVD ΔE 60.5). 변경 시 재검증할 것 */
 .p-E { background: #2e7d52; }
 .p-S { background: #2f6db4; }
-.p-G { background: #8a5cb8; }
+.p-G { background: #b3610f; }
 
 .dp-count {
   margin-left: auto;
@@ -177,7 +178,7 @@
 .fw-gri  { border-color: #2e7d5266; }
 .fw-kssb { border-color: #b4232a66; }
 .fw-kcgs { border-color: #2f6db466; }
-.fw-msci { border-color: #8a5cb866; }
+.fw-msci { border-color: #b3610f66; }
 
 .cosa-note {
   margin-top: 14px;

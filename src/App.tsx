@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import AccountTree from './modules/AccountTree'
+import Materiality from './modules/Materiality'
 import './App.css'
 
 // 모듈 지도 = 제품 로드맵. status는 정직하게 유지한다:
@@ -23,7 +24,7 @@ const MODULES = [
     id: 'materiality',
     name: '중대성 평가',
     desc: 'IRO 등록 → 이중 중대성 매트릭스 (인터랙티브)',
-    status: 'planned',
+    status: 'live',
     note: '',
   },
   {
@@ -80,6 +81,8 @@ export default function App() {
         </header>
         {mod.id === 'cosa' ? (
           <AccountTree />
+        ) : mod.id === 'materiality' ? (
+          <Materiality />
         ) : (
           <section className="placeholder">
             <p>
