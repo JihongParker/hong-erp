@@ -76,7 +76,7 @@ export default function Instruments() {
         <button className={tab === 'collar' ? 'ins-tab active' : 'ins-tab'} onClick={() => setTab('collar')}>
           Zero-cost collar <span className="ins-tag">industry standard</span>
         </button>
-        <button className={tab === 'exotic' ? 'ins-tab active' : 'ins-tab'} onClick={() => setTab('exotic')}>
+        <button className={tab === 'exotic' ? 'ins-tab active' : 'ins-tab'} data-tour="exotic-tab" onClick={() => setTab('exotic')}>
           Double-KO quanto <span className="ins-tag">research</span>
         </button>
       </div>
@@ -94,6 +94,25 @@ export default function Instruments() {
             </Chip>
           </div>
           <div className="ins-grid">
+            <div className="ins-tiles">
+              <div className="tile">
+                <span className="tile-label">Cap (bought call)</span>
+                <span className="tile-value">${collar.capK.toFixed(0)}</span>
+              </div>
+              <div className="tile">
+                <span className="tile-label">Floor (written put)</span>
+                <span className="tile-value">${collar.floorK.toFixed(2)}</span>
+              </div>
+              <div className="tile">
+                <span className="tile-label">Net premium</span>
+                <span className="tile-value">${Math.abs(collar.netPremium) < 0.005 ? '0.00' : collar.netPremium.toFixed(2)}</span>
+              </div>
+              <div className="tile">
+                <span className="tile-label">Protected band</span>
+                <span className="tile-value">${(collar.capK - collar.floorK).toFixed(1)}</span>
+              </div>
+            </div>
+
             <div className="ins-panel ins-deck">
               <h3>Market & structure</h3>
               {(
@@ -117,7 +136,7 @@ export default function Instruments() {
                   <span className="ins-pval">{m.fmt(mkt[m.key])}</span>
                 </label>
               ))}
-              <label>
+              <label data-tour="cap">
                 <span className="ins-plabel">Cap strike Kc</span>
                 <input
                   type="range"
@@ -136,25 +155,6 @@ export default function Instruments() {
             </div>
 
             <div className="ins-main">
-              <div className="ins-tiles">
-                <div className="tile">
-                  <span className="tile-label">Cap (bought call)</span>
-                  <span className="tile-value">${collar.capK.toFixed(0)}</span>
-                </div>
-                <div className="tile">
-                  <span className="tile-label">Floor (written put)</span>
-                  <span className="tile-value">${collar.floorK.toFixed(2)}</span>
-                </div>
-                <div className="tile">
-                  <span className="tile-label">Net premium</span>
-                  <span className="tile-value">${Math.abs(collar.netPremium) < 0.005 ? '0.00' : collar.netPremium.toFixed(2)}</span>
-                </div>
-                <div className="tile">
-                  <span className="tile-label">Protected band</span>
-                  <span className="tile-value">${(collar.capK - collar.floorK).toFixed(1)}</span>
-                </div>
-              </div>
-
               <figure className="ins-panel ins-plot">
                 <h3>Effective purchase cost at expiry</h3>
                 <svg

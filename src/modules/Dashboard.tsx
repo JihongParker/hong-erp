@@ -132,10 +132,36 @@ export default function Dashboard() {
       </div>
 
       <div className="db-grid">
+        <div className="db-tiles">
+          <div className="tile">
+            <span className="tile-label">Disclosure d*</span>
+            <span className="tile-value">{eq.dStar.toFixed(2)}</span>
+            <span className={eq.floorBinding ? 'tile-badge binding' : 'tile-badge'}>
+                {eq.floorBinding ? 'floor binding' : 'voluntary interior'}
+              </span>
+          </div>
+          <div className="tile">
+            <span className="tile-label">Financial hedge h_f*</span>
+            <span className="tile-value" style={{ color: C_FIN }}>
+                {(eq.hF * 100).toFixed(0)}%
+              </span>
+          </div>
+          <div className="tile">
+            <span className="tile-label">Climate hedge h_c*</span>
+            <span className="tile-value" style={{ color: C_CLI }}>
+                {(eq.hC * 100).toFixed(0)}%
+              </span>
+          </div>
+          <div className="tile">
+            <span className="tile-label">Risk price Λ(d*)</span>
+            <span className="tile-value">{eq.lambdaAtD.toFixed(2)}</span>
+          </div>
+        </div>
+
         {/* ── parameters ── */}
         <div className="db-panel db-params">
           {GROUPS.map((g) => (
-            <div key={g.title} className="db-group">
+            <div key={g.title} className="db-group" data-tour={g.title === 'Regulation' ? 'floor' : undefined}>
               <h4>{g.title}</h4>
               {g.params.map((m) => (
                 <label key={m.key}>
@@ -160,31 +186,6 @@ export default function Dashboard() {
 
         {/* ── results ── */}
         <div className="db-main">
-          <div className="db-tiles">
-            <div className="tile">
-              <span className="tile-label">Disclosure d*</span>
-              <span className="tile-value">{eq.dStar.toFixed(2)}</span>
-              <span className={eq.floorBinding ? 'tile-badge binding' : 'tile-badge'}>
-                {eq.floorBinding ? 'floor binding' : 'voluntary interior'}
-              </span>
-            </div>
-            <div className="tile">
-              <span className="tile-label">Financial hedge h_f*</span>
-              <span className="tile-value" style={{ color: C_FIN }}>
-                {(eq.hF * 100).toFixed(0)}%
-              </span>
-            </div>
-            <div className="tile">
-              <span className="tile-label">Climate hedge h_c*</span>
-              <span className="tile-value" style={{ color: C_CLI }}>
-                {(eq.hC * 100).toFixed(0)}%
-              </span>
-            </div>
-            <div className="tile">
-              <span className="tile-label">Risk price Λ(d*)</span>
-              <span className="tile-value">{eq.lambdaAtD.toFixed(2)}</span>
-            </div>
-          </div>
 
           {/* hedge at a glance */}
           <div className="db-panel">

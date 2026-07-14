@@ -42,8 +42,6 @@ const FLOW = [
   { id: 'decision', label: 'Disclosure', sub: 'd* × h*' },
 ]
 
-const TECH = ['React 19', 'TypeScript', 'Vite', 'hand-rolled SVG dataviz', 'Context state spine', '100% client-side', 'GitHub Actions → Pages']
-
 export default function Overview({
   onNavigate,
   onStartTour,
@@ -54,40 +52,32 @@ export default function Overview({
   return (
     <div className="ov">
       <section className="ov-hero">
-        <div className="ov-tech rise" style={{ animationDelay: '0ms' }}>
-          <span className="ov-tech-name">HongERP</span>
-          <span className="ov-tech-tag">a financial-engineering ESG decision simulator</span>
-          <span className="ov-tech-chips">
-            {TECH.map((t) => (
-              <span key={t} className="ov-chip">{t}</span>
-            ))}
-          </span>
-        </div>
-        <p className="ov-kicker rise" style={{ animationDelay: '80ms' }}>One position · four papers · one operating system</p>
-        <h2 className="rise" style={{ animationDelay: '140ms' }}>
+        <h2 className="rise" style={{ animationDelay: '60ms' }}>
           The decision layer that ESG platforms{' '}
           <span className="ov-accent">leave empty</span>
         </h2>
-        <p className="ov-lede rise" style={{ animationDelay: '220ms' }}>
-          Incumbent ESG software collects disclosures and stops. HongERP treats
-          disclosure as a <strong>control variable</strong> that lowers the
-          shadow price of residual risk, Λ(d) = φ + λe<sup>−kd</sup>, and solves
-          the optimal hedge and the optimal disclosure as{' '}
-          <strong>one problem</strong> — for a Korean crude-oil importer's joint
-          WTI × USD/KRW exposure, on the actual engines of a four-paper research
-          program.
+        <p className="ov-lede rise" style={{ animationDelay: '160ms' }}>
+          Most ESG software is a filing cabinet: it collects disclosures, checks
+          the boxes, and stops. <strong>HongERP is built like a trading desk.</strong>{' '}
+          Give it a company's risk exposures and it works out two things at once —{' '}
+          <strong>how much to hedge</strong> and <strong>how much to disclose</strong> —
+          because disclosing risk makes carrying it cheaper. Under the hood: the
+          actual models from four finance papers on a Korean oil importer's
+          WTI × USD/KRW exposure, running live in your browser.
         </p>
-        <div className="ov-cta rise" style={{ animationDelay: '300ms' }}>
-          <button className="ov-btn primary" onClick={onStartTour}>
-            ▶ Take the 90-second tour
+        <div className="ov-cta rise" style={{ animationDelay: '240ms' }}>
+          <button className="ov-btn big primary" onClick={onStartTour}>
+            Take a look
+            <span className="ov-btn-sub">guided · no finance needed</span>
           </button>
-          <button className="ov-btn" onClick={() => onNavigate('decision')}>
-            Open the Decision Dashboard →
+          <button className="ov-btn big" onClick={() => onNavigate('decision')}>
+            Start
+            <span className="ov-btn-sub">open the Decision Dashboard</span>
           </button>
-          <a className="ov-btn" href="https://github.com/JihongParker/hong-erp" target="_blank" rel="noreferrer">
-            Source on GitHub
-          </a>
         </div>
+        <a className="ov-gh rise" style={{ animationDelay: '300ms' }} href="https://github.com/JihongParker/hong-erp" target="_blank" rel="noreferrer">
+          Source on GitHub →
+        </a>
       </section>
 
       <section className="ov-flow">
@@ -125,32 +115,6 @@ export default function Overview({
         </div>
       </section>
 
-      <section className="ov-proof">
-        <h3>Nothing is invented</h3>
-        <div className="ov-proof-row">
-          <div className="ov-proof-item">
-            <span className="ov-proof-big">3×10⁻⁶</span>
-            worst gap, closed form vs independent minimizer (200 random draws)
-          </div>
-          <div className="ov-proof-item">
-            <span className="ov-proof-big">43.5% ≈ 43.7%</span>
-            exotic surface KO rate vs the paper's own European engine
-          </div>
-          <div className="ov-proof-item">
-            <span className="ov-proof-big">10⁻¹⁴</span>
-            Black-76 put–call parity residual on the collar desk
-          </div>
-          <div className="ov-proof-item">
-            <span className="ov-proof-big">(0.9705, 0.0295)</span>
-            the budget paper's vertex optimum, reproduced at defaults
-          </div>
-        </div>
-        <p className="ov-flow-note">
-          Every number on every screen is anchored to the papers' own engines —
-          frozen formula transcriptions, precomputed simulation surfaces, or the
-          papers' published ledgers. Values are illustrative, never advice.
-        </p>
-      </section>
     </div>
   )
 }
