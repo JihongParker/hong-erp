@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import AccountTree from './modules/AccountTree'
 import './App.css'
 
 // 모듈 지도 = 제품 로드맵. status는 정직하게 유지한다:
@@ -15,8 +16,8 @@ const MODULES = [
     id: 'cosa',
     name: '계정체계',
     desc: '지속가능성 계정 트리 → 프레임워크 datapoint 매핑',
-    status: 'planned',
-    note: 'COSA형 계층코드, 가상 taxonomy 100~300계정',
+    status: 'live',
+    note: '',
   },
   {
     id: 'materiality',
@@ -77,18 +78,22 @@ export default function App() {
           <h1>{mod.name}</h1>
           <p className="desc">{mod.desc}</p>
         </header>
-        <section className="placeholder">
-          <p>
-            이 모듈은 아직 <strong>{mod.status}</strong> 단계입니다.
-            {mod.note && <> — {mod.note}</>}
-          </p>
-          <p className="thesis">
-            홍ERP의 논지: 기존 회계법인 솔루션은 공시를 <em>비용 센터</em>로
-            취급한다. 홍ERP는 공시를 잔존위험의 그림자가격 Λ(d) = φ + λe
-            <sup>−kd</sup> 를 낮추는 <em>통제변수</em>로 보고, 최적 헤지 h*와
-            최적 공시강도 d*를 하나의 최적화로 함께 푼다.
-          </p>
-        </section>
+        {mod.id === 'cosa' ? (
+          <AccountTree />
+        ) : (
+          <section className="placeholder">
+            <p>
+              이 모듈은 아직 <strong>{mod.status}</strong> 단계입니다.
+              {mod.note && <> — {mod.note}</>}
+            </p>
+            <p className="thesis">
+              홍ERP의 논지: 기존 회계법인 솔루션은 공시를 <em>비용 센터</em>로
+              취급한다. 홍ERP는 공시를 잔존위험의 그림자가격 Λ(d) = φ + λe
+              <sup>−kd</sup> 를 낮추는 <em>통제변수</em>로 보고, 최적 헤지 h*와
+              최적 공시강도 d*를 하나의 최적화로 함께 푼다.
+            </p>
+          </section>
+        )}
       </main>
     </div>
   )
