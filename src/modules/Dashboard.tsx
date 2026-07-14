@@ -6,6 +6,8 @@ import {
   type ModelParams,
 } from '../engine/model'
 import { Chip, useSpine } from '../state/spine'
+import { timeAgo, useErp } from '../state/erp'
+import Activity from '../components/Activity'
 import './Dashboard.css'
 
 // Series colors — from the validated palette; color follows the entity
@@ -75,6 +77,28 @@ export default function Dashboard() {
 
   const eq = useMemo(() => solveEquilibrium(p), [p])
   const spine = useSpine()
+  const { state: erp } = useErp()
+  const divBook = useMemo(
+    () =>
+      erp.divisions.map((d) => {
+        const sol = solveEquilibrium(d.params)
+        const metrics = erp.metrics.filter((m) => m.division === d.id)
+        const trades = erp.trades.filter((t) => t.division === d.id)
+        const lastTs = Math.max(0, ...metrics.map((m) => m.ts), ...trades.map((t) => t.ts))
+        return {
+          id: d.id,
+          name: d.name,
+          head: d.head,
+          dStar: sol.dStar,
+          hF: sol.hF,
+          approved: metrics.filter((m) => m.status === 'approved').length,
+          pending: metrics.filter((m) => m.status === 'pending').length,
+          trades: trades.length,
+          lastTs,
+        }
+      }),
+    [erp],
+  )
 
   useEffect(() => {
     spine.publish({ dStar: eq.dStar, floorBinding: eq.floorBinding })
@@ -327,6 +351,34 @@ export default function Dashboard() {
               <span className="lg-item">
                 Total <strong>{costTotal.toFixed(2)}</strong>
               </span>
+            </div>
+          </div>
+
+          <div className="db-ops">
+            <div className="db-panel">
+              <h3>Division book</h3>
+              <div className="db-divs">
+                {divBook.map((d) => (
+                  <div key={d.id} className="db-div">
+                    <div className="db-div-head">
+                      <strong>{d.name}</strong>
+                      <span className="db-div-owner">{d.head}</span>
+                    </div>
+                    <div className="db-div-stats">
+                      <span>d* <strong>{d.dStar.toFixed(2)}</strong></span>
+                      <span>h_f* <strong>{(d.hF * 100).toFixed(0)}%</strong></span>
+                    </div>
+                    <div className="db-div-meta">
+                      {d.approved} approved{d.pending > 0 && <> · <em>{d.pending} pending</em></>} · {d.trades} {d.trades === 1 ? 'trade' : 'trades'}
+                      {d.lastTs > 0 && <> · {timeAgo(d.lastTs)}</>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="db-panel">
+              <h3>Recent activity</h3>
+              <Activity limit={6} />
             </div>
           </div>
 

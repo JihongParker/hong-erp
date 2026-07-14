@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import surface from '../data/exotic_surface.json'
 import { useSpine } from '../state/spine'
+import { useErp } from '../state/erp'
 import './ExoticDesk.css'
 
 // Precomputed from the paper's own model & calibration (see meta in the JSON;
@@ -95,6 +96,29 @@ export default function ExoticDesk() {
   const koP = atSpot(row.ko, spot)
   const dFx = v / S2_0 // homogeneity theorem: structural FX delta = V/S2
   const spine = useSpine()
+  const { state: erp, dispatch } = useErp()
+  const [bookDiv, setBookDiv] = useState(erp.divisions[0].id)
+  const [bookNot, setBookNot] = useState('0.25')
+  const [booked, setBooked] = useState<string | null>(null)
+
+  const bookQuanto = () => {
+    const n = Number(bookNot)
+    if (!n || n <= 0) return
+    dispatch({
+      type: 'bookTrade',
+      trade: {
+        division: bookDiv,
+        instrument: 'Double-KO quanto',
+        terms: `K $${K} · KO ${L}/${U} · ${T_GRID[ti].toFixed(2)}y`,
+        notional: `${n.toFixed(2)}M bbl`,
+        by: 'Treasury desk',
+        designation: 'CFH-A',
+      },
+    })
+    setBooked(`Booked — ${n.toFixed(2)}M bbl quanto for ${erp.divisions.find((d) => d.id === bookDiv)?.name}. Barrier odds flow to Accounting.`)
+    setTimeout(() => setBooked(null), 4000)
+  }
+
   useEffect(() => {
     spine.publish({ exoticKo: koP, exoticSpot: spot })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -125,6 +149,26 @@ export default function ExoticDesk() {
               <span className="tile-badge">paper §c* — vs c=1 naive</span>
             </div>
           </div>
+
+        <div className="ins-panel ins-book">
+          <h3>Book this structure</h3>
+          <div className="ins-bookrow">
+            <label className="ins-binline">
+              Division
+              <select value={bookDiv} onChange={(e) => setBookDiv(e.target.value)}>
+                {erp.divisions.map((d) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+            </label>
+            <label className="ins-binline">
+              Notional (M bbl)
+              <input type="text" inputMode="decimal" value={bookNot} onChange={(e) => setBookNot(e.target.value)} />
+            </label>
+            <button className="ins-bookbtn" onClick={bookQuanto}>Book quanto</button>
+            {booked && <span className="ins-bookflash">✓ {booked}</span>}
+          </div>
+        </div>
 
         <div className="ex-panel ex-deck">
           <h3>Position &amp; barrier monitor</h3>

@@ -468,3 +468,25 @@ input[type='range']::-moz-range-thumb {
   background: var(--panel);
   border-radius: 12px;
 }
+
+.sidebar-foot {
+  display: grid;
+  gap: 8px;
+}
+
+.sidebar-reset {
+  justify-self: start;
+  padding: 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.sidebar-reset:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}

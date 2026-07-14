@@ -7,6 +7,7 @@ import {
 } from '../engine/instruments'
 import ExoticDesk from './ExoticDesk'
 import { Chip, useSpine } from '../state/spine'
+import { useErp } from '../state/erp'
 import './Instruments.css'
 
 // Series colors — validated palette, fixed assignment: the collar is the hero.
@@ -28,6 +29,28 @@ export default function Instruments() {
 
   const collar = useMemo(() => solveZeroCostFloor(capK, mkt), [capK, mkt])
   const spine = useSpine()
+  const { state: erp, dispatch } = useErp()
+  const [bookDiv, setBookDiv] = useState(erp.divisions[0].id)
+  const [bookNot, setBookNot] = useState('0.50')
+  const [booked, setBooked] = useState<string | null>(null)
+
+  const bookCollar = () => {
+    const n = Number(bookNot)
+    if (!n || n <= 0) return
+    dispatch({
+      type: 'bookTrade',
+      trade: {
+        division: bookDiv,
+        instrument: 'Zero-cost collar',
+        terms: `cap $${collar.capK.toFixed(0)} / floor $${collar.floorK.toFixed(2)} · ${mkt.T.toFixed(2)}y`,
+        notional: `${n.toFixed(2)}M bbl`,
+        by: 'Treasury desk',
+        designation: 'CFH-B',
+      },
+    })
+    setBooked(`Booked — ${n.toFixed(2)}M bbl collar for ${erp.divisions.find((d) => d.id === bookDiv)?.name}. See the blotter in Hedge Accounting.`)
+    setTimeout(() => setBooked(null), 4000)
+  }
   const capOnlyPremium = useMemo(() => black76Call(capK, mkt), [capK, mkt])
 
   const sMin = 0.4 * mkt.F
@@ -155,6 +178,26 @@ export default function Instruments() {
             </div>
 
             <div className="ins-main">
+              <div className="ins-panel ins-book">
+                <h3>Book this structure</h3>
+                <div className="ins-bookrow">
+                  <label className="ins-binline">
+                    Division
+                    <select value={bookDiv} onChange={(e) => setBookDiv(e.target.value)}>
+                      {erp.divisions.map((d) => (
+                        <option key={d.id} value={d.id}>{d.name}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="ins-binline">
+                    Notional (M bbl)
+                    <input type="text" inputMode="decimal" value={bookNot} onChange={(e) => setBookNot(e.target.value)} />
+                  </label>
+                  <button className="ins-bookbtn" onClick={bookCollar}>Book collar</button>
+                  {booked && <span className="ins-bookflash">✓ {booked}</span>}
+                </div>
+              </div>
+
               <figure className="ins-panel ins-plot">
                 <h3>Effective purchase cost at expiry</h3>
                 <svg

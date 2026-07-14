@@ -1,22 +1,11 @@
 import { useMemo, useState } from 'react'
 import { solveEquilibrium, type ModelParams } from '../engine/model'
+import { useErp } from '../state/erp'
 import './Scenario.css'
 
 // Division colors — validated palette, assigned to entities in fixed order;
 // a division keeps its color across every chart.
 const DIV_COLORS = ['#2e7d52', '#2f6db4', '#b3610f']
-
-interface Division extends ModelParams {
-  name: string
-}
-
-// Arbitrary division-level parameters (no real data exists at this level —
-// the point is to show how strategy splits across divisions).
-const DEFAULT_DIVISIONS: Division[] = [
-  { name: 'Refining', sigmaF: 1.3, sigmaC: 0.8, rho: 0.45, pF: 3.5, pC: 2.1, a: 0.3, phi: 0.5, lambda: 8, k: 0.9, dFloor: 0 },
-  { name: 'Chemicals', sigmaF: 1.0, sigmaC: 0.6, rho: 0.3, pF: 3.0, pC: 1.8, a: 0.4, phi: 0.5, lambda: 5, k: 0.6, dFloor: 0 },
-  { name: 'Materials', sigmaF: 0.7, sigmaC: 0.4, rho: 0.15, pF: 1.6, pC: 0.9, a: 0.8, phi: 0.4, lambda: 3, k: 0.5, dFloor: 0 },
-]
 
 const PARAM_META: { key: keyof ModelParams; label: string; min: number; max: number; step: number }[] = [
   { key: 'lambda', label: 'λ stringency', min: 0, max: 12, step: 0.25 },
@@ -40,14 +29,15 @@ function Bar({ frac, color }: { frac: number; color: string }) {
 }
 
 export default function Scenario() {
-  const [divs, setDivs] = useState<Division[]>(DEFAULT_DIVISIONS)
+  const { state: erp, dispatch } = useErp()
+  const divs = erp.divisions
   const [sel, setSel] = useState(0)
 
-  const solutions = useMemo(() => divs.map((d) => solveEquilibrium(d)), [divs])
+  const solutions = useMemo(() => divs.map((d) => solveEquilibrium(d.params)), [divs])
   const dMax = Math.max(...solutions.map((s) => s.dStar), 0.1)
 
   const setParam = (key: keyof ModelParams, value: number) =>
-    setDivs((prev) => prev.map((d, i) => (i === sel ? { ...d, [key]: value } : d)))
+    dispatch({ type: 'setDivisionParams', id: divs[sel].id, params: { ...divs[sel].params, [key]: value } })
 
   return (
     <div className="sc">
@@ -75,16 +65,16 @@ export default function Scenario() {
                   min={m.min}
                   max={m.max}
                   step={m.step}
-                  value={divs[sel][m.key]}
+                  value={divs[sel].params[m.key]}
                   onChange={(e) => setParam(m.key, Number(e.target.value))}
                 />
-                <span className="sc-val">{divs[sel][m.key].toFixed(2)}</span>
+                <span className="sc-val">{divs[sel].params[m.key].toFixed(2)}</span>
               </label>
             ))}
           </div>
           <p className="sc-fixed-note">
-            Fixed per division: σc, p_c, ρ (climate leg) — edit them in the
-            Decision Dashboard's single-firm view.
+            These are the divisions' live parameter records — edits persist
+            and flow to the division book on the Decision Dashboard.
           </p>
         </div>
 
