@@ -15,9 +15,25 @@
 
 .bg-grid {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 20px;
+  gap: 16px;
+}
+
+.bg-deck {
+  display: grid;
+  grid-template-columns: auto 1fr 1.2fr;
+  gap: 8px 24px;
   align-items: start;
+}
+
+.bg-deck h3 {
+  grid-column: 1 / -1;
+}
+
+.bg-mid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 16px;
+  align-items: stretch;
 }
 
 .bg-panel {
@@ -36,7 +52,7 @@
 .bg-tabs {
   display: grid;
   gap: 6px;
-  margin-bottom: 14px;
+  align-self: start;
 }
 
 .bg-tab {
@@ -87,7 +103,7 @@
 }
 
 .bg-ko {
-  margin-top: 12px;
+  margin-top: 0;
   font-size: 12px;
   color: var(--muted);
   border-left: 3px solid #b3610f;
@@ -145,7 +161,8 @@
 }
 
 @media (max-width: 1000px) {
-  .bg-grid {
+  .bg-deck,
+  .bg-mid {
     grid-template-columns: 1fr;
   }
   .bg-tiles {

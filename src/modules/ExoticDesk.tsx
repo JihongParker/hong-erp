@@ -116,8 +116,8 @@ export default function ExoticDesk() {
       </div>
 
       <div className="ex-grid">
-        <div className="ex-panel">
-          <h3>Position</h3>
+        <div className="ex-panel ex-deck">
+          <h3>Position &amp; barrier monitor</h3>
           <label>
             <span className="ex-plabel">WTI spot S₁</span>
             <input type="range" min={S_GRID[0]} max={S_GRID[S_GRID.length - 1]} step={0.5} value={spot} onChange={(e) => setSpot(Number(e.target.value))} />
@@ -153,8 +153,7 @@ export default function ExoticDesk() {
           </div>
         </div>
 
-        <div className="ex-main">
-          <div className="ex-tiles">
+        <div className="ex-tiles">
             <div className="tile">
               <span className="tile-label">Value (KRW / unit)</span>
               <span className="tile-value">{v.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
@@ -174,6 +173,7 @@ export default function ExoticDesk() {
             </div>
           </div>
 
+        <div className="ex-charts">
           <figure className="ex-panel">
             <h3>Value across the corridor — the barrier squeeze</h3>
             <Curve values={row.price} color="#2f6db4" spot={spot} fmt={(v) => `${(v / 1000).toFixed(0)}k`} />

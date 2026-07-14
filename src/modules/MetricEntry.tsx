@@ -215,15 +215,14 @@ export default function MetricEntry() {
           {stage === 'draft' && errors.length > 0 && (
             <p className="me-hint">Resolve {errors.length} error(s) to request review.</p>
           )}
+          <p className="me-note">
+            Three demo validation rules: numeric/negative checks, mandatory
+            evidence, ±50% year-over-year change warning. This layer is exactly
+            what incumbent solutions' quantitative modules do — HongERP does not
+            stop here: approved values feed the Decision Dashboard as inputs.
+          </p>
         </div>
       </div>
-
-      <p className="me-note">
-        Three demo validation rules: numeric/negative checks, mandatory evidence,
-        ±50% year-over-year change warning. This layer is exactly what incumbent
-        solutions' quantitative modules do — HongERP does not stop here: approved
-        values feed the Decision Dashboard as inputs.
-      </p>
     </div>
   )
 }

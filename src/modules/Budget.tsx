@@ -80,7 +80,7 @@ export default function Budget() {
       </div>
 
       <div className="bg-grid">
-        <div className="bg-panel">
+        <div className="bg-panel bg-deck">
           <h3>Program inputs</h3>
           <div className="bg-tabs">
             {(
@@ -94,6 +94,7 @@ export default function Budget() {
               </button>
             ))}
           </div>
+          <div className="bg-sliders">
           <label>
             <span className="bg-plabel">Budget B</span>
             <input type="range" min={30e9} max={60e9} step={0.5e9} value={B} onChange={(e) => setB(Number(e.target.value))} />
@@ -109,6 +110,7 @@ export default function Budget() {
             1540.64, stress FX 1550, σ₁ {regime === 'european' ? '0.395 (raw)' : '0.324 (diffusive)'},
             σ₂ 0.093, ρ 0.088.
           </p>
+          </div>
 
           <div className="bg-ko">
             <strong>Instrument-mix rule (paper §7–8):</strong> measured stress
@@ -120,8 +122,7 @@ export default function Budget() {
           </div>
         </div>
 
-        <div className="bg-main">
-          <div className="bg-tiles">
+        <div className="bg-tiles">
             <div className="tile">
               <span className="tile-label">WTI coverage w₁*</span>
               <span className="tile-value" style={{ color: C_WTI }}>{(sol.w1 * 100).toFixed(2)}%</span>
@@ -143,7 +144,7 @@ export default function Budget() {
             </div>
           </div>
 
-          <div className="bg-panel">
+        <div className="bg-panel">
             <h3>The split</h3>
             {(
               [
@@ -167,7 +168,7 @@ export default function Budget() {
             </p>
           </div>
 
-          <figure className="bg-panel bg-plot">
+        <figure className="bg-panel bg-plot">
             <h3>Feasible corner &amp; the optimum</h3>
             <svg viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label="Feasible region and optimum">
               {[0.85, 0.9, 0.95, 1.0].map((v) => (
@@ -199,8 +200,7 @@ export default function Budget() {
               why a 10% volatility mis-estimate moves what the allocation{' '}
               <em>delivers</em>, not what it <em>is</em> (paper §6.5).
             </figcaption>
-          </figure>
-        </div>
+        </figure>
       </div>
     </div>
   )

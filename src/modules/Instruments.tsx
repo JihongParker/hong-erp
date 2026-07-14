@@ -94,7 +94,7 @@ export default function Instruments() {
             </Chip>
           </div>
           <div className="ins-grid">
-            <div className="ins-panel">
+            <div className="ins-panel ins-deck">
               <h3>Market & structure</h3>
               {(
                 [

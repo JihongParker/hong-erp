@@ -109,7 +109,7 @@ export default function Accounting() {
         </div>
         <div className="tile">
           <span className="tile-label">Economic σ — A vs B</span>
-          <span className="tile-value">{bn(S.sigmaEconA)} / {bn(S.sigmaEconB)}</span>
+          <span className="tile-value small">{(S.sigmaEconA / 1e9).toFixed(1)} / {(S.sigmaEconB / 1e9).toFixed(1)} bn</span>
           <span className="tile-badge">≈ same economics</span>
         </div>
         <div className="tile">
