@@ -58,9 +58,42 @@
 
 .ins-grid {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 20px;
-  align-items: start;
+  gap: 16px;
+}
+
+/* market & structure — horizontal deck */
+.ins-deck {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) 1.3fr;
+  gap: 8px 18px;
+  align-items: center;
+}
+
+.ins-deck h3 {
+  grid-column: 1 / -1;
+  margin-bottom: 2px;
+}
+
+.ins-panel.ins-deck label {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 8px;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.ins-panel.ins-deck label input[type='range'] {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.ins-panel.ins-deck .ins-pval {
+  text-align: right;
+}
+
+.ins-deck .ins-muted {
+  margin-top: 0;
+  align-self: center;
 }
 
 .ins-panel label {
@@ -185,8 +218,11 @@
 }
 
 @media (max-width: 1000px) {
-  .ins-grid {
-    grid-template-columns: 1fr;
+  .ins-deck {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .ins-deck .ins-muted {
+    grid-column: 1 / -1;
   }
   .ins-tiles {
     grid-template-columns: repeat(2, 1fr);

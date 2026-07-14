@@ -19,9 +19,7 @@
 
 .db-grid {
   display: grid;
-  grid-template-columns: 270px 1fr;
-  gap: 20px;
-  align-items: start;
+  gap: 16px;
 }
 
 .db-panel {
@@ -36,10 +34,12 @@
   margin-bottom: 12px;
 }
 
-/* parameters */
+/* parameters — horizontal control deck above the charts */
 .db-params {
   display: grid;
-  gap: 14px;
+  grid-template-columns: repeat(4, 1fr) auto;
+  gap: 20px;
+  align-items: start;
 }
 
 .db-group h4 {
@@ -52,11 +52,16 @@
 
 .db-group label {
   display: grid;
-  grid-template-columns: 92px 1fr 40px;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 8px;
+  gap: 2px 8px;
   font-size: 12px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.db-group label input[type='range'] {
+  grid-column: 1 / -1;
+  width: 100%;
 }
 
 .db-plabel {
@@ -74,6 +79,7 @@
 }
 
 .db-reset {
+  align-self: end;
   padding: 7px 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -113,6 +119,10 @@
 .tile-label {
   font-size: 11px;
   color: var(--muted);
+}
+
+.tile-value.small {
+  font-size: 17px;
 }
 
 .tile-value {
@@ -292,10 +302,16 @@
 }
 
 @media (max-width: 1000px) {
-  .db-grid {
-    grid-template-columns: 1fr;
+  .db-params {
+    grid-template-columns: repeat(2, 1fr);
   }
   .db-tiles {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  .db-params {
+    grid-template-columns: 1fr;
   }
 }
