@@ -176,3 +176,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+.sc-fixed-note {
+  margin-top: 12px;
+  font-size: 11.5px;
+  color: var(--muted);
+}

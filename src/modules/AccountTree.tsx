@@ -12,7 +12,7 @@ const FRAMEWORK_LABELS = {
 export default function AccountTree() {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState<Set<string>>(
-    () => new Set(['E', 'E-01']), // 첫 화면에서 기후변화 카테고리를 펼쳐 보여준다
+    () => new Set(['E', 'E-01']), // open the Climate category on first paint
   )
   const [selected, setSelected] = useState<Account | null>(
     TAXONOMY[0].categories[0].accounts[0],
@@ -20,7 +20,7 @@ export default function AccountTree() {
 
   const q = query.trim().toLowerCase()
 
-  // 검색 시: 매칭되는 계정만 남긴 필터된 트리 (코드·이름·datapoint 이름 대상)
+  // search: filter tree to matching accounts (code, name, datapoint names)
   const filtered = useMemo(() => {
     if (!q) return TAXONOMY
     return TAXONOMY.map((p) => ({
@@ -59,14 +59,14 @@ export default function AccountTree() {
         <div className="cosa-toolbar">
           <input
             type="search"
-            placeholder="계정·데이터포인트 검색"
+            placeholder="Search accounts & datapoints"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
           <span className="cosa-count">{countDatapoints()} datapoints</span>
         </div>
 
-        {filtered.length === 0 && <p className="cosa-empty">검색 결과 없음</p>}
+        {filtered.length === 0 && <p className="cosa-empty">No results</p>}
 
         {filtered.map((pillar) => (
           <div key={pillar.code}>
@@ -113,10 +113,10 @@ export default function AccountTree() {
               <table>
                 <thead>
                   <tr>
-                    <th>코드</th>
-                    <th>데이터포인트</th>
-                    <th>단위</th>
-                    <th>프레임워크 매핑</th>
+                    <th>Code</th>
+                    <th>Datapoint</th>
+                    <th>Unit</th>
+                    <th>Framework mapping</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -148,12 +148,13 @@ export default function AccountTree() {
               </table>
             </div>
             <p className="cosa-note">
-              데모 taxonomy — 매핑의 실무 정합성은 검증되지 않았다. 구조(계층코드
-              → 다중 프레임워크 datapoint 매핑)를 보여주는 것이 목적.
+              Demo taxonomy — mappings are not validated for practice. The point
+              is the structure: hierarchical codes mapped to multiple frameworks
+              at the datapoint level.
             </p>
           </>
         ) : (
-          <p className="cosa-empty">좌측에서 계정을 선택하세요</p>
+          <p className="cosa-empty">Select an account on the left</p>
         )}
       </div>
     </div>
