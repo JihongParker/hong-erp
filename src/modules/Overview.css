@@ -26,16 +26,21 @@
   transform: none;
 }
 
-/* flow stages sink in one after another (left to right) */
+/* flow nodes plunge in one after another (left to right), then float in place */
 .ov-flow-item.reveal {
   opacity: 0;
   transform: none;
-  transition: none;
+  transition: opacity 0.5s ease;
+  transition-delay: calc(var(--i, 0) * 90ms);
 }
 .ov-flow-item.in {
   opacity: 1;
-  animation: ov-sink 1.05s cubic-bezier(0.34, 0.68, 0.3, 1) both;
-  animation-delay: calc(var(--i, 0) * 95ms);
+  animation: ov-float 8s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -1.6s);
+}
+.ov-flow-item.in .ov-node {
+  animation: ov-plunge 1.15s cubic-bezier(0.3, 0.72, 0.24, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 90ms);
 }
 
 /* section titles wipe in left-to-right as their block reveals */
@@ -62,7 +67,9 @@
     opacity: 1;
   }
   .chain-item.in,
-  .ov-flow-item.in {
+  .ov-flow-item.in,
+  .chain-item.in .chain-card,
+  .ov-flow-item.in .ov-node {
     animation: none;
   }
   .ov .reveal h3,
@@ -315,25 +322,41 @@
 /* underwater sink: framework panels drop in from just above, overshoot into the
    water, and settle back with a faint buoyancy sway — subtle, and sequential as
    each card scrolls into view */
-@keyframes ov-sink {
-  0%   { opacity: 0; transform: translateY(-22px) rotate(-0.35deg); }
-  45%  { opacity: 1; transform: translateY(8px) rotate(0.28deg); }
-  70%  { transform: translateY(-4px) rotate(-0.14deg); }
-  86%  { transform: translateY(2px) rotate(0.06deg); }
-  100% { opacity: 1; transform: translateY(0) rotate(0deg); }
+/* an ice slab plunges into the water in 3D (rotateX shows its thin edge),
+   splashes, bobs on its buoyancy, and then floats in place forever — not a
+   one-shot slide. The panel's depth is the slab shadow on .chain-card below. */
+@keyframes ov-plunge {
+  0%   { transform: translateY(-34px) rotateX(-16deg) scale(0.985); }
+  42%  { transform: translateY(11px) rotateX(6deg) scale(1.012); }
+  64%  { transform: translateY(-5px) rotateX(-2.5deg) scale(0.997); }
+  82%  { transform: translateY(3px) rotateX(1deg); }
+  100% { transform: translateY(0) rotateX(0deg) scale(1); }
+}
+@keyframes ov-float {
+  0%, 100% { transform: translateY(0) rotate(-0.18deg); }
+  50%      { transform: translateY(-3px) rotate(0.18deg); }
 }
 
 .chain-item {
   position: relative;
   padding: 14px 0 14px 56px;
+  perspective: 1100px;
   opacity: 0;
   transform: none;
-  transition: none;
+  transition: opacity 0.5s ease;
 }
 
+/* the whole panel floats in place (buoyancy) once revealed; phases desynced */
 .chain-item.in {
   opacity: 1;
-  animation: ov-sink 1.15s cubic-bezier(0.34, 0.68, 0.3, 1) both;
+  animation: ov-float 7.5s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -1.9s);
+}
+
+/* the card itself does the 3D plunge; backwards fill so it reverts to no
+   transform afterward and the hover lift keeps working */
+.chain-item.in .chain-card {
+  animation: ov-plunge 1.3s cubic-bezier(0.3, 0.72, 0.24, 1) backwards;
 }
 
 /* every card fills the track width, so all four boxes are identical (a button
@@ -397,7 +420,12 @@
   border: 1px solid var(--line);
   border-radius: 16px;
   background: var(--panel);
-  box-shadow: 0 2px 4px rgb(0 0 0 / 0.04);
+  /* thin 3D slab: top sheen, a 2px solid bottom edge = the panel's depth, and a
+     soft shadow cast down onto the water */
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    0 2px 0 rgb(120 140 150 / 0.3),
+    0 16px 26px -12px rgb(30 50 60 / 0.28);
   font: inherit;
   text-align: inherit;
   cursor: pointer;
@@ -491,6 +519,7 @@
   padding-bottom: 4px;
   max-width: 1140px;
   margin: 0 auto;
+  perspective: 1100px;
 }
 
 .ov-flow-item {
@@ -514,6 +543,10 @@
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--panel);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    0 2px 0 rgb(120 140 150 / 0.3),
+    0 14px 22px -12px rgb(30 50 60 / 0.26);
   font: inherit;
   text-align: left;
   cursor: pointer;
