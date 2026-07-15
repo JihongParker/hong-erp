@@ -121,7 +121,14 @@ export default function MetricEntry() {
             </label>
             <label className="me-inline">
               Value
-              <input type="text" inputMode="decimal" value={value} placeholder="0" onChange={(e) => setValue(e.target.value)} />
+              <input
+                type="text"
+                inputMode="decimal"
+                value={value}
+                placeholder="0"
+                aria-invalid={value.trim() !== '' && !numeric}
+                onChange={(e) => setValue(e.target.value)}
+              />
             </label>
             <label className="me-evidence">
               <input type="checkbox" checked={evidence} onChange={(e) => setEvidence(e.target.checked)} />
@@ -129,7 +136,12 @@ export default function MetricEntry() {
             </label>
           </div>
           {!numeric && value.trim() !== '' && <p className="me-err">✕ Value must be a non-negative number</p>}
-          <button className="me-btn" disabled={!canSubmit} onClick={submit}>
+          <button
+            className="me-btn"
+            disabled={!canSubmit}
+            title={!canSubmit ? (!numeric ? 'Enter a non-negative number' : 'Attach evidence to submit') : undefined}
+            onClick={submit}
+          >
             Submit for review
           </button>
           <p className="me-note">
