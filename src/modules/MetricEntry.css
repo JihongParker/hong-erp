@@ -306,6 +306,28 @@
   color: var(--muted);
 }
 
+/* each queue row lives in a collapsing slot: on approve/reject it eases its
+   height to zero and fades, instead of the list snapping shorter */
+.me-qslot {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--dur-m) var(--ease-out), opacity var(--dur-m) var(--ease-out);
+}
+.me-qslot.leaving {
+  grid-template-rows: 0fr;
+  opacity: 0;
+  pointer-events: none;
+}
+.me-qslot > .me-qitem {
+  min-height: 0;
+  overflow: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .me-qslot {
+    transition: opacity var(--dur-s) ease;
+  }
+}
+
 .me-qitem {
   display: flex;
   align-items: center;

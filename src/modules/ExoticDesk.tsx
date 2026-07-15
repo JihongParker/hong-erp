@@ -4,6 +4,7 @@ import { Chip, useSpine } from '../state/spine'
 import { useErp } from '../state/erp'
 import { MARKET, clamp } from '../state/market'
 import MarketChip from '../components/MarketChip'
+import { useToast } from '../components/Toast'
 import { crrDoubleKO, koConvergence, gbmDoubleKOprob } from '../engine/lattice'
 import { europeanQuanto, type QuantoCalib } from '../engine/quanto'
 import './ExoticDesk.css'
@@ -264,10 +265,10 @@ export default function ExoticDesk() {
   const destroyed = euro.value > 0 ? (euro.value - v) / euro.value : 0 // barrier effect (FX-independent)
 
   const spine = useSpine()
+  const toast = useToast()
   const { state: erp, dispatch } = useErp()
   const [bookDiv, setBookDiv] = useState(erp.divisions[0].id)
   const [bookNot, setBookNot] = useState('0.25')
-  const [booked, setBooked] = useState<string | null>(null)
 
   const bookQuanto = () => {
     const n = Number(bookNot)
@@ -283,8 +284,7 @@ export default function ExoticDesk() {
         designation: 'CFH-A',
       },
     })
-    setBooked(`Booked — ${n.toFixed(2)}M bbl ${mode === 'euro' ? 'European quanto' : 'quanto'} for ${erp.divisions.find((d) => d.id === bookDiv)?.name}.${mode === 'euro' ? '' : ' Barrier odds flow to Accounting.'}`)
-    setTimeout(() => setBooked(null), 4000)
+    toast(`Booked — ${n.toFixed(2)}M bbl ${mode === 'euro' ? 'European quanto' : 'quanto'} for ${erp.divisions.find((d) => d.id === bookDiv)?.name}.${mode === 'euro' ? '' : ' Barrier odds flow to Accounting.'}`)
   }
 
   useEffect(() => {
@@ -390,7 +390,6 @@ export default function ExoticDesk() {
                 <input type="text" inputMode="decimal" value={bookNot} onChange={(e) => setBookNot(e.target.value)} />
               </label>
               <button className="ins-bookbtn" onClick={bookQuanto}>Book {mode === 'euro' ? 'European' : 'quanto'}</button>
-              {booked && <span className="ins-bookflash">✓ {booked}</span>}
             </div>
           </div>
         </div>

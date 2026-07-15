@@ -192,13 +192,22 @@
 }
 
 .ac-blotter th {
-  font-size: 11.5px;
+  font-size: 10px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--muted);
+  border-bottom-width: 1.5px;
+}
+
+.ac-blotter tbody tr:hover td {
+  background: color-mix(in srgb, var(--line) 22%, transparent);
 }
 
 .ac-blotter .num {
   text-align: right;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 .ac-terms {
@@ -210,11 +219,31 @@
 }
 
 .ac-desig {
-  padding: 5px 8px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--bg);
+  padding: 4px 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 99px;
+  background: var(--panel);
   color: var(--text);
   font: inherit;
-  font-size: 12.5px;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: border-color var(--dur-s) var(--ease-out), color var(--dur-s) var(--ease-out), background var(--dur-s) var(--ease-out);
+}
+
+/* designation reads as a colored chip: combined / split / fair-value-through-P&L */
+.ac-desig-cfha {
+  border-color: #2e7d52;
+  color: #2e7d52;
+  background: color-mix(in srgb, #2e7d52 8%, var(--panel));
+}
+.ac-desig-cfhb {
+  border-color: #2f6db4;
+  color: #2f6db4;
+  background: color-mix(in srgb, #2f6db4 8%, var(--panel));
+}
+.ac-desig-fvtpl {
+  border-color: #b3610f;
+  color: #b3610f;
+  background: color-mix(in srgb, #b3610f 10%, var(--panel));
 }

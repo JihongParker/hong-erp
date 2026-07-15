@@ -10,6 +10,7 @@ import Budget from './modules/Budget'
 import Accounting from './modules/Accounting'
 import { SpineProvider } from './state/spine'
 import { ErpProvider, useErp } from './state/erp'
+import { ToastProvider } from './components/Toast'
 import { MARKET, marketDate } from './state/market'
 import './App.css'
 
@@ -293,6 +294,7 @@ export default function App() {
   return (
     <ErpProvider>
     <SpineProvider>
+    <ToastProvider>
     <div className={tour !== null ? 'app touring' : 'app'}>
 
       {/* mobile top bar — brand + hamburger; hidden on desktop */}
@@ -397,6 +399,7 @@ export default function App() {
         </aside>
       )}
     </div>
+    </ToastProvider>
     </SpineProvider>
     </ErpProvider>
   )

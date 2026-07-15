@@ -3,6 +3,7 @@ import { TAXONOMY, type Datapoint } from '../data/taxonomy'
 import { Chip, useSpine } from '../state/spine'
 import { timeAgo, useErp } from '../state/erp'
 import Activity from '../components/Activity'
+import { useToast } from '../components/Toast'
 import './MetricEntry.css'
 
 // Division-level metrics operations: submit → validation → approval queue →
@@ -29,7 +30,21 @@ export default function MetricEntry() {
   const [year, setYear] = useState(2026)
   const [value, setValue] = useState('')
   const [evidence, setEvidence] = useState(false)
-  const [flash, setFlash] = useState<string | null>(null)
+  const toast = useToast()
+  // queue items collapse+fade out before they leave the ledger, not snap away
+  const [leaving, setLeaving] = useState<Record<string, boolean>>({})
+  const review = (id: string, status: 'approved' | 'rejected') => {
+    if (leaving[id]) return
+    setLeaving((l) => ({ ...l, [id]: true }))
+    setTimeout(() => {
+      dispatch({ type: 'reviewMetric', id, status, actor: 'J. Kim (audit)' })
+      setLeaving((l) => {
+        const n = { ...l }
+        delete n[id]
+        return n
+      })
+    }, 240)
+  }
 
   const div = state.divisions.find((d) => d.id === division)!
   const sel = ALL_DPS.find((d) => d.dp.code === dpCode)!
@@ -57,8 +72,7 @@ export default function MetricEntry() {
     })
     setValue('')
     setEvidence(false)
-    setFlash(`Submitted — ${sel.dp.name} FY${year} is now in the approval queue`)
-    setTimeout(() => setFlash(null), 3500)
+    toast(`Submitted — ${sel.dp.name} FY${year} is now in the approval queue`)
   }
 
   return (
@@ -118,7 +132,6 @@ export default function MetricEntry() {
           <button className="me-btn" disabled={!canSubmit} onClick={submit}>
             Submit for review
           </button>
-          {flash && <p className="me-flash">✓ {flash}</p>}
           <p className="me-note">
             Submitted as {div.head} ({div.name}). Approved values feed the
             division's exposure parameters and the firm's disclosure intensity.
@@ -134,23 +147,25 @@ export default function MetricEntry() {
             <p className="me-empty">Queue is clear.</p>
           ) : (
             pending.map((m) => (
-              <div key={m.id} className="me-qitem">
-                <div className="me-qbody">
-                  <strong>{state.divisions.find((d) => d.id === m.division)?.name}</strong> · {m.name} FY{m.year}
-                  <span className="me-qval">
-                    {m.value.toLocaleString()} {m.unit}
-                  </span>
-                  <span className="me-qmeta">
-                    by {m.by} · {timeAgo(m.ts)}
-                  </span>
-                </div>
-                <div className="me-qact">
-                  <button className="me-btn sm" onClick={() => dispatch({ type: 'reviewMetric', id: m.id, status: 'approved', actor: 'J. Kim (audit)' })}>
-                    Approve
-                  </button>
-                  <button className="me-btn sm ghost" onClick={() => dispatch({ type: 'reviewMetric', id: m.id, status: 'rejected', actor: 'J. Kim (audit)' })}>
-                    Reject
-                  </button>
+              <div key={m.id} className={leaving[m.id] ? 'me-qslot leaving' : 'me-qslot'}>
+                <div className="me-qitem">
+                  <div className="me-qbody">
+                    <strong>{state.divisions.find((d) => d.id === m.division)?.name}</strong> · {m.name} FY{m.year}
+                    <span className="me-qval">
+                      {m.value.toLocaleString()} {m.unit}
+                    </span>
+                    <span className="me-qmeta">
+                      by {m.by} · {timeAgo(m.ts)}
+                    </span>
+                  </div>
+                  <div className="me-qact">
+                    <button className="me-btn sm" onClick={() => review(m.id, 'approved')}>
+                      Approve
+                    </button>
+                    <button className="me-btn sm ghost" onClick={() => review(m.id, 'rejected')}>
+                      Reject
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
