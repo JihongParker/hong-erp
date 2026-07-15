@@ -169,3 +169,83 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ── textbook lattice foil ──────────────────────────────────────────────── */
+.ex-foil-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid #b3610f;
+  color: #b3610f;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.ex-foil-sub {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-bottom: 12px;
+  max-width: 720px;
+}
+.ex-foil-ctrl {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.ex-foil-ctrl label {
+  flex: 1;
+  min-width: 260px;
+}
+.ex-foil-toggle {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.ex-foil-toggle button {
+  font-size: 12px;
+  padding: 6px 12px;
+  background: var(--panel);
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+}
+.ex-foil-toggle button.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 650;
+}
+.ex-foil-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.ex-foil-why {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 8px;
+}
+.ex-foil-why li {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.5;
+  padding-left: 14px;
+  border-left: 2px solid var(--line);
+}
+.ex-foil-why strong {
+  color: var(--text);
+}
+
+@media (max-width: 700px) {
+  .ex-foil-tiles {
+    grid-template-columns: 1fr;
+  }
+}

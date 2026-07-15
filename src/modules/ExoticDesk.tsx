@@ -4,6 +4,7 @@ import { useSpine } from '../state/spine'
 import { useErp } from '../state/erp'
 import { MARKET, clamp } from '../state/market'
 import MarketChip from '../components/MarketChip'
+import { crrDoubleKO, koConvergence } from '../engine/lattice'
 import './ExoticDesk.css'
 
 // Precomputed from the paper's own model & calibration (see meta in the JSON;
@@ -14,11 +15,21 @@ const T_GRID = surface.tGrid as number[]
 const PRICE = surface.price as number[][]
 const DELTA = surface.deltaWTI as number[][]
 const KO = surface.koProb as number[][]
-const META = surface.meta as { calibration: { U: number; L: number; K: number; S2_0: number } }
-const { U, L, K, S2_0 } = META.calibration
+const META = surface.meta as {
+  calibration: { U: number; L: number; K: number; S2_0: number; sigma1: number; lambda: number; thetaJ: number; deltaJ: number; rUS: number }
+}
+const { U, L, K, S2_0, sigma1, lambda, thetaJ, deltaJ, rUS } = META.calibration
 
 // paper constant (Park_quanto): covariance-aware FX multiplier
 const C_STAR = -0.548
+
+// textbook-foil vols: the lattice can only take one number. σ_diff is the bare
+// diffusion vol a desk would read off; σ_total also folds in the jump variance
+// λ(θ_J²+δ_J²) — but a GBM lattice fed σ_total still can't reproduce the jump's
+// discrete gaps, the quanto correlation, or the barrier continuity correction.
+const SIG_DIFF = sigma1
+const SIG_TOT = Math.sqrt(sigma1 * sigma1 + lambda * (thetaJ * thetaJ + deltaJ * deltaJ))
+const PAPER_KO_BASE = 0.435 // anchor: jump-diffusion quanto MC at S₀=K, T=0.833y
 
 function interp1(grid: number[], values: number[], x: number): number {
   if (x <= grid[0]) return values[0]
@@ -82,6 +93,105 @@ function Curve({
       <line x1={x(spot)} y1={PAD.top} x2={x(spot)} y2={CH - PAD.bottom} stroke="var(--muted)" strokeWidth={1} opacity={0.6} />
       <circle cx={x(spot)} cy={y(Math.min(spotV, yMax))} r={5} fill={color} stroke="var(--panel)" strokeWidth={2} />
     </svg>
+  )
+}
+
+// ── textbook lattice foil: CRR double-KO vs the paper's jump-diffusion quanto MC
+const LW = 560
+const LH = 200
+const LPAD = { top: 14, right: 92, bottom: 32, left: 46 }
+const CONV_NS = [15, 25, 40, 60, 85, 115, 150, 190, 235, 285, 340]
+
+function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; baseT: number }) {
+  const [nSteps, setNSteps] = useState(80)
+  const [useTotal, setUseTotal] = useState(false)
+  const sigma = useTotal ? SIG_TOT : SIG_DIFF
+  const base = { K, U, L, T: baseT, r: rUS }
+
+  // live lattice at the desk's current spot
+  const live = useMemo(() => crrDoubleKO({ ...base, S0: spot, sigma, N: nSteps }).koProb, [spot, sigma, nSteps]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // convergence curves at S₀ = K (baseline), both vols — computed once
+  const conv = useMemo(() => ({
+    diff: koConvergence({ ...base, S0: K, sigma: SIG_DIFF }, CONV_NS),
+    tot: koConvergence({ ...base, S0: K, sigma: SIG_TOT }, CONV_NS),
+  }), []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const yMax = 0.6
+  const xN = (n: number) => LPAD.left + ((n - CONV_NS[0]) / (CONV_NS[CONV_NS.length - 1] - CONV_NS[0])) * (LW - LPAD.left - LPAD.right)
+  const yK = (v: number) => LH - LPAD.bottom - (v / yMax) * (LH - LPAD.top - LPAD.bottom)
+  const path = (pts: { N: number; koProb: number }[]) => pts.map((p, i) => `${i ? 'L' : 'M'}${xN(p.N).toFixed(1)},${yK(p.koProb).toFixed(1)}`).join('')
+
+  const gap = ((live - paperKo) * 100)
+
+  return (
+    <figure className="ex-panel ex-foil">
+      <h3>Textbook lattice — the model-risk foil <span className="ex-foil-tag">model risk</span></h3>
+      <p className="ex-foil-sub">
+        A one-factor CRR binomial for the same double-KO under plain GBM — the standard
+        desk tool. No jumps, no quanto correlation, no barrier continuity correction.
+        Watch it disagree with the paper's engine.
+      </p>
+
+      <div className="ex-foil-ctrl">
+        <label>
+          <span className="ex-plabel">Lattice steps N</span>
+          <input type="range" min={10} max={340} step={2} value={nSteps} onChange={(e) => setNSteps(Number(e.target.value))} />
+          <span className="ex-pval">{nSteps}</span>
+        </label>
+        <div className="ex-foil-toggle">
+          <button className={!useTotal ? 'active' : ''} onClick={() => setUseTotal(false)}>σ diffusive {SIG_DIFF.toFixed(3)}</button>
+          <button className={useTotal ? 'active' : ''} onClick={() => setUseTotal(true)}>σ + jump var {SIG_TOT.toFixed(3)}</button>
+        </div>
+      </div>
+
+      <div className="ex-foil-tiles">
+        <div className="tile">
+          <span className="tile-label">Lattice KO @ ${spot.toFixed(0)}</span>
+          <span className="tile-value">{(live * 100).toFixed(1)}%</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">Paper MC KO @ ${spot.toFixed(0)}</span>
+          <span className="tile-value">{(paperKo * 100).toFixed(1)}%</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">Lattice − paper</span>
+          <span className="tile-value" style={{ color: Math.abs(gap) > 5 ? '#b3610f' : 'var(--text)' }}>{gap >= 0 ? '+' : ''}{gap.toFixed(1)} pp</span>
+        </div>
+      </div>
+
+      <svg viewBox={`0 0 ${LW} ${LH}`} role="img" aria-label="Knock-out probability vs lattice steps">
+        {[0.2, 0.4, 0.6].map((g) => (
+          <g key={g}>
+            <line x1={LPAD.left} y1={yK(g)} x2={LW - LPAD.right} y2={yK(g)} stroke="var(--line)" strokeWidth={1} />
+            <text x={LPAD.left - 6} y={yK(g) + 4} textAnchor="end" className="tick">{(g * 100).toFixed(0)}%</text>
+          </g>
+        ))}
+        {[50, 150, 250, 340].map((n) => (
+          <text key={n} x={xN(n)} y={LH - LPAD.bottom + 14} textAnchor="middle" className="tick">{n}</text>
+        ))}
+        <text x={(LPAD.left + LW - LPAD.right) / 2} y={LH - 2} textAnchor="middle" className="axis-title">lattice steps N →</text>
+
+        {/* paper MC reference at baseline */}
+        <line x1={LPAD.left} y1={yK(PAPER_KO_BASE)} x2={LW - LPAD.right} y2={yK(PAPER_KO_BASE)} stroke="#2f6db4" strokeWidth={1.5} strokeDasharray="6 4" />
+        <text x={LPAD.left + 6} y={yK(PAPER_KO_BASE) - 6} className="series-label" fill="#2f6db4">paper MC {(PAPER_KO_BASE * 100).toFixed(0)}%</text>
+
+        {/* CRR convergence, both vols — oscillation is the point */}
+        <path d={path(conv.diff)} fill="none" stroke="#b3610f" strokeWidth={2} />
+        <path d={path(conv.tot)} fill="none" stroke="#7a5195" strokeWidth={2} />
+        <text x={LW - LPAD.right + 6} y={yK(conv.diff[conv.diff.length - 1].koProb) + 4} className="series-label" fill="#b3610f">σ diff</text>
+        <text x={LW - LPAD.right + 6} y={yK(conv.tot[conv.tot.length - 1].koProb) - 4} className="series-label" fill="#7a5195">σ+jump</text>
+
+        {/* current N marker */}
+        <line x1={xN(Math.min(Math.max(nSteps, CONV_NS[0]), CONV_NS[CONV_NS.length - 1]))} y1={LPAD.top} x2={xN(Math.min(Math.max(nSteps, CONV_NS[0]), CONV_NS[CONV_NS.length - 1]))} y2={LH - LPAD.bottom} stroke="var(--muted)" strokeWidth={1} opacity={0.4} />
+      </svg>
+
+      <ul className="ex-foil-why">
+        <li><strong>Blind to the jump.</strong> At the bare diffusion vol the lattice converges near {(conv.diff[conv.diff.length - 1].koProb * 100).toFixed(0)}% — it misses the paper's {(PAPER_KO_BASE * 100).toFixed(0)}% because the jump variance λ(θ_J²+δ_J²) isn't in it. Pumping σ to fold jump variance in fluke-matches the odds but is still the wrong process.</li>
+        <li><strong>Won't sit still.</strong> The KO estimate oscillates with N: the barriers straddle lattice nodes (Boyle–Lau), so the effective barrier jitters and the number never cleanly converges.</li>
+        <li><strong>One factor only.</strong> There is no FX leg here — so the paper's quanto delta Δ_FX = V/S₂ and covariance multiplier c* = {C_STAR} simply do not exist. Hedge off this and the correlation exposure stays wide open.</li>
+      </ul>
+    </figure>
   )
 }
 
@@ -235,6 +345,8 @@ export default function ExoticDesk() {
             </figcaption>
           </figure>
         </div>
+
+        <LatticeFoil spot={spot} paperKo={koP} baseT={T_GRID[0]} />
       </div>
     </div>
   )
