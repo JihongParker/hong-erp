@@ -81,6 +81,38 @@ export function crrDelta(p: LatticeParams, bump = 0.01): number {
   return (up - dn) / (2 * p.S0 * bump)
 }
 
+// Exact GBM double-knock-out probability (continuous monitoring) via the
+// absorbing-barrier eigenfunction expansion — no lattice, no Monte-Carlo noise.
+// This is the "true" one-factor GBM number the binomial is only approximating:
+// the flat reference the oscillating CRR estimate wobbles around, and still the
+// wrong physics (no jumps, no quanto). Series in n converges geometrically.
+export function gbmDoubleKOprob(p: { S0: number; U: number; L: number; sigma: number; T: number; r: number }): number {
+  const { S0, U, L, sigma, T, r } = p
+  const a = Math.log(L)
+  const b = Math.log(U)
+  const x0 = Math.log(S0)
+  if (x0 <= a || x0 >= b) return 1 // already outside → certain knock-out
+  const mu = r - 0.5 * sigma * sigma // risk-neutral log drift
+  const k = mu / (sigma * sigma)
+  const ell = b - a
+  const x = x0 - a
+  let sum = 0
+  for (let n = 1; n <= 400; n++) {
+    const npl = (n * Math.PI) / ell
+    const D = k * k + npl * npl
+    const decay = Math.exp((-npl * npl * sigma * sigma * T) / 2)
+    const term =
+      ((2 * n * Math.PI) / (ell * ell)) *
+      Math.sin((n * Math.PI * x) / ell) *
+      ((1 - Math.pow(-1, n) * Math.exp(k * ell)) / D) *
+      decay
+    sum += term
+    if (n > 8 && Math.abs(term) < 1e-13) break
+  }
+  const survive = Math.exp((-k * k * sigma * sigma * T) / 2 - k * x) * sum
+  return Math.max(0, Math.min(1, 1 - survive))
+}
+
 // KO probability across a range of step counts — the convergence diagnostic.
 // Barrier lattices do not converge smoothly: as N grows the barriers straddle
 // nodes differently and the estimate oscillates (Boyle–Lau node problem).

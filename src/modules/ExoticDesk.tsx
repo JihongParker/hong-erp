@@ -4,7 +4,7 @@ import { useSpine } from '../state/spine'
 import { useErp } from '../state/erp'
 import { MARKET, clamp } from '../state/market'
 import MarketChip from '../components/MarketChip'
-import { crrDoubleKO, koConvergence } from '../engine/lattice'
+import { crrDoubleKO, koConvergence, gbmDoubleKOprob } from '../engine/lattice'
 import './ExoticDesk.css'
 
 // Precomputed from the paper's own model & calibration (see meta in the JSON;
@@ -29,7 +29,6 @@ const C_STAR = -0.548
 // discrete gaps, the quanto correlation, or the barrier continuity correction.
 const SIG_DIFF = sigma1
 const SIG_TOT = Math.sqrt(sigma1 * sigma1 + lambda * (thetaJ * thetaJ + deltaJ * deltaJ))
-const PAPER_KO_BASE = 0.435 // anchor: jump-diffusion quanto MC at S₀=K, T=0.833y
 
 function interp1(grid: number[], values: number[], x: number): number {
   if (x <= grid[0]) return values[0]
@@ -106,31 +105,33 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
   const [nSteps, setNSteps] = useState(80)
   const [useTotal, setUseTotal] = useState(false)
   const sigma = useTotal ? SIG_TOT : SIG_DIFF
-  const base = { K, U, L, T: baseT, r: rUS }
+  const base = { U, L, T: baseT, r: rUS }
 
-  // live lattice at the desk's current spot
-  const live = useMemo(() => crrDoubleKO({ ...base, S0: spot, sigma, N: nSteps }).koProb, [spot, sigma, nSteps]) // eslint-disable-line react-hooks/exhaustive-deps
+  // exact one-factor GBM double-KO (closed form, no noise) at the desk spot —
+  // the true number the lattice only approximates; still the wrong physics
+  const exact = useMemo(() => gbmDoubleKOprob({ ...base, S0: spot, sigma }), [spot, sigma]) // eslint-disable-line react-hooks/exhaustive-deps
+  // the lattice's own estimate at the chosen step count
+  const crrAtN = useMemo(() => crrDoubleKO({ ...base, K, S0: spot, sigma, N: nSteps }).koProb, [spot, sigma, nSteps]) // eslint-disable-line react-hooks/exhaustive-deps
+  // CRR across N at the desk spot — the oscillation diagnostic
+  const conv = useMemo(() => koConvergence({ ...base, K, S0: spot, sigma }, CONV_NS), [spot, sigma]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // convergence curves at S₀ = K (baseline), both vols — computed once
-  const conv = useMemo(() => ({
-    diff: koConvergence({ ...base, S0: K, sigma: SIG_DIFF }, CONV_NS),
-    tot: koConvergence({ ...base, S0: K, sigma: SIG_TOT }, CONV_NS),
-  }), []) // eslint-disable-line react-hooks/exhaustive-deps
+  const modelGap = (paperKo - exact) * 100 // jumps + quanto, noise-free
 
   const yMax = 0.6
   const xN = (n: number) => LPAD.left + ((n - CONV_NS[0]) / (CONV_NS[CONV_NS.length - 1] - CONV_NS[0])) * (LW - LPAD.left - LPAD.right)
-  const yK = (v: number) => LH - LPAD.bottom - (v / yMax) * (LH - LPAD.top - LPAD.bottom)
+  const yK = (v: number) => LH - LPAD.bottom - (Math.min(v, yMax) / yMax) * (LH - LPAD.top - LPAD.bottom)
   const path = (pts: { N: number; koProb: number }[]) => pts.map((p, i) => `${i ? 'L' : 'M'}${xN(p.N).toFixed(1)},${yK(p.koProb).toFixed(1)}`).join('')
-
-  const gap = ((live - paperKo) * 100)
+  const nClamp = Math.min(Math.max(nSteps, CONV_NS[0]), CONV_NS[CONV_NS.length - 1])
 
   return (
     <figure className="ex-panel ex-foil">
-      <h3>Textbook lattice — the model-risk foil <span className="ex-foil-tag">model risk</span></h3>
+      <h3>Textbook lattice vs the exact price vs reality <span className="ex-foil-tag">model risk</span></h3>
       <p className="ex-foil-sub">
-        A one-factor CRR binomial for the same double-KO under plain GBM — the standard
-        desk tool. No jumps, no quanto correlation, no barrier continuity correction.
-        Watch it disagree with the paper's engine.
+        Three prices for the same double-KO. The binomial lattice (jittery line) only
+        approximates the <strong>exact one-factor GBM</strong> value (grey line, closed form) — that is
+        numerical error. Both sit far below the paper's jump-diffusion quanto engine
+        (blue) — that gap is the real model error: the textbook GBM world has no jumps
+        and no FX correlation.
       </p>
 
       <div className="ex-foil-ctrl">
@@ -147,20 +148,23 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
 
       <div className="ex-foil-tiles">
         <div className="tile">
-          <span className="tile-label">Lattice KO @ ${spot.toFixed(0)}</span>
-          <span className="tile-value">{(live * 100).toFixed(1)}%</span>
+          <span className="tile-label">Exact GBM KO @ ${spot.toFixed(0)}</span>
+          <span className="tile-value">{(exact * 100).toFixed(1)}%</span>
+          <span className="tile-badge">closed form · lattice @N{nSteps}: {(crrAtN * 100).toFixed(1)}%</span>
         </div>
         <div className="tile">
           <span className="tile-label">Paper MC KO @ ${spot.toFixed(0)}</span>
           <span className="tile-value">{(paperKo * 100).toFixed(1)}%</span>
+          <span className="tile-badge">jump-diffusion quanto</span>
         </div>
         <div className="tile">
-          <span className="tile-label">Lattice − paper</span>
-          <span className="tile-value" style={{ color: Math.abs(gap) > 5 ? '#b3610f' : 'var(--text)' }}>{gap >= 0 ? '+' : ''}{gap.toFixed(1)} pp</span>
+          <span className="tile-label">Model gap (jumps + quanto)</span>
+          <span className="tile-value" style={{ color: Math.abs(modelGap) > 5 ? '#b3610f' : 'var(--text)' }}>{modelGap >= 0 ? '+' : ''}{modelGap.toFixed(1)} pp</span>
+          <span className="tile-badge">paper − exact GBM</span>
         </div>
       </div>
 
-      <svg viewBox={`0 0 ${LW} ${LH}`} role="img" aria-label="Knock-out probability vs lattice steps">
+      <svg viewBox={`0 0 ${LW} ${LH}`} role="img" aria-label="Knock-out probability: lattice vs exact GBM vs paper">
         {[0.2, 0.4, 0.6].map((g) => (
           <g key={g}>
             <line x1={LPAD.left} y1={yK(g)} x2={LW - LPAD.right} y2={yK(g)} stroke="var(--line)" strokeWidth={1} />
@@ -172,24 +176,26 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
         ))}
         <text x={(LPAD.left + LW - LPAD.right) / 2} y={LH - 2} textAnchor="middle" className="axis-title">lattice steps N →</text>
 
-        {/* paper MC reference at baseline */}
-        <line x1={LPAD.left} y1={yK(PAPER_KO_BASE)} x2={LW - LPAD.right} y2={yK(PAPER_KO_BASE)} stroke="#2f6db4" strokeWidth={1.5} strokeDasharray="6 4" />
-        <text x={LPAD.left + 6} y={yK(PAPER_KO_BASE) - 6} className="series-label" fill="#2f6db4">paper MC {(PAPER_KO_BASE * 100).toFixed(0)}%</text>
+        {/* paper MC (reality) */}
+        <line x1={LPAD.left} y1={yK(paperKo)} x2={LW - LPAD.right} y2={yK(paperKo)} stroke="#2f6db4" strokeWidth={1.5} strokeDasharray="6 4" />
+        <text x={LPAD.left + 6} y={yK(paperKo) - 6} className="series-label" fill="#2f6db4">paper MC {(paperKo * 100).toFixed(0)}%</text>
 
-        {/* CRR convergence, both vols — oscillation is the point */}
-        <path d={path(conv.diff)} fill="none" stroke="#b3610f" strokeWidth={2} />
-        <path d={path(conv.tot)} fill="none" stroke="#7a5195" strokeWidth={2} />
-        <text x={LW - LPAD.right + 6} y={yK(conv.diff[conv.diff.length - 1].koProb) + 4} className="series-label" fill="#b3610f">σ diff</text>
-        <text x={LW - LPAD.right + 6} y={yK(conv.tot[conv.tot.length - 1].koProb) - 4} className="series-label" fill="#7a5195">σ+jump</text>
+        {/* exact GBM (closed form) — the truth the lattice chases */}
+        <line x1={LPAD.left} y1={yK(exact)} x2={LW - LPAD.right} y2={yK(exact)} stroke="var(--muted)" strokeWidth={1.5} strokeDasharray="3 3" />
+        <text x={LPAD.left + 6} y={yK(exact) - 6} className="series-label" fill="var(--muted)">exact GBM {(exact * 100).toFixed(0)}%</text>
+
+        {/* CRR convergence at the desk spot — the wobble is numerical error */}
+        <path d={path(conv)} fill="none" stroke="#b3610f" strokeWidth={2} />
+        <text x={LW - LPAD.right + 6} y={yK(conv[conv.length - 1].koProb) + 4} className="series-label" fill="#b3610f">lattice</text>
 
         {/* current N marker */}
-        <line x1={xN(Math.min(Math.max(nSteps, CONV_NS[0]), CONV_NS[CONV_NS.length - 1]))} y1={LPAD.top} x2={xN(Math.min(Math.max(nSteps, CONV_NS[0]), CONV_NS[CONV_NS.length - 1]))} y2={LH - LPAD.bottom} stroke="var(--muted)" strokeWidth={1} opacity={0.4} />
+        <line x1={xN(nClamp)} y1={LPAD.top} x2={xN(nClamp)} y2={LH - LPAD.bottom} stroke="var(--muted)" strokeWidth={1} opacity={0.4} />
       </svg>
 
       <ul className="ex-foil-why">
-        <li><strong>Blind to the jump.</strong> At the bare diffusion vol the lattice converges near {(conv.diff[conv.diff.length - 1].koProb * 100).toFixed(0)}% — it misses the paper's {(PAPER_KO_BASE * 100).toFixed(0)}% because the jump variance λ(θ_J²+δ_J²) isn't in it. Pumping σ to fold jump variance in fluke-matches the odds but is still the wrong process.</li>
-        <li><strong>Won't sit still.</strong> The KO estimate oscillates with N: the barriers straddle lattice nodes (Boyle–Lau), so the effective barrier jitters and the number never cleanly converges.</li>
-        <li><strong>One factor only.</strong> There is no FX leg here — so the paper's quanto delta Δ_FX = V/S₂ and covariance multiplier c* = {C_STAR} simply do not exist. Hedge off this and the correlation exposure stays wide open.</li>
+        <li><strong>Numerical error (lattice vs exact).</strong> The jittery line is the binomial estimate; the grey line is the exact GBM value. They differ only because the barriers straddle lattice nodes (Boyle–Lau) — crank N and the wobble shrinks, but never cleanly settles.</li>
+        <li><strong>Model error (exact vs paper).</strong> Even the perfect GBM price is {Math.abs(modelGap).toFixed(0)}pp off the paper. Toggle to σ + jump variance and the <em>level</em> jumps toward reality — but a GBM with a bigger σ is still the wrong process: jumps gap discretely and this world has no FX leg.</li>
+        <li><strong>One factor only.</strong> No FX here — so the paper's quanto delta Δ_FX = V/S₂ and covariance multiplier c* = {C_STAR} do not exist. Hedge off the textbook number and the correlation exposure stays wide open.</li>
       </ul>
     </figure>
   )
