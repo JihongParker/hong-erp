@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import surface from '../data/exotic_surface.json'
 import { useSpine } from '../state/spine'
 import { useErp } from '../state/erp'
+import { MARKET, clamp } from '../state/market'
+import MarketChip from '../components/MarketChip'
 import './ExoticDesk.css'
 
 // Precomputed from the paper's own model & calibration (see meta in the JSON;
@@ -84,7 +86,7 @@ function Curve({
 }
 
 export default function ExoticDesk() {
-  const [spot, setSpot] = useState(78.94)
+  const [spot, setSpot] = useState(() => clamp(MARKET.wti.value, S_GRID[0], S_GRID[S_GRID.length - 1]))
   const [ti, setTi] = useState(0)
 
   const row = useMemo(
@@ -92,6 +94,10 @@ export default function ExoticDesk() {
     [ti],
   )
   const v = atSpot(row.price, spot)
+  // homogeneity thm (paper: V linear in S2): re-express the surface — priced
+  // at the paper's S2_0 — at today's FRED USD/KRW without re-simulation
+  const fxScale = MARKET.usdkrw.value / S2_0
+  const vLive = v * fxScale
   const dWti = atSpot(row.delta, spot)
   const koP = atSpot(row.ko, spot)
   const dFx = v / S2_0 // homogeneity theorem: structural FX delta = V/S2
@@ -129,11 +135,13 @@ export default function ExoticDesk() {
 
   return (
     <div className="ex">
+      <div className="market-row"><MarketChip /></div>
       <div className="ex-grid">
         <div className="ex-tiles">
             <div className="tile">
               <span className="tile-label">Value (KRW / unit)</span>
-              <span className="tile-value">{v.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+              <span className="tile-value">{vLive.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+              <span className="tile-badge">at live ₩{MARKET.usdkrw.value.toLocaleString()} — homogeneity rescale</span>
             </div>
             <div className="tile">
               <span className="tile-label">Δ WTI (regression-grid FD)</span>

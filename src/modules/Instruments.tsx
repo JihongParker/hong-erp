@@ -8,13 +8,17 @@ import {
 import ExoticDesk from './ExoticDesk'
 import { Chip, useSpine } from '../state/spine'
 import { useErp } from '../state/erp'
+import { MARKET } from '../state/market'
+import MarketChip from '../components/MarketChip'
 import './Instruments.css'
 
 // Series colors — validated palette, fixed assignment: the collar is the hero.
 const C_COLLAR = '#2f6db4'
 const C_FWD = '#b3610f'
 
-const DEFAULT_MKT: MarketParams = { F: 85, sigma: 0.35, T: 0.5, r: 0.04 }
+// forward defaults to the latest FRED WTI close (flat-forward approximation);
+// vol and rates stay at the paper calibration
+const DEFAULT_MKT: MarketParams = { F: Math.round(MARKET.wti.value), sigma: 0.35, T: 0.5, r: 0.04 }
 
 const CW = 640
 const CH = 320
@@ -23,7 +27,7 @@ const PAD = { top: 16, right: 110, bottom: 36, left: 52 }
 export default function Instruments() {
   const [tab, setTab] = useState<'collar' | 'exotic'>('collar')
   const [mkt, setMkt] = useState<MarketParams>(DEFAULT_MKT)
-  const [capK, setCapK] = useState(95)
+  const [capK, setCapK] = useState(() => Math.round(DEFAULT_MKT.F * 1.12))
   const [hoverS, setHoverS] = useState<number | null>(null)
   const svgRef = useRef<SVGSVGElement | null>(null)
 
@@ -109,6 +113,7 @@ export default function Instruments() {
       ) : (
         <>
           <div className="spine-row">
+            <MarketChip />
             <Chip from="Budget">
               allocator says cover <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> of the WTI leg — {(spine.budgetW1 * 2.0).toFixed(2)}M bbl through this desk
             </Chip>
