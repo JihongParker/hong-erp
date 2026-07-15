@@ -6,6 +6,7 @@
   --line: #e4e4e0;
   --accent: #237a55; /* soft ESG green */
   --accent-soft: #e6f2ec;
+  --ice-water: #7aa0af; /* waterline/ripple ink on the overview sea */
   color-scheme: light dark;
 }
 
@@ -18,6 +19,7 @@
     --line: #2c2c33;
     --accent: #55b98a;
     --accent-soft: #223229;
+    --ice-water: #4a6b78;
   }
 }
 

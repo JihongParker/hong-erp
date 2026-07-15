@@ -26,21 +26,51 @@
   transform: none;
 }
 
-/* flow nodes plunge in one after another (left to right), then float in place */
+/* flow nodes: same ice pattern, staggered left to right by --i */
 .ov-flow-item.reveal {
   opacity: 0;
   transform: none;
   transition: opacity 0.5s ease;
   transition-delay: calc(var(--i, 0) * 90ms);
 }
+.ov-flow-item::before { /* ripple ring */
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 2px;
+  height: 18px;
+  border: 1.5px solid color-mix(in srgb, var(--ice-water) 60%, transparent);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+.ov-flow-item::after { /* waterline shimmer */
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  height: 10px;
+  background: linear-gradient(to bottom, transparent,
+    color-mix(in srgb, var(--ice-water) 34%, transparent) 45%, transparent);
+  border-radius: 50%;
+  filter: blur(1px);
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+}
 .ov-flow-item.in {
   opacity: 1;
-  animation: ov-float 8s ease-in-out infinite;
+  animation: ice-bob 6.8s ease-in-out infinite;
   animation-delay: calc(var(--i, 0) * -1.6s);
 }
+.ov-flow-item.in::before { animation: ice-ripple 0.9s ease-out calc(0.48s + var(--i, 0) * 90ms) both; }
+.ov-flow-item.in::after  { animation: ice-water 1.4s ease-out calc(0.4s + var(--i, 0) * 90ms) forwards; }
 .ov-flow-item.in .ov-node {
-  animation: ov-plunge 1.15s cubic-bezier(0.3, 0.72, 0.24, 1) backwards;
-  animation-delay: calc(var(--i, 0) * 90ms);
+  animation:
+    ice-plunge 1.25s cubic-bezier(0.3, 0.72, 0.24, 1) calc(var(--i, 0) * 90ms) backwards,
+    ice-sway 9.7s ease-in-out calc(1.25s + var(--i, 0) * 90ms) infinite;
 }
 
 /* section titles wipe in left-to-right as their block reveals */
@@ -62,21 +92,14 @@
     transform: none;
     transition: none;
   }
-  .chain-item,
-  .ov-flow-item {
-    opacity: 1;
-  }
-  .chain-item.in,
-  .ov-flow-item.in,
-  .chain-item.in .chain-card,
-  .ov-flow-item.in .ov-node {
-    animation: none;
-  }
   .ov .reveal h3,
   .ov .reveal .ov-cta-h {
     clip-path: none;
     animation: none;
   }
+  /* the ice-slab reduced-motion fallback lives in the final @media block at the
+     end of this file — it must come after the .chain-card / .ov-node rules to
+     win at equal specificity, so it is not duplicated here */
 }
 
 /* ── 1 · hero: copy centred over the open water, clear of the machinery ── */
@@ -272,6 +295,10 @@
   flex-direction: column;
   max-width: 720px;
   margin: 0 auto;
+  /* one shared vanishing point for the whole scene — cards lower in the track
+     show more of their edge, like slabs floating on the same water */
+  perspective: 1200px;
+  perspective-origin: 50% -10%;
 }
 
 .chain-spine {
@@ -322,41 +349,90 @@
 /* underwater sink: framework panels drop in from just above, overshoot into the
    water, and settle back with a faint buoyancy sway — subtle, and sequential as
    each card scrolls into view */
-/* an ice slab plunges into the water in 3D (rotateX shows its thin edge),
-   splashes, bobs on its buoyancy, and then floats in place forever — not a
-   one-shot slide. The panel's depth is the slab shadow on .chain-card below. */
-@keyframes ov-plunge {
-  0%   { transform: translateY(-34px) rotateX(-16deg) scale(0.985); }
-  42%  { transform: translateY(11px) rotateX(6deg) scale(1.012); }
-  64%  { transform: translateY(-5px) rotateX(-2.5deg) scale(0.997); }
-  82%  { transform: translateY(3px) rotateX(1deg); }
-  100% { transform: translateY(0) rotateX(0deg) scale(1); }
+/* ── ice slabs ────────────────────────────────────────────────────────────
+   Each panel is a thin 3D slab that is ALWAYS tilted (rotateX 1.4deg base, so
+   its bottom edge stays visible at rest), plunges into the water on reveal
+   (rotateX shows the thin edge), makes the water react (ripple ring + a
+   waterline shimmer that never fully fades), pops back on its buoyancy, and
+   then floats in place forever: parent bobs (translateY), card sways (rotate),
+   with incommensurate periods so the loop never reads as a loop. */
+@keyframes ice-plunge {
+  0%   { transform: translateY(-46px) rotateX(-14deg); }
+  38%  { transform: translateY(12px)  rotateX(5deg); }    /* impact: below the waterline */
+  55%  { transform: translateY(-6px)  rotateX(-2.6deg); } /* buoyant pop */
+  72%  { transform: translateY(3.5px) rotateX(1.2deg); }
+  86%  { transform: translateY(-1.5px) rotateX(-0.5deg); }
+  100% { transform: translateY(0) rotateX(1.4deg); }      /* endpoint = resting tilt */
 }
-@keyframes ov-float {
-  0%, 100% { transform: translateY(0) rotate(-0.18deg); }
-  50%      { transform: translateY(-3px) rotate(0.18deg); }
+@keyframes ice-sway { /* carries the base tilt so there is no jump at handoff */
+  0%, 100% { transform: rotateX(1.4deg) rotate(-0.12deg); }
+  50%      { transform: rotateX(1.4deg) rotate(0.12deg); }
+}
+@keyframes ice-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+@keyframes ice-ripple {
+  0%   { opacity: 0; transform: scaleX(0.55) scaleY(0.5); }
+  18%  { opacity: 0.5; }
+  100% { opacity: 0; transform: scaleX(1.18) scaleY(1); }
+}
+@keyframes ice-water {
+  0%   { opacity: 0; }
+  35%  { opacity: 0.55; }
+  100% { opacity: 0.28; } /* the waterline stays, faintly, forever */
 }
 
 .chain-item {
   position: relative;
   padding: 14px 0 14px 56px;
-  perspective: 1100px;
   opacity: 0;
-  transform: none;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.45s ease;
 }
 
-/* the whole panel floats in place (buoyancy) once revealed; phases desynced */
+/* water reaction lives on the item so it stays put while the card moves */
+.chain-item::before { /* ripple ring at impact */
+  content: "";
+  position: absolute;
+  left: 46px;
+  right: -6px;
+  bottom: 2px;
+  height: 18px;
+  border: 1.5px solid color-mix(in srgb, var(--ice-water) 60%, transparent);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+.chain-item::after { /* waterline shimmer the slab sits in */
+  content: "";
+  position: absolute;
+  left: 46px;
+  right: -6px;
+  bottom: 6px;
+  height: 10px;
+  background: linear-gradient(to bottom, transparent,
+    color-mix(in srgb, var(--ice-water) 34%, transparent) 45%, transparent);
+  border-radius: 50%;
+  filter: blur(1px);
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
 .chain-item.in {
   opacity: 1;
-  animation: ov-float 7.5s ease-in-out infinite;
-  animation-delay: calc(var(--i, 0) * -1.9s);
+  animation: ice-bob 6.8s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -1.7s);
 }
+.chain-item.in::before { animation: ice-ripple 0.9s ease-out 0.48s both; }
+.chain-item.in::after  { animation: ice-water 1.4s ease-out 0.4s forwards; }
 
-/* the card itself does the 3D plunge; backwards fill so it reverts to no
-   transform afterward and the hover lift keeps working */
+/* plunge once, then sway forever — comma-chained on the same element so the
+   two transforms never fight (sway starts exactly when the plunge ends) */
 .chain-item.in .chain-card {
-  animation: ov-plunge 1.3s cubic-bezier(0.3, 0.72, 0.24, 1) backwards;
+  animation:
+    ice-plunge 1.25s cubic-bezier(0.3, 0.72, 0.24, 1) backwards,
+    ice-sway 9.7s ease-in-out 1.25s infinite;
 }
 
 /* every card fills the track width, so all four boxes are identical (a button
@@ -429,13 +505,35 @@
   font: inherit;
   text-align: inherit;
   cursor: pointer;
-  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  /* ALWAYS tilted — the slab reads as 3D at rest, not only mid-animation.
+     No transform in the transition: the card is perpetually animating, so
+     hover feedback is border + shadow only (a transform hover would snap). */
+  position: relative;
+  transform: rotateX(1.4deg);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* the slab's underside — a thin extruded edge below the card */
+.chain-card::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -5px;
+  height: 5px;
+  border-radius: 0 0 12px 12px;
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--panel) 68%, #35505e),
+    color-mix(in srgb, var(--panel) 55%, #2a4250));
+  pointer-events: none;
 }
 
 .chain-card:hover {
   border-color: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 26px -14px rgb(30 40 34 / 0.4);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    0 2px 0 rgb(120 140 150 / 0.3),
+    0 18px 32px -12px rgb(30 50 60 / 0.4);
 }
 
 .chain-title {
@@ -519,10 +617,19 @@
   padding-bottom: 4px;
   max-width: 1140px;
   margin: 0 auto;
-  perspective: 1100px;
+  perspective: 1200px;
+}
+
+/* desktop: let the plunge overshoot and the ripples escape the row box;
+   mobile keeps overflow-x for the horizontal scroll */
+@media (min-width: 1001px) {
+  .ov-flow-row {
+    overflow: visible;
+  }
 }
 
 .ov-flow-item {
+  position: relative; /* anchors the ripple/waterline pseudo-elements */
   display: flex;
   align-items: center;
   gap: 4px;
@@ -550,7 +657,24 @@
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  /* persistent slab tilt; hover feedback via border/shadow only (see .chain-card) */
+  position: relative;
+  transform: rotateX(1.4deg);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ov-node::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -5px;
+  height: 5px;
+  border-radius: 0 0 10px 10px;
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--panel) 68%, #35505e),
+    color-mix(in srgb, var(--panel) 55%, #2a4250));
+  pointer-events: none;
 }
 
 .ov-node-label,
@@ -562,7 +686,10 @@
 
 .ov-node:hover {
   border-color: var(--accent);
-  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    0 2px 0 rgb(120 140 150 / 0.3),
+    0 16px 28px -12px rgb(30 50 60 / 0.38);
 }
 
 .ov-node-label {
@@ -667,3 +794,29 @@
   color: var(--muted);
 }
 
+
+/* ── a11y: must stay LAST — overrides every ice rule above at equal specificity ── */
+@media (prefers-reduced-motion: reduce) {
+  .chain-item.in,
+  .ov-flow-item.in,
+  .chain-item.in .chain-card,
+  .ov-flow-item.in .ov-node,
+  .chain-item.in::before,
+  .chain-item.in::after,
+  .ov-flow-item.in::before,
+  .ov-flow-item.in::after {
+    animation: none;
+  }
+  .chain-item::before,
+  .chain-item::after,
+  .ov-flow-item::before,
+  .ov-flow-item::after,
+  .chain-card::before,
+  .ov-node::before {
+    display: none;
+  }
+  .chain-card,
+  .ov-node {
+    transform: none;
+  }
+}
