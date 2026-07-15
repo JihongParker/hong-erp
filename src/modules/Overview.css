@@ -26,9 +26,16 @@
   transform: none;
 }
 
-/* staggered children (flow stages) cascade in one after another */
+/* flow stages sink in one after another (left to right) */
 .ov-flow-item.reveal {
-  transition-delay: calc(var(--i, 0) * 80ms);
+  opacity: 0;
+  transform: none;
+  transition: none;
+}
+.ov-flow-item.in {
+  opacity: 1;
+  animation: ov-sink 1.05s cubic-bezier(0.34, 0.68, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 95ms);
 }
 
 /* section titles wipe in left-to-right as their block reveals */
@@ -49,6 +56,14 @@
     opacity: 1;
     transform: none;
     transition: none;
+  }
+  .chain-item,
+  .ov-flow-item {
+    opacity: 1;
+  }
+  .chain-item.in,
+  .ov-flow-item.in {
+    animation: none;
   }
   .ov .reveal h3,
   .ov .reveal .ov-cta-h {
@@ -297,14 +312,28 @@
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent), 0 4px 12px rgb(35 122 85 / 0.4);
 }
 
+/* underwater sink: framework panels drop in from just above, overshoot into the
+   water, and settle back with a faint buoyancy sway — subtle, and sequential as
+   each card scrolls into view */
+@keyframes ov-sink {
+  0%   { opacity: 0; transform: translateY(-22px) rotate(-0.35deg); }
+  45%  { opacity: 1; transform: translateY(8px) rotate(0.28deg); }
+  70%  { transform: translateY(-4px) rotate(-0.14deg); }
+  86%  { transform: translateY(2px) rotate(0.06deg); }
+  100% { opacity: 1; transform: translateY(0) rotate(0deg); }
+}
+
 .chain-item {
   position: relative;
   padding: 14px 0 14px 56px;
-  transform: translateX(34px);
+  opacity: 0;
+  transform: none;
+  transition: none;
 }
 
 .chain-item.in {
-  transform: none;
+  opacity: 1;
+  animation: ov-sink 1.15s cubic-bezier(0.34, 0.68, 0.3, 1) both;
 }
 
 /* every card fills the track width, so all four boxes are identical (a button
