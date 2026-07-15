@@ -144,8 +144,9 @@ export default function SceneBackground() {
         </g>
         </g>
 
-        {/* the tanker, anchored offshore to the right and clear of the copy */}
-        <g transform="translate(372 12)">
+        {/* the tanker, anchored offshore to the far right and lower, clear of
+            the centered copy */}
+        <g transform="translate(474 44)">
           <g className="sc-ship">
             <path d="M470 500 L806 500 L784 546 C784 546 620 558 470 546 Z" fill="url(#sc-hull)" />
             <rect x="470" y="500" width="336" height="9" fill="#b3441f" />
