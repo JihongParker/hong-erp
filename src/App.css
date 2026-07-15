@@ -331,6 +331,12 @@ nav {
   .content {
     padding: 22px 18px 40px;
   }
+
+  /* fatter touch targets on mobile: the slider gets a ~40px tall hit area
+     (the visible track stays thin, centered) */
+  input[type='range'] {
+    height: 40px;
+  }
 }
 
 /* spine chips — cross-module data provenance */
@@ -450,6 +456,17 @@ input[type='range']::-webkit-slider-thumb {
   background: var(--accent);
   border: 2.5px solid var(--panel);
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
+  transition: box-shadow var(--dur-s) var(--ease-out), transform var(--dur-xs) var(--ease-out);
+}
+
+input[type='range']::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 6px var(--accent-soft), 0 1px 4px rgb(0 0 0 / 0.25);
+}
+input[type='range']:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+input[type='range']::-moz-range-thumb:hover {
+  box-shadow: 0 0 0 6px var(--accent-soft);
 }
 
 input[type='range']::-moz-range-track {
@@ -898,4 +915,10 @@ input[type='range'].fancy::-moz-range-thumb:hover {
   .fade-swap {
     animation: none;
   }
+}
+
+/* invalid form fields flag themselves (paired with the inline error message) */
+input[aria-invalid='true'],
+select[aria-invalid='true'] {
+  border-color: #c0392b;
 }
