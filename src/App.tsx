@@ -66,8 +66,8 @@ const TOUR: { module: string; title: string; body: string; target: string; lift?
     module: 'budget',
     target: '.bg-deck',
     lift: '.bg-tiles',
-    title: 'Tighten the budget',
-    body: 'Pull the budget slider down. The plan spends less, but the split between oil and currency barely moves — the shape of the market decides it, not the size of the wallet.',
+    title: 'Loosen the budget',
+    body: 'Raise the budget slider. Even with far more cash to spend, the split between oil and currency barely moves off 97 / 3 — once the budget stops binding, the shape of the market fixes the allocation, not the size of the wallet.',
   },
   {
     module: 'instruments',
@@ -271,7 +271,7 @@ export default function App() {
   return (
     <ErpProvider>
     <SpineProvider>
-    <div className="app">
+    <div className={tour !== null ? 'app touring' : 'app'}>
 
       {/* mobile top bar — brand + hamburger; hidden on desktop */}
       <div className="mobile-bar">

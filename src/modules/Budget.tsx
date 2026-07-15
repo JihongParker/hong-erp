@@ -93,7 +93,7 @@ export default function Budget() {
           <div className="bg-sliders" data-tour="budget-b">
             <ParamRow
               label="B budget"
-              min={30e9}
+              min={43e9}
               max={60e9}
               step={0.5e9}
               value={B}
