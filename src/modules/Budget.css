@@ -13,20 +13,26 @@
   background: var(--panel);
 }
 
+/* cockpit: sticky input rail left, reacting results right */
 .bg-grid {
   display: grid;
+  grid-template-columns: 296px minmax(0, 1fr);
   gap: 16px;
+  align-items: start;
 }
 
 .bg-deck {
   display: grid;
-  grid-template-columns: auto 1fr 1.2fr;
-  gap: 8px 24px;
-  align-items: start;
+  gap: 14px;
+  align-content: start;
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
 }
 
-.bg-deck h3 {
-  grid-column: 1 / -1;
+.bg-tabs {
+  grid-template-columns: 1fr;
 }
 
 .bg-mid {
@@ -161,9 +167,13 @@
 }
 
 @media (max-width: 1000px) {
-  .bg-deck,
+  .bg-grid,
   .bg-mid {
     grid-template-columns: 1fr;
+  }
+  .bg-deck {
+    position: static;
+    max-height: none;
   }
   .bg-tiles {
     grid-template-columns: repeat(2, 1fr);
