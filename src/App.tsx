@@ -151,7 +151,7 @@ function ResetDemo() {
       title="Restore the seeded demo ledgers"
       onClick={() => dispatch({ type: 'reset' })}
     >
-      Reset demo data
+      Reset demo data (all divisions)
     </button>
   )
 }

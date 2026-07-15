@@ -108,28 +108,22 @@
   z-index: 1;
 }
 
-/* a body of liquid fills the "empty" word */
+/* a clean accent underline that draws in — no muddy highlight box */
 .ov-underflow {
   position: absolute;
-  left: -2px;
-  right: -2px;
-  bottom: 0.06em;
-  height: 0.5em;
-  border-radius: 6px;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 55%, transparent), color-mix(in srgb, #2f6db4 55%, transparent));
+  left: 0;
+  right: 0;
+  bottom: 0.04em;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent);
   transform-origin: left center;
-  animation: ov-fill 1.1s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both, ov-slosh 4.5s 1.6s ease-in-out infinite;
-  opacity: 0.32;
+  animation: ov-fill 1.1s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes ov-fill {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
-}
-
-@keyframes ov-slosh {
-  0%, 100% { height: 0.5em; }
-  50% { height: 0.62em; }
 }
 
 .ov-lede {
@@ -142,6 +136,14 @@
 
 .ov-lede strong {
   color: var(--text);
+}
+
+.ov-hero-cta {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
 .ov-scrollcue {

@@ -58,17 +58,23 @@ export default function ParamRow({
         </span>
         <span className="p-desc">{desc}</span>
       </span>
-      <input
-        type="range"
-        className="fancy"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        aria-label={help ? `${desc} — ${help}` : desc}
-        style={{ '--f': fill } as CSSProperties}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
+      <span className="p-track">
+        <input
+          type="range"
+          className="fancy"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          aria-label={help ? `${desc} — ${help}` : desc}
+          style={{ '--f': fill } as CSSProperties}
+          onChange={(e) => onChange(Number(e.target.value))}
+        />
+        <span className="p-range">
+          <span>{fmt ? fmt(min) : min}</span>
+          <span>{fmt ? fmt(max) : max}</span>
+        </span>
+      </span>
       <span className="p-val">{fmt ? fmt(value) : value.toFixed(2)}</span>
     </label>
   )

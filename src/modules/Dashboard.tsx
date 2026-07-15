@@ -169,7 +169,7 @@ export default function Dashboard() {
             </div>
           ))}
           <button className="db-reset" onClick={() => setP(DEFAULTS)}>
-            Reset defaults
+            Reset sliders
           </button>
         </div>
 
@@ -312,15 +312,9 @@ export default function Dashboard() {
               </div>
             )}
             <figcaption className="db-legend">
-              <span className="lg-item">
-                <span className="dot" style={{ background: C_FIN }} /> Financial hedge h_f
-              </span>
-              <span className="lg-item">
-                <span className="dot" style={{ background: C_CLI }} /> Climate hedge h_c
-              </span>
               <span className="lg-note">
-                Both curves fall as d rises — disclosure cheapens residual risk
-                (Λ↓) and substitutes for hedging. Dots mark the equilibrium.
+                Both curves fall as disclosure rises: disclosure cheapens residual
+                risk and substitutes for hedging. Dots mark the equilibrium.
               </span>
             </figcaption>
           </figure>

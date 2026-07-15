@@ -123,8 +123,18 @@ export default function Overview({
             and <strong>how much to disclose</strong>. Disclosing a risk makes it
             cheaper to carry, so the two are really one decision.
           </p>
+          <div className="ov-hero-cta reveal in">
+            <button className="ov-btn big primary" onClick={() => onNavigate('decision')}>
+              Open the app
+              <span className="ov-btn-sub">go to the Decision Dashboard</span>
+            </button>
+            <button className="ov-btn big" onClick={onStartTour}>
+              Take a tour
+              <span className="ov-btn-sub">guided · no finance needed</span>
+            </button>
+          </div>
           <button className="ov-scrollcue reveal in" onClick={() => chainRef.current?.scrollIntoView({ behavior: 'smooth' })}>
-            Follow the chain <span className="ov-cue-arrow">↓</span>
+            or follow the chain <span className="ov-cue-arrow">↓</span>
           </button>
         </div>
       </section>
