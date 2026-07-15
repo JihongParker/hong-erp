@@ -4,38 +4,78 @@
   gap: 16px;
 }
 
+/* instrument switcher — the module's headline choice, full width */
 .ins-tabs {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
 .ins-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  display: grid;
+  gap: 4px;
+  text-align: left;
+  padding: 14px 20px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
   background: var(--panel);
   color: var(--text);
   font: inherit;
-  font-size: 13px;
   cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.ins-tab:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.08);
 }
 
 .ins-tab.active {
   border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.ins-tab-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.ins-tab.active .ins-tab-title {
   color: var(--accent);
-  font-weight: 600;
+}
+
+.ins-tab-sub {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .ins-tag {
-  font-size: 10px;
-  padding: 1px 7px;
+  font-size: 10.5px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 9px;
   border-radius: 99px;
   border: 1px solid var(--line);
   color: var(--muted);
+}
+
+.ins-tag.research {
+  border-color: #b3610f;
+  color: #b3610f;
+}
+
+@media (max-width: 760px) {
+  .ins-tabs {
+    grid-template-columns: 1fr;
+  }
 }
 
 .ins-panel {
@@ -56,67 +96,26 @@
   margin-bottom: 10px;
 }
 
+/* cockpit: sticky control rail left, reacting results right */
 .ins-grid {
   display: grid;
+  grid-template-columns: 296px minmax(0, 1fr);
   gap: 16px;
+  align-items: start;
 }
 
-/* market & structure — horizontal deck */
-.ins-deck {
+.ins-rail {
   display: grid;
-  grid-template-columns: repeat(5, 1fr) 1.3fr;
-  gap: 8px 18px;
-  align-items: center;
-}
-
-.ins-deck h3 {
-  grid-column: 1 / -1;
-  margin-bottom: 2px;
-}
-
-.ins-panel.ins-deck label {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 4px 8px;
-  align-items: center;
-  margin-bottom: 0;
-}
-
-.ins-panel.ins-deck label input[type='range'] {
-  grid-column: 1 / -1;
-  width: 100%;
-}
-
-.ins-panel.ins-deck .ins-pval {
-  text-align: right;
-}
-
-.ins-deck .ins-muted {
-  margin-top: 0;
-  align-self: center;
-}
-
-.ins-panel label {
-  display: grid;
-  grid-template-columns: 88px 1fr 48px;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  margin-bottom: 8px;
-}
-
-.ins-plabel {
-  color: var(--muted);
+  gap: 16px;
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
 }
 
 .ins-panel input[type='range'] {
   accent-color: var(--accent);
   min-width: 0;
-}
-
-.ins-pval {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
 }
 
 .ins-muted {
@@ -190,7 +189,7 @@
 .ins-table-wrap th,
 .ins-table-wrap td {
   text-align: left;
-  padding: 8px 10px;
+  padding: 6px 10px;
   border-bottom: 1px solid var(--line);
   white-space: nowrap;
 }
@@ -218,11 +217,12 @@
 }
 
 @media (max-width: 1000px) {
-  .ins-deck {
-    grid-template-columns: repeat(3, 1fr);
+  .ins-grid {
+    grid-template-columns: 1fr;
   }
-  .ins-deck .ins-muted {
-    grid-column: 1 / -1;
+  .ins-rail {
+    position: static;
+    max-height: none;
   }
   .ins-tiles {
     grid-template-columns: repeat(2, 1fr);
@@ -256,6 +256,21 @@
   font: inherit;
   font-size: 13px;
   width: 150px;
+}
+
+/* in the rail the booking controls stack full-width */
+.ins-rail .ins-bookrow {
+  display: grid;
+  gap: 10px;
+}
+
+.ins-rail .ins-binline select,
+.ins-rail .ins-binline input {
+  width: 100%;
+}
+
+.ins-rail .ins-bookbtn {
+  width: 100%;
 }
 
 .ins-bookbtn {

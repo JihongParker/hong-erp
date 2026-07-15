@@ -10,6 +10,7 @@ import { Chip, useSpine } from '../state/spine'
 import { useErp } from '../state/erp'
 import { MARKET } from '../state/market'
 import MarketChip from '../components/MarketChip'
+import ParamRow from '../components/ParamRow'
 import './Instruments.css'
 
 // Series colors — validated palette, fixed assignment: the collar is the hero.
@@ -21,7 +22,7 @@ const C_FWD = '#b3610f'
 const DEFAULT_MKT: MarketParams = { F: Math.round(MARKET.wti.value), sigma: 0.35, T: 0.5, r: 0.04 }
 
 const CW = 640
-const CH = 320
+const CH = 236
 const PAD = { top: 16, right: 110, bottom: 36, left: 52 }
 
 export default function Instruments() {
@@ -101,10 +102,12 @@ export default function Instruments() {
     <div className="ins">
       <div className="ins-tabs">
         <button className={tab === 'collar' ? 'ins-tab active' : 'ins-tab'} onClick={() => setTab('collar')}>
-          Zero-cost collar <span className="ins-tag">industry standard</span>
+          <span className="ins-tab-title">Zero-cost collar <span className="ins-tag">industry standard</span></span>
+          <span className="ins-tab-sub">Cap + financed floor — how refiners actually hedge, Black-76 desk solver</span>
         </button>
         <button className={tab === 'exotic' ? 'ins-tab active' : 'ins-tab'} data-tour="exotic-tab" onClick={() => setTab('exotic')}>
-          Double-KO quanto <span className="ins-tag">research</span>
+          <span className="ins-tab-title">Double-KO quanto <span className="ins-tag research">research</span></span>
+          <span className="ins-tab-sub">Barrier analytics from the paper's engine — where textbook deltas reverse sign</span>
         </button>
       </div>
 
@@ -122,67 +125,43 @@ export default function Instruments() {
             </Chip>
           </div>
           <div className="ins-grid">
-            <div className="ins-tiles">
-              <div className="tile">
-                <span className="tile-label">Cap (bought call)</span>
-                <span className="tile-value">${collar.capK.toFixed(0)}</span>
-              </div>
-              <div className="tile">
-                <span className="tile-label">Floor (written put)</span>
-                <span className="tile-value">${collar.floorK.toFixed(2)}</span>
-              </div>
-              <div className="tile">
-                <span className="tile-label">Net premium</span>
-                <span className="tile-value">${Math.abs(collar.netPremium) < 0.005 ? '0.00' : collar.netPremium.toFixed(2)}</span>
-              </div>
-              <div className="tile">
-                <span className="tile-label">Protected band</span>
-                <span className="tile-value">${(collar.capK - collar.floorK).toFixed(1)}</span>
-              </div>
-            </div>
-
-            <div className="ins-panel ins-deck">
-              <h3>Market & structure</h3>
-              {(
-                [
-                  { key: 'F', label: 'Forward F', min: 50, max: 130, step: 1, fmt: (v: number) => `$${v.toFixed(0)}` },
-                  { key: 'sigma', label: 'Vol σ', min: 0.1, max: 0.8, step: 0.01, fmt: (v: number) => `${(v * 100).toFixed(0)}%` },
-                  { key: 'T', label: 'Maturity T', min: 0.1, max: 2, step: 0.05, fmt: (v: number) => `${v.toFixed(2)}y` },
-                  { key: 'r', label: 'Rate r', min: 0, max: 0.08, step: 0.0025, fmt: (v: number) => `${(v * 100).toFixed(1)}%` },
-                ] as const
-              ).map((m) => (
-                <label key={m.key}>
-                  <span className="ins-plabel">{m.label}</span>
-                  <input
-                    type="range"
+            <div className="ins-rail">
+              <div className="ins-panel ins-deck" data-tour="cap">
+                <h3>Market & structure</h3>
+                {(
+                  [
+                    { key: 'F', label: 'F forward', min: 50, max: 130, step: 1, fmt: (v: number) => `$${v.toFixed(0)}` },
+                    { key: 'sigma', label: 'σ volatility', min: 0.1, max: 0.8, step: 0.01, fmt: (v: number) => `${(v * 100).toFixed(0)}%` },
+                    { key: 'T', label: 'T maturity', min: 0.1, max: 2, step: 0.05, fmt: (v: number) => `${v.toFixed(2)}y` },
+                    { key: 'r', label: 'r rate', min: 0, max: 0.08, step: 0.0025, fmt: (v: number) => `${(v * 100).toFixed(1)}%` },
+                  ] as const
+                ).map((m) => (
+                  <ParamRow
+                    key={m.key}
+                    label={m.label}
                     min={m.min}
                     max={m.max}
                     step={m.step}
                     value={mkt[m.key]}
-                    onChange={(e) => setM(m.key, Number(e.target.value))}
+                    onChange={(v) => setM(m.key, v)}
+                    fmt={m.fmt}
                   />
-                  <span className="ins-pval">{m.fmt(mkt[m.key])}</span>
-                </label>
-              ))}
-              <label data-tour="cap">
-                <span className="ins-plabel">Cap strike Kc</span>
-                <input
-                  type="range"
+                ))}
+                <ParamRow
+                  label="Kc cap strike"
                   min={Math.round(mkt.F)}
                   max={Math.round(mkt.F * 1.5)}
                   step={1}
                   value={capK}
-                  onChange={(e) => setCapK(Number(e.target.value))}
+                  onChange={setCapK}
+                  fmt={(v) => `$${v.toFixed(0)}`}
                 />
-                <span className="ins-pval">${capK.toFixed(0)}</span>
-              </label>
-              <p className="ins-muted">
-                Pick the cap; the solver finds the floor whose written put
-                exactly finances the purchased call.
-              </p>
-            </div>
+                <p className="ins-muted">
+                  Pick the cap; the solver finds the floor whose written put
+                  exactly finances the purchased call.
+                </p>
+              </div>
 
-            <div className="ins-main">
               <div className="ins-panel ins-book">
                 <h3>Book this structure</h3>
                 <div className="ins-bookrow">
@@ -200,6 +179,27 @@ export default function Instruments() {
                   </label>
                   <button className="ins-bookbtn" onClick={bookCollar}>Book collar</button>
                   {booked && <span className="ins-bookflash">✓ {booked}</span>}
+                </div>
+              </div>
+            </div>
+
+            <div className="ins-main">
+              <div className="ins-tiles">
+                <div className="tile">
+                  <span className="tile-label">Cap (bought call)</span>
+                  <span className="tile-value">${collar.capK.toFixed(0)}</span>
+                </div>
+                <div className="tile">
+                  <span className="tile-label">Floor (written put)</span>
+                  <span className="tile-value">${collar.floorK.toFixed(2)}</span>
+                </div>
+                <div className="tile">
+                  <span className="tile-label">Net premium</span>
+                  <span className="tile-value">${Math.abs(collar.netPremium) < 0.005 ? '0.00' : collar.netPremium.toFixed(2)}</span>
+                </div>
+                <div className="tile">
+                  <span className="tile-label">Protected band</span>
+                  <span className="tile-value">${(collar.capK - collar.floorK).toFixed(1)}</span>
                 </div>
               </div>
 
