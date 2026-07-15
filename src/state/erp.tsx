@@ -35,6 +35,7 @@ export interface Trade {
   instrument:
     | 'Zero-cost collar'
     | 'Double-KO quanto'
+    | 'European quanto'
     | 'Swap / forward'
     | 'Cap (bought call)'
     | 'Three-way collar'

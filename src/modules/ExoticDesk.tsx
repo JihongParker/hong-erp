@@ -5,6 +5,7 @@ import { useErp } from '../state/erp'
 import { MARKET, clamp } from '../state/market'
 import MarketChip from '../components/MarketChip'
 import { crrDoubleKO, koConvergence, gbmDoubleKOprob } from '../engine/lattice'
+import { europeanQuanto, type QuantoCalib } from '../engine/quanto'
 import './ExoticDesk.css'
 
 // Precomputed from the paper's own model & calibration (see meta in the JSON;
@@ -16,9 +17,12 @@ const PRICE = surface.price as number[][]
 const DELTA = surface.deltaWTI as number[][]
 const KO = surface.koProb as number[][]
 const META = surface.meta as {
-  calibration: { U: number; L: number; K: number; S2_0: number; sigma1: number; lambda: number; thetaJ: number; deltaJ: number; rUS: number }
+  calibration: { U: number; L: number; K: number; S2_0: number; sigma1: number; lambda: number; thetaJ: number; deltaJ: number; sigma2: number; rho: number; rUS: number; rKRW: number }
 }
-const { U, L, K, S2_0, sigma1, lambda, thetaJ, deltaJ, rUS } = META.calibration
+const { U, L, K, S2_0, sigma1, lambda, thetaJ, deltaJ, sigma2, rho, rUS, rKRW } = META.calibration
+
+// same calibration as the paper's surface — used by the European ablation engine
+const CALIB: QuantoCalib = { sigma1, lambda, thetaJ, deltaJ, sigma2, rho, rUS, rKRW, S2_0 }
 
 // paper constant (Park_quanto): covariance-aware FX multiplier
 const C_STAR = -0.548
@@ -91,6 +95,40 @@ function Curve({
       <path d={d} fill="none" stroke={color} strokeWidth={2} />
       <line x1={x(spot)} y1={PAD.top} x2={x(spot)} y2={CH - PAD.bottom} stroke="var(--muted)" strokeWidth={1} opacity={0.6} />
       <circle cx={x(spot)} cy={y(Math.min(spotV, yMax))} r={5} fill={color} stroke="var(--panel)" strokeWidth={2} />
+    </svg>
+  )
+}
+
+// European value (monotone) vs the barrier value (humped, collapsing) across the
+// corridor — the shaded gap is exactly what the two knock-outs destroy.
+function EuroCompare({ euro, ko, spot }: { euro: number[]; ko: number[]; spot: number }) {
+  const yMax = Math.max(...euro) * 1.06
+  const x = (s: number) => PAD.left + ((s - L) / (U - L)) * (CW - PAD.left - PAD.right)
+  const y = (v: number) => CH - PAD.bottom - (v / yMax) * (CH - PAD.top - PAD.bottom)
+  const line = (vals: number[]) => S_GRID.map((s, i) => `${i ? 'L' : 'M'}${x(s).toFixed(1)},${y(vals[i]).toFixed(1)}`).join('')
+  const n = S_GRID.length
+  let gap = ''
+  for (let i = 0; i < n; i++) gap += `${i ? 'L' : 'M'}${x(S_GRID[i]).toFixed(1)},${y(euro[i]).toFixed(1)}`
+  for (let i = n - 1; i >= 0; i--) gap += `L${x(S_GRID[i]).toFixed(1)},${y(ko[i]).toFixed(1)}`
+  gap += 'Z'
+  const euroSpot = atSpot(euro, spot)
+  const koSpot = atSpot(ko, spot)
+  return (
+    <svg viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label="European vs barrier value across the corridor">
+      <path d={gap} fill="#b3610f" opacity={0.1} />
+      {[L, K, U].map((val) => (
+        <g key={val}>
+          <line x1={x(val)} y1={PAD.top} x2={x(val)} y2={CH - PAD.bottom} stroke={val === K ? 'var(--line)' : 'var(--accent)'} strokeWidth={1} strokeDasharray={val === K ? '3 3' : undefined} />
+          <text x={x(val)} y={CH - PAD.bottom + 14} textAnchor="middle" className="tick">{val}</text>
+        </g>
+      ))}
+      <path d={line(euro)} fill="none" stroke="#2f6db4" strokeWidth={2} />
+      <path d={line(ko)} fill="none" stroke="#b3610f" strokeWidth={2} />
+      <line x1={x(spot)} y1={PAD.top} x2={x(spot)} y2={CH - PAD.bottom} stroke="var(--muted)" strokeWidth={1} opacity={0.6} />
+      <circle cx={x(spot)} cy={y(euroSpot)} r={4.5} fill="#2f6db4" stroke="var(--panel)" strokeWidth={2} />
+      <circle cx={x(spot)} cy={y(koSpot)} r={4.5} fill="#b3610f" stroke="var(--panel)" strokeWidth={2} />
+      <text x={x(S_GRID[n - 1]) - 4} y={y(euro[n - 1]) - 6} textAnchor="end" className="ex-foil-lbl" fill="#2f6db4">European</text>
+      <text x={x(S_GRID[n - 1]) - 4} y={y(ko[n - 1]) + 14} textAnchor="end" className="ex-foil-lbl" fill="#b3610f">Double-KO</text>
     </svg>
   )
 }
@@ -217,6 +255,14 @@ export default function ExoticDesk() {
   const dWti = atSpot(row.delta, spot)
   const koP = atSpot(row.ko, spot)
   const dFx = v / S2_0 // homogeneity theorem: structural FX delta = V/S2
+
+  // ── European ablation: same jump-diffusion calibration, barrier removed ──
+  const [mode, setMode] = useState<'ko' | 'euro'>('ko')
+  const euro = useMemo(() => europeanQuanto(spot, K, T_GRID[ti], CALIB), [spot, ti])
+  const euroCurve = useMemo(() => S_GRID.map((s) => europeanQuanto(s, K, T_GRID[ti], CALIB).value), [ti])
+  const euroLive = euro.value * fxScale
+  const destroyed = euro.value > 0 ? (euro.value - v) / euro.value : 0 // barrier effect (FX-independent)
+
   const spine = useSpine()
   const { state: erp, dispatch } = useErp()
   const [bookDiv, setBookDiv] = useState(erp.divisions[0].id)
@@ -230,14 +276,14 @@ export default function ExoticDesk() {
       type: 'bookTrade',
       trade: {
         division: bookDiv,
-        instrument: 'Double-KO quanto',
-        terms: `K $${K} · KO ${L}/${U} · ${T_GRID[ti].toFixed(2)}y`,
+        instrument: mode === 'euro' ? 'European quanto' : 'Double-KO quanto',
+        terms: mode === 'euro' ? `K $${K} · no barrier · ${T_GRID[ti].toFixed(2)}y` : `K $${K} · KO ${L}/${U} · ${T_GRID[ti].toFixed(2)}y`,
         notional: `${n.toFixed(2)}M bbl`,
         by: 'Treasury desk',
         designation: 'CFH-A',
       },
     })
-    setBooked(`Booked — ${n.toFixed(2)}M bbl quanto for ${erp.divisions.find((d) => d.id === bookDiv)?.name}. Barrier odds flow to Accounting.`)
+    setBooked(`Booked — ${n.toFixed(2)}M bbl ${mode === 'euro' ? 'European quanto' : 'quanto'} for ${erp.divisions.find((d) => d.id === bookDiv)?.name}.${mode === 'euro' ? '' : ' Barrier odds flow to Accounting.'}`)
     setTimeout(() => setBooked(null), 4000)
   }
 
@@ -261,11 +307,28 @@ export default function ExoticDesk() {
         </Chip>
       </div>
 
+      {/* structure selector — Double-KO (paper surface) vs European ablation */}
+      <div className="ins-strat" role="tablist" aria-label="Quanto structure">
+        <button role="tab" aria-selected={mode === 'ko'} className={mode === 'ko' ? 'ins-strat-btn active' : 'ins-strat-btn'} onClick={() => setMode('ko')}>
+          <span className="ins-strat-name">Double-KO quanto</span>
+          <span className="ins-strat-tag warn">barrier · paper surface</span>
+        </button>
+        <button role="tab" aria-selected={mode === 'euro'} className={mode === 'euro' ? 'ins-strat-btn active' : 'ins-strat-btn'} onClick={() => setMode('euro')}>
+          <span className="ins-strat-name">European quanto</span>
+          <span className="ins-strat-tag">ablation · no barrier</span>
+        </button>
+      </div>
+      <p className="ins-strat-blurb">
+        {mode === 'ko'
+          ? 'The paper structure: a double knock-out quanto priced from the jump-diffusion MC surface. Watch the value collapse and the delta reverse as spot nears a barrier.'
+          : 'The same jump-diffusion calibration with both barriers removed, priced in closed form. Subtract it from the Double-KO and what is left is exactly the survival risk the barriers inject.'}
+      </p>
+
       <div className="ex-grid">
         {/* ── control rail: inputs + book, sticky (same cockpit as the vanilla desk) ── */}
         <div className="ex-rail">
           <div className="ex-panel ex-deck">
-            <h3>Position &amp; barrier monitor</h3>
+            <h3>Position{mode === 'ko' ? ' & barrier monitor' : ' — European'}</h3>
             <label data-tour="spot">
               <span className="ex-plabel">WTI spot S₁</span>
               <input type="range" min={S_GRID[0]} max={S_GRID[S_GRID.length - 1]} step={0.5} value={spot} onChange={(e) => setSpot(Number(e.target.value))} />
@@ -277,28 +340,38 @@ export default function ExoticDesk() {
               <span className="ex-pval">{T_GRID[ti].toFixed(2)}y</span>
             </label>
 
-            <div className={`ex-monitor ${risk.cls}`}>
-              <div className="ex-monitor-head">
-                <span className="ex-risk-icon">{risk.icon}</span> Barrier risk: {risk.label}
-              </div>
-              <div className="ex-monitor-body">
-                KO probability <strong>{(koP * 100).toFixed(1)}%</strong>
-                <div className="ex-gauge">
-                  <div className={`ex-gauge-fill ${risk.cls}`} style={{ width: `${koP * 100}%` }} />
+            {mode === 'ko' ? (
+              <>
+                <div className={`ex-monitor ${risk.cls}`}>
+                  <div className="ex-monitor-head">
+                    <span className="ex-risk-icon">{risk.icon}</span> Barrier risk: {risk.label}
+                  </div>
+                  <div className="ex-monitor-body">
+                    KO probability <strong>{(koP * 100).toFixed(1)}%</strong>
+                    <div className="ex-gauge">
+                      <div className={`ex-gauge-fill ${risk.cls}`} style={{ width: `${koP * 100}%` }} />
+                    </div>
+                    <div className="ex-dist">
+                      upper barrier {U}: <strong>{distU.toFixed(1)}%</strong> away · lower {L}:{' '}
+                      <strong>{distL.toFixed(1)}%</strong> away
+                    </div>
+                  </div>
                 </div>
-                <div className="ex-dist">
-                  upper barrier {U}: <strong>{distU.toFixed(1)}%</strong> away · lower {L}:{' '}
-                  <strong>{distL.toFixed(1)}%</strong> away
-                </div>
-              </div>
-            </div>
 
-            <div className="ex-contingency">
-              <strong>KO contingency:</strong> if the structure knocks out, the
-              hedge dies while the exposure lives. Desk rule: residual exposure
-              reverts to the budget allocator (vanilla legs / collar) the same
-              day — the plan exists <em>before</em> the barrier is hit.
-            </div>
+                <div className="ex-contingency">
+                  <strong>KO contingency:</strong> if the structure knocks out, the
+                  hedge dies while the exposure lives. Desk rule: residual exposure
+                  reverts to the budget allocator (vanilla legs / collar) the same
+                  day — the plan exists <em>before</em> the barrier is hit.
+                </div>
+              </>
+            ) : (
+              <div className="ex-contingency">
+                <strong>No barrier.</strong> Value grows monotonically with spot and
+                nothing knocks out — the paper structure stripped to its quanto core.
+                It exists to be subtracted from the Double-KO, not booked as the hedge.
+              </div>
+            )}
           </div>
 
           <div className="ins-panel ins-book">
@@ -316,7 +389,7 @@ export default function ExoticDesk() {
                 Notional (M bbl)
                 <input type="text" inputMode="decimal" value={bookNot} onChange={(e) => setBookNot(e.target.value)} />
               </label>
-              <button className="ins-bookbtn" onClick={bookQuanto}>Book quanto</button>
+              <button className="ins-bookbtn" onClick={bookQuanto}>Book {mode === 'euro' ? 'European' : 'quanto'}</button>
               {booked && <span className="ins-bookflash">✓ {booked}</span>}
             </div>
           </div>
@@ -324,49 +397,101 @@ export default function ExoticDesk() {
 
         {/* ── results main ── */}
         <div className="ex-main">
-          <div className="ex-tiles">
-            <div className="tile">
-              <span className="tile-label">Value (KRW / unit)</span>
-              <span className="tile-value">{vLive.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
-              <span className="tile-badge">at live ₩{MARKET.usdkrw.value.toLocaleString()} — homogeneity rescale</span>
-            </div>
-            <div className="tile">
-              <span className="tile-label">Δ WTI (regression-grid FD)</span>
-              <span className="tile-value">{dWti.toFixed(0)}</span>
-            </div>
-            <div className="tile">
-              <span className="tile-label">Δ FX = V/S₂ (homogeneity thm)</span>
-              <span className="tile-value">{dFx.toFixed(2)}</span>
-            </div>
-            <div className="tile">
-              <span className="tile-label">c* covariance multiplier</span>
-              <span className="tile-value">{C_STAR}</span>
-              <span className="tile-badge">paper §c* — vs c=1 naive</span>
-            </div>
-          </div>
+          {mode === 'ko' ? (
+            <>
+              <div className="ex-tiles">
+                <div className="tile">
+                  <span className="tile-label">Value (KRW / unit)</span>
+                  <span className="tile-value">{vLive.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                  <span className="tile-badge">at live ₩{MARKET.usdkrw.value.toLocaleString()} — homogeneity rescale</span>
+                </div>
+                <div className="tile">
+                  <span className="tile-label">Δ WTI (regression-grid FD)</span>
+                  <span className="tile-value">{dWti.toFixed(0)}</span>
+                </div>
+                <div className="tile">
+                  <span className="tile-label">Δ FX = V/S₂ (homogeneity thm)</span>
+                  <span className="tile-value">{dFx.toFixed(2)}</span>
+                </div>
+                <div className="tile">
+                  <span className="tile-label">c* covariance multiplier</span>
+                  <span className="tile-value">{C_STAR}</span>
+                  <span className="tile-badge">paper §c* — vs c=1 naive</span>
+                </div>
+              </div>
 
-          <div className="ex-charts">
-            <figure className="ex-panel">
-              <h3>Value across the corridor — the barrier squeeze</h3>
-              <Curve values={row.price} color="#2f6db4" spot={spot} fmt={(v) => `${(v / 1000).toFixed(0)}k`} />
-              <figcaption className="ex-cap">
-                Value rises with S₁ then collapses toward the upper barrier — the
-                non-monotonicity that makes per-asset delta estimation break, and
-                the reason the paper's covariance-aware c* ≠ 1.
-              </figcaption>
-            </figure>
+              <div className="ex-charts">
+                <figure className="ex-panel">
+                  <h3>Value across the corridor — the barrier squeeze</h3>
+                  <Curve values={row.price} color="#2f6db4" spot={spot} fmt={(v) => `${(v / 1000).toFixed(0)}k`} />
+                  <figcaption className="ex-cap">
+                    Value rises with S₁ then collapses toward the upper barrier — the
+                    non-monotonicity that makes per-asset delta estimation break, and
+                    the reason the paper's covariance-aware c* ≠ 1.
+                  </figcaption>
+                </figure>
 
-            <figure className="ex-panel">
-              <h3>Knock-out probability</h3>
-              <Curve values={row.ko} color="#b3610f" spot={spot} fmt={(v) => `${(v * 100).toFixed(0)}%`} yMaxHint={1.05} />
-              <figcaption className="ex-cap">
-                Q-measure probability of hitting either barrier before maturity.
-                Shaded edges are the dead zones; dashed line is the strike K={K}.
-              </figcaption>
-            </figure>
-          </div>
+                <figure className="ex-panel">
+                  <h3>Knock-out probability</h3>
+                  <Curve values={row.ko} color="#b3610f" spot={spot} fmt={(v) => `${(v * 100).toFixed(0)}%`} yMaxHint={1.05} />
+                  <figcaption className="ex-cap">
+                    Q-measure probability of hitting either barrier before maturity.
+                    Shaded edges are the dead zones; dashed line is the strike K={K}.
+                  </figcaption>
+                </figure>
+              </div>
 
-          <LatticeFoil spot={spot} paperKo={koP} baseT={T_GRID[0]} />
+              <LatticeFoil spot={spot} paperKo={koP} baseT={T_GRID[0]} />
+            </>
+          ) : (
+            <>
+              <div className="ex-tiles">
+                <div className="tile">
+                  <span className="tile-label">European value (KRW / unit)</span>
+                  <span className="tile-value">{euroLive.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                  <span className="tile-badge">closed form · live-FX rescaled</span>
+                </div>
+                <div className="tile">
+                  <span className="tile-label">Δ WTI — monotone</span>
+                  <span className="tile-value">{euro.deltaWTI.toFixed(0)}</span>
+                  <span className="tile-badge">always ≥ 0 · barrier Δ here: {dWti.toFixed(0)}</span>
+                </div>
+                <div className="tile">
+                  <span className="tile-label">Barrier destroys</span>
+                  <span className="tile-value" style={{ color: '#b3610f' }}>{(destroyed * 100).toFixed(0)}%</span>
+                  <span className="tile-badge">of European value, at ${spot.toFixed(0)}</span>
+                </div>
+                <div className="tile">
+                  <span className="tile-label">c* covariance multiplier</span>
+                  <span className="tile-value">{C_STAR}</span>
+                  <span className="tile-badge">from the −ρσ₁σ₂ drift below</span>
+                </div>
+              </div>
+
+              <figure className="ex-panel">
+                <h3>European vs barrier — what the knock-outs destroy</h3>
+                <EuroCompare euro={euroCurve} ko={row.price} spot={spot} />
+                <figcaption className="ex-cap">
+                  The European value (blue) climbs smoothly with spot; the Double-KO (orange)
+                  peaks then collapses toward each barrier. The shaded gap — <strong>{(destroyed * 100).toFixed(0)}%</strong> of
+                  value at ${spot.toFixed(0)} — is the survival risk the barriers inject. The barrier
+                  also crushes the delta: European Δ = +{euro.deltaWTI.toFixed(0)} here vs the Double-KO&rsquo;s {dWti.toFixed(0)},
+                  and it turns negative as spot nears the upper barrier — a reversal the European never shows.
+                </figcaption>
+              </figure>
+
+              <div className="ex-panel">
+                <h3>Where c* comes from</h3>
+                <p className="ex-cap" style={{ paddingTop: 0 }}>
+                  The European drift is r<sub>US</sub> − <strong>ρσ₁σ₂</strong> — the −ρσ₁σ₂ term
+                  (ρ = {rho}, σ₁ = {sigma1.toFixed(3)}, σ₂ = {sigma2.toFixed(3)}) is the quanto covariance
+                  correction the naive c = 1 desk drops. The paper normalises it to the covariance
+                  multiplier <strong>c* = {C_STAR}</strong>. Barrier or not, the quanto leg is already
+                  mispriced the moment you set c = 1.
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
