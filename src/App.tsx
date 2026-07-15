@@ -54,7 +54,7 @@ const ALL = GROUPS.flatMap((g) => g.items)
 
 // Guided walkthrough — five moves that show the whole system without any
 // finance background. Each step lands on a module and says exactly what to drag.
-const TOUR: { module: string; title: string; body: string; target: string; lift?: string }[] = [
+const TOUR: { module: string; title: string; body: string; target: string; lift?: string; scrollSel?: string; scrollBlock?: ScrollLogicalPosition }[] = [
   {
     module: 'materiality',
     target: '.mat-controls',
@@ -86,9 +86,11 @@ const TOUR: { module: string; title: string; body: string; target: string; lift?
   {
     module: 'instruments',
     target: '.ins-deck',
-    lift: '.ins-tiles',
+    lift: '.ins-tabs, .ins-strat, .ins-tiles',
+    scrollSel: '.ins-tabs',
+    scrollBlock: 'start',
     title: 'Build a free hedge',
-    body: 'Raise the cap slider. The desk instantly finds the floor that pays for it — and the net premium stays at zero. This is how oil refiners actually hedge.',
+    body: 'This is the Vanilla desk (top) — five structures refiners actually run, in the strip below. Zero-cost collar is up: raise the cap slider and the desk instantly finds the floor that pays for it, net premium zero. The Quanto desk next door is the research side.',
   },
   {
     module: 'instruments',
@@ -247,16 +249,20 @@ export default function App() {
     let tries = 0
     let scrolled = false
     const apply = () => {
-      const el = document.querySelector(TOUR[tour].target)
+      const step = TOUR[tour]
+      const el = document.querySelector(step.target)
       if (el && !el.classList.contains('tour-glow')) {
         el.classList.add('tour-glow')
         if (!scrolled) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          // some steps highlight elements above the glow (tabs, selector); scroll
+          // a chosen anchor to the top so every highlighted region stays on-screen
+          const anchor = step.scrollSel ? document.querySelector(step.scrollSel) : el
+          anchor?.scrollIntoView({ behavior: 'smooth', block: step.scrollBlock ?? 'center' })
           scrolled = true
         }
       }
-      const lift = TOUR[tour].lift
-      if (lift) document.querySelector(lift)?.classList.add('tour-lift')
+      // lift may be a comma-separated list of selectors — cut a spotlight hole in each
+      if (step.lift) document.querySelectorAll(step.lift).forEach((l) => l.classList.add('tour-lift'))
     }
     const t = setInterval(() => {
       apply()
