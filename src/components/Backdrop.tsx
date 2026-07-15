@@ -14,14 +14,13 @@ const GREEN = '#237a55'
 const BLUE = '#2f6db4'
 const AMBER = '#b3610f'
 
+// Four shapes only, anchored to the corners so they never sit behind a heading
+// or body text — decoration at the margins, not noise across the copy.
 const SHAPES: { kind: Kind; x: number; y: number; size: number; depth: number; dur: number; hue: string; flip?: boolean }[] = [
-  { kind: 'co2', x: 38, y: 6, size: 150, depth: 22, dur: 18, hue: BLUE },
-  { kind: 'cycle', x: 3, y: 26, size: 120, depth: 28, dur: 22, hue: GREEN },
-  { kind: 'leaf', x: 5, y: 74, size: 170, depth: 12, dur: 21, hue: GREEN },
-  { kind: 'waves', x: 26, y: 90, size: 230, depth: 8, dur: 17, hue: BLUE },
-  { kind: 'sun', x: 58, y: 74, size: 110, depth: 24, dur: 24, hue: AMBER },
-  { kind: 'sprout', x: 44, y: 44, size: 96, depth: 30, dur: 20, hue: GREEN },
-  { kind: 'pump', x: 80, y: 88, size: 190, depth: 10, dur: 25, hue: AMBER },
+  { kind: 'co2', x: 85, y: 7, size: 140, depth: 22, dur: 18, hue: BLUE },
+  { kind: 'leaf', x: 3, y: 80, size: 150, depth: 12, dur: 21, hue: GREEN },
+  { kind: 'waves', x: 30, y: 95, size: 210, depth: 8, dur: 17, hue: BLUE },
+  { kind: 'pump', x: 83, y: 85, size: 175, depth: 10, dur: 25, hue: AMBER },
 ]
 
 function Icon({ kind, flip }: { kind: Kind; flip?: boolean }) {

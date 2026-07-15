@@ -160,7 +160,14 @@ function ResetDemo() {
 export default function App() {
   const [active, setActive] = useState<string>('overview')
   const [tour, setTour] = useState<number | null>(null)
+  const [navOpen, setNavOpen] = useState(false)
   const mod = ALL.find((m) => m.id === active)!
+
+  // on mobile, choosing a screen closes the drawer
+  const go = (id: string) => {
+    setActive(id)
+    setNavOpen(false)
+  }
 
   // spotlight the tour step's control: soft glow + arrow, scrolled into view
   useEffect(() => {
@@ -210,8 +217,26 @@ export default function App() {
     <SpineProvider>
     <div className="app">
       {active === 'overview' && <Backdrop />}
-      <aside className="sidebar">
-        <button className="brand" onClick={() => setActive('overview')}>
+
+      {/* mobile top bar — brand + hamburger; hidden on desktop */}
+      <div className="mobile-bar">
+        <button className="brand" onClick={() => go('overview')}>
+          <span className="brand-mark">홍</span>
+          <span className="brand-name">HongERP</span>
+        </button>
+        <button
+          className="nav-toggle"
+          aria-label={navOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={navOpen}
+          onClick={() => setNavOpen((v) => !v)}
+        >
+          <span className={navOpen ? 'nav-burger open' : 'nav-burger'} />
+        </button>
+      </div>
+      {navOpen && <div className="nav-scrim" onClick={() => setNavOpen(false)} />}
+
+      <aside className={navOpen ? 'sidebar open' : 'sidebar'}>
+        <button className="brand brand-desktop" onClick={() => go('overview')}>
           <span className="brand-mark">홍</span>
           <div>
             <div className="brand-name">HongERP</div>
@@ -226,7 +251,7 @@ export default function App() {
                 <button
                   key={m.id}
                   className={m.id === active ? 'nav-item active' : 'nav-item'}
-                  onClick={() => setActive(m.id)}
+                  onClick={() => go(m.id)}
                 >
                   {m.name}
                 </button>

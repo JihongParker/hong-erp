@@ -13,7 +13,7 @@ const PARAM_META: { key: keyof ModelParams; label: string; min: number; max: num
   { key: 'k', label: 'k attenuation', min: 0.1, max: 2, step: 0.05 },
   { key: 'a', label: 'a disclosure cost', min: 0.2, max: 5, step: 0.1 },
   { key: 'phi', label: 'φ distress price', min: 0, max: 3, step: 0.05 },
-  { key: 'sigmaF', label: 'σf financial vol', min: 0.2, max: 3, step: 0.05 },
+  { key: 'sigmaF', label: 'σ_f financial vol', min: 0.2, max: 3, step: 0.05 },
   { key: 'pF', label: 'p_f hedge premium', min: 0.05, max: 4, step: 0.05 },
   { key: 'dFloor', label: 'd̲ mandated floor', min: 0, max: 5, step: 0.1 },
 ]

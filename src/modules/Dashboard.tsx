@@ -39,8 +39,8 @@ const GROUPS: {
   {
     title: 'Exposure',
     params: [
-      { key: 'sigmaF', label: 'σf financial vol', min: 0.2, max: 3, step: 0.05 },
-      { key: 'sigmaC', label: 'σc climate vol', min: 0.2, max: 3, step: 0.05 },
+      { key: 'sigmaF', label: 'σ_f financial vol', min: 0.2, max: 3, step: 0.05 },
+      { key: 'sigmaC', label: 'σ_c climate vol', min: 0.2, max: 3, step: 0.05 },
       { key: 'rho', label: 'ρ correlation', min: -0.9, max: 0.9, step: 0.05 },
     ],
   },
