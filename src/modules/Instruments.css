@@ -22,7 +22,7 @@
   color: var(--text);
   font: inherit;
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  transition: border-color var(--dur-s) var(--ease-out), background var(--dur-s) var(--ease-out), color var(--dur-s) var(--ease-out), box-shadow var(--dur-s) var(--ease-out), transform var(--dur-s) var(--ease-out);
 }
 
 .ins-tab:hover {

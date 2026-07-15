@@ -264,7 +264,7 @@ export default function Instruments() {
               </div>
             </div>
 
-            <div className="ins-main">
+            <div className="ins-main fade-swap" key={strategy}>
               <div className="ins-tiles">
                 {tiles.map(([label, value]) => (
                   <div className="tile" key={label}>

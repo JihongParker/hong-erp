@@ -396,7 +396,7 @@ export default function ExoticDesk() {
         </div>
 
         {/* ── results main ── */}
-        <div className="ex-main">
+        <div className="ex-main fade-swap" key={mode}>
           {mode === 'ko' ? (
             <>
               <div className="ex-tiles">

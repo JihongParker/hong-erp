@@ -822,3 +822,27 @@ input[type='range'].fancy::-moz-range-thumb:hover {
   color: var(--text);
   border-color: var(--accent);
 }
+
+/* ── screen & panel transitions (Phase 2) ─────────────────────────────────── */
+/* a calm fade+lift as you move between modules */
+.screen {
+  animation: screen-in var(--dur-m) var(--ease-out);
+}
+@keyframes screen-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+/* result crossfade on in-panel tab/mode switches — the rail stays put */
+.fade-swap {
+  animation: fade-swap var(--dur-m) var(--ease-out);
+}
+@keyframes fade-swap {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .screen,
+  .fade-swap {
+    animation: none;
+  }
+}

@@ -354,6 +354,7 @@ export default function App() {
             {mod.desc && <p className="mod-desc">{mod.desc}</p>}
           </header>
         )}
+        <div key={mod.id} className={mod.id === 'overview' ? undefined : 'screen'}>
         {mod.id === 'overview' ? (
           <Overview onNavigate={setActive} onStartTour={startTour} />
         ) : mod.id === 'decision' ? (
@@ -373,6 +374,7 @@ export default function App() {
         ) : (
           <Scenario />
         )}
+        </div>
       </main>
 
       <TourSpotlight active={tour !== null} />

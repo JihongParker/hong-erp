@@ -71,6 +71,7 @@
   font-size: 12.5px;
   cursor: pointer;
   text-align: left;
+  transition: border-color var(--dur-s) var(--ease-out), color var(--dur-s) var(--ease-out), background var(--dur-s) var(--ease-out);
 }
 
 .bg-tab.active {
