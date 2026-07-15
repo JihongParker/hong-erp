@@ -184,15 +184,17 @@ export default function App() {
     setNavOpen(false)
   }
 
-  // deep-linking: the active screen lives in the URL hash (#decision), so a
-  // screen can be opened directly and links are shareable
+  // the app always opens on the Overview landing. A deep-link hash left in the
+  // URL by a previous visit (e.g. #decision) must not drop a fresh load straight
+  // into a sub-screen — clear it on mount. In-session navigation still syncs the
+  // hash below, so the current screen shows in the URL and back/forward work.
   useEffect(() => {
+    if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search)
     const fromHash = () => {
       const id = window.location.hash.replace('#', '')
       if (id && ALL.some((m) => m.id === id)) setActive(id)
       else if (!id) setActive('overview')
     }
-    fromHash()
     window.addEventListener('hashchange', fromHash)
     return () => window.removeEventListener('hashchange', fromHash)
   }, [])
