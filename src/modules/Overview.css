@@ -24,11 +24,29 @@
   transform: none;
 }
 
+/* section titles wipe in left-to-right as their block reveals */
+.ov .reveal h3,
+.ov .reveal .ov-cta-h {
+  clip-path: inset(0 100% 0 0);
+}
+.ov .reveal.in h3,
+.ov .reveal.in .ov-cta-h {
+  animation: title-wipe 0.85s 0.06s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes title-wipe {
+  to { clip-path: inset(0 0 0 0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+  .ov .reveal h3,
+  .ov .reveal .ov-cta-h {
+    clip-path: none;
+    animation: none;
   }
 }
 
@@ -204,7 +222,7 @@
   top: 0;
   width: 100%;
   height: calc(var(--chain, 0) * 100%);
-  background: linear-gradient(180deg, var(--accent) 0%, #2f6db4 50%, var(--accent) 100%);
+  background: linear-gradient(180deg, #3f79ad 0%, #2e8b57 50%, #3f79ad 100%);
   background-size: 100% 220%;
   border-radius: 4px;
   animation: chain-flow 2.6s linear infinite;
@@ -283,9 +301,9 @@
 }
 
 .chain-item.in .chain-node {
-  background: var(--accent);
+  background: var(--node-c, var(--accent));
   color: #fff;
-  border-color: var(--accent);
+  border-color: var(--node-c, var(--accent));
 }
 
 .chain-item.in .chain-node::after {
@@ -293,7 +311,7 @@
   position: absolute;
   inset: -6px;
   border-radius: 99px;
-  border: 2px solid var(--accent);
+  border: 2px solid var(--node-c, var(--accent));
   opacity: 0;
   animation: node-ping 0.9s ease-out 0.1s;
 }
