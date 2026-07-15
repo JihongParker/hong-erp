@@ -4,7 +4,11 @@
 }
 
 .sidebar {
-  position: relative;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100vh;
+  overflow-y: auto;
   z-index: 2;
   width: 240px;
   flex-shrink: 0;

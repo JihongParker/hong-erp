@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import SeaCanvas from './SeaCanvas'
 import './SceneBackground.css'
 
 // The whole Overview sits inside one seascape. Up top, an oil-import terminal
@@ -64,14 +65,17 @@ export default function SceneBackground() {
           <ellipse cx="-28" cy="-9" rx="26" ry="11" />
         </g>
 
-        {/* airliner with a contrail */}
+        {/* airliner with a contrail (scaled up so it reads clearly) */}
         <g className="sc-plane">
-          <line x1="-64" y1="0" x2="-6" y2="0" stroke="var(--sc-cloud)" strokeWidth="3" strokeLinecap="round" opacity="0.7" />
-          <g fill="var(--sc-plane)">
-            <path d="M0 0 L26 -1.5 L34 0 L26 1.5 Z" />
-            <path d="M12 0 L2 -10 L7 -10 L20 -1 Z" />
-            <path d="M12 0 L2 10 L7 10 L20 1 Z" />
-            <path d="M26 -1 L22 -7 L25 -7 L31 -1 Z" />
+          <g transform="scale(2.6)">
+            <line x1="-72" y1="0" x2="-6" y2="0" stroke="var(--sc-cloud)" strokeWidth="2.6" strokeLinecap="round" opacity="0.75" />
+            <g fill="var(--sc-plane)">
+              <path d="M0 0 L26 -1.6 L35 0 L26 1.6 Z" />
+              <path d="M12 0 L1 -11 L7 -11 L21 -1 Z" />
+              <path d="M12 0 L1 11 L7 11 L21 1 Z" />
+              <path d="M27 -1 L22 -8 L25 -8 L32 -1 Z" />
+              <path d="M27 1 L22 8 L25 8 L32 1 Z" />
+            </g>
           </g>
         </g>
 
@@ -123,77 +127,48 @@ export default function SceneBackground() {
           ))}
         </g>
 
-        {/* colored surf line where sky meets sea */}
-        <g className="sc-surf sc-surf-3">
-          <path d="M-100 470 C120 452 300 488 520 470 C740 452 920 488 1140 470 C1250 461 1320 470 1400 466 L1400 640 L-100 640 Z" fill="var(--sc-surf-a)" />
-        </g>
-
-        {/* sun reflection */}
-        <g className="sc-reflect">
-          <rect x="982" y="486" width="60" height="5" rx="2.5" fill="var(--sc-sun-1)" />
-          <rect x="972" y="504" width="80" height="5" rx="2.5" fill="var(--sc-sun-1)" opacity="0.7" />
-          <rect x="984" y="522" width="56" height="5" rx="2.5" fill="var(--sc-sun-1)" opacity="0.5" />
-        </g>
-
-        {/* the tanker berthed at the jetty */}
-        <g className="sc-ship">
-          <path d="M470 500 L806 500 L784 546 C784 546 620 558 470 546 Z" fill="url(#sc-hull)" />
-          <rect x="470" y="500" width="336" height="9" fill="#b3441f" />
-          <rect x="500" y="482" width="242" height="18" rx="3" fill="#3a4d61" />
-          {[522, 570, 618, 666, 714].map((px) => (
-            <rect key={px} x={px} y="466" width="7" height="18" fill="#43586d" />
-          ))}
-          <rect x="742" y="454" width="60" height="46" rx="3" fill="#e9edf1" />
-          <rect x="742" y="454" width="60" height="11" rx="3" fill="#cfd8e0" />
-          <g fill="#2f6db4">
-            <rect x="750" y="470" width="10" height="8" rx="1" />
-            <rect x="766" y="470" width="10" height="8" rx="1" />
-            <rect x="782" y="470" width="10" height="8" rx="1" />
-            <rect x="750" y="484" width="10" height="8" rx="1" />
-            <rect x="766" y="484" width="10" height="8" rx="1" />
-            <rect x="782" y="484" width="10" height="8" rx="1" />
+        {/* the tanker, anchored offshore to the right and clear of the copy */}
+        <g transform="translate(196 6)">
+          <g className="sc-ship">
+            <path d="M470 500 L806 500 L784 546 C784 546 620 558 470 546 Z" fill="url(#sc-hull)" />
+            <rect x="470" y="500" width="336" height="9" fill="#b3441f" />
+            <rect x="500" y="482" width="242" height="18" rx="3" fill="#3a4d61" />
+            {[522, 570, 618, 666, 714].map((px) => (
+              <rect key={px} x={px} y="466" width="7" height="18" fill="#43586d" />
+            ))}
+            <rect x="742" y="454" width="60" height="46" rx="3" fill="#e9edf1" />
+            <rect x="742" y="454" width="60" height="11" rx="3" fill="#cfd8e0" />
+            <g fill="#2f6db4">
+              <rect x="750" y="470" width="10" height="8" rx="1" />
+              <rect x="766" y="470" width="10" height="8" rx="1" />
+              <rect x="782" y="470" width="10" height="8" rx="1" />
+              <rect x="750" y="484" width="10" height="8" rx="1" />
+              <rect x="766" y="484" width="10" height="8" rx="1" />
+              <rect x="782" y="484" width="10" height="8" rx="1" />
+            </g>
+            <rect x="804" y="458" width="18" height="30" rx="2" fill="#2c3f52" />
+            <rect x="804" y="458" width="18" height="9" fill="#237a55" />
+            <path className="sc-plume" d="M813 452 C804 438 824 428 814 414 C807 405 819 397 814 388" stroke="var(--sc-plume)" strokeWidth="7" fill="none" strokeLinecap="round" opacity="0.32" />
           </g>
-          <rect x="804" y="458" width="18" height="30" rx="2" fill="#2c3f52" />
-          <rect x="804" y="458" width="18" height="9" fill="#237a55" />
-          <path className="sc-plume" d="M813 452 C804 438 824 428 814 414 C807 405 819 397 814 388" stroke="var(--sc-plume)" strokeWidth="7" fill="none" strokeLinecap="round" opacity="0.32" />
-        </g>
-
-        {/* marine loading arm from jetty to ship manifold */}
-        <g className="sc-arm" stroke="#8a5a2b" strokeWidth="6" fill="none" strokeLinecap="round">
-          <path d="M470 472 L512 442" />
-          <path className="sc-arm-swing" d="M512 442 L566 486" />
-          <circle cx="470" cy="472" r="5" fill="#8a5a2b" stroke="none" />
-          <circle cx="512" cy="442" r="5" fill="#8a5a2b" stroke="none" />
         </g>
 
         {/* buoys, bobbing in place */}
-        <g transform="translate(420 566)">
+        <g transform="translate(360 560)">
           <g className="sc-buoy">
             <path d="M0 0 L5 -14 L-5 -14 Z" fill="#c94f3a" />
             <rect x="-6" y="0" width="12" height="9" rx="2" fill="#c94f3a" />
           </g>
         </g>
-        <g transform="translate(910 582)">
+        <g transform="translate(1030 548)">
           <g className="sc-buoy sc-buoy-late">
             <path d="M0 0 L4 -11 L-4 -11 Z" fill="#2e7d52" />
             <rect x="-5" y="0" width="10" height="7" rx="2" fill="#2e7d52" />
           </g>
         </g>
-
-        {/* two more filled surf layers */}
-        <g className="sc-surf sc-surf-2">
-          <path d="M-100 512 C120 494 320 530 540 512 C760 494 940 530 1160 512 L1160 640 L-100 640 Z" fill="var(--sc-surf-b)" />
-        </g>
-        <g className="sc-surf sc-surf-1">
-          <path d="M-100 556 C140 538 340 574 560 556 C780 538 960 574 1180 556 L1180 640 L-100 640 Z" fill="var(--sc-surf-c)" />
-        </g>
       </svg>
 
-      {/* the deep water rolling slowly downward as you descend */}
-      <div className="scene-deep">
-        <div className="scene-swell scene-swell-1" />
-        <div className="scene-swell scene-swell-2" />
-      </div>
+      {/* animated surf fills the water */}
+      <SeaCanvas />
     </div>
   )
 }
