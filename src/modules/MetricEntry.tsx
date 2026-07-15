@@ -159,39 +159,25 @@ export default function MetricEntry() {
           <Activity limit={5} />
         </div>
 
-        {/* ── division ledger ── */}
+        {/* ── division ledger: compact list, fits its column ── */}
         <div className="me-panel">
-          <h3>{div.name} — submission ledger</h3>
-        <div className="me-ledger">
-          <table>
-            <thead>
-              <tr>
-                <th>Datapoint</th>
-                <th>FY</th>
-                <th className="num">Value</th>
-                <th>By</th>
-                <th>When</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ledger.map((m) => (
-                <tr key={m.id}>
-                  <td>{m.name}</td>
-                  <td>{m.year}</td>
-                  <td className="num">
-                    {m.value.toLocaleString()} <span className="me-unitsm">{m.unit}</span>
-                  </td>
-                  <td>{m.by}</td>
-                  <td>{timeAgo(m.ts)}</td>
-                  <td>
-                    <span className={`me-status ${m.status}`}>{STATUS_LABEL[m.status]}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+          <h3>{div.name} submission ledger</h3>
+          <div className="me-ledger">
+            {ledger.map((m) => (
+              <div key={m.id} className="me-lrow">
+                <div className="me-lmain">
+                  <span className="me-lname">{m.name}</span>
+                  <span className={`me-status ${m.status}`}>{STATUS_LABEL[m.status]}</span>
+                </div>
+                <div className="me-lmeta">
+                  <span className="me-lval">
+                    {m.value.toLocaleString()} {m.unit}
+                  </span>
+                  <span>FY{m.year} · {m.by} · {timeAgo(m.ts)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

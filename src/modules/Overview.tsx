@@ -132,7 +132,7 @@ export default function Overview({
       {/* ── 2 · the research chain ── */}
       <section className="ov-chain" ref={chainRef}>
         <div className="ov-chain-head reveal">
-          <h3>One position, four papers, one chain</h3>
+          <h3>One position, four papers, one chain.</h3>
           <p>
             Four papers, one Korean oil importer's WTI × USD/KRW exposure. Each
             picks up where the last leaves off.
@@ -166,7 +166,7 @@ export default function Overview({
       {/* ── 3 · live screens ── */}
       <section className="ov-live reveal">
         <div className="ov-live-head">
-          <h3>And it all moves</h3>
+          <h3>And it all moves.</h3>
           <p>Drag a dial, the equilibrium recomputes. Flip through, or let them play.</p>
         </div>
         <AppPreview />
@@ -174,7 +174,7 @@ export default function Overview({
 
       {/* ── 4 · data-flow map ── */}
       <section className="ov-flow reveal">
-        <h3>The sidebar is a data flow, not a menu</h3>
+        <h3>The sidebar is a data flow, not a menu.</h3>
         <div className="ov-flow-row">
           {FLOW.map((f, i) => (
             <div key={f.id} className="ov-flow-item">
