@@ -361,6 +361,7 @@ nav {
 .spine-chip strong {
   color: var(--text);
   font-size: 14.5px;
+  font-variant-numeric: tabular-nums;
 }
 
 /* chip text is one inline flow — numbers never wrap onto their own line */
@@ -787,7 +788,15 @@ input[type='range'].fancy::-moz-range-thumb:hover {
   background: var(--accent-soft);
   border-radius: 6px;
   padding: 2px 6px;
-  transition: background 0.15s ease;
+  transition: background var(--dur-s) var(--ease-out), box-shadow var(--dur-s) var(--ease-out);
+}
+
+/* while the slider is being dragged (or focused), its value chip rings — the
+   number you are changing is highlighted */
+.param-row:has(input:active) .p-val,
+.param-row:focus-within .p-val {
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  background: color-mix(in srgb, var(--accent) 18%, var(--panel));
 }
 
 .sidebar-foot {
