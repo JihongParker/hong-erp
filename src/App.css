@@ -95,10 +95,54 @@ nav {
   background: var(--bg);
 }
 
+.nav-item {
+  transition: background var(--dur-s) var(--ease-out), box-shadow var(--dur-s) var(--ease-out);
+}
+
 .nav-item.active {
   background: var(--accent-soft);
   color: var(--accent);
   font-weight: 600;
+  /* the same left-accent-bar language as a highlighted table row */
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+/* live pending count — makes the ERP feel worked-in, not a mockup */
+.nav-badge {
+  margin-left: auto;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: inline-grid;
+  place-items: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  border-radius: 99px;
+  background: var(--accent);
+  color: #fff;
+}
+
+/* keyboard-only skip link to the current screen */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 300;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform var(--dur-s) var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+  outline: 2px solid var(--panel);
 }
 
 .badge {

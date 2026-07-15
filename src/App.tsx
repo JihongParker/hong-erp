@@ -173,6 +173,15 @@ function ResetDemo() {
   )
 }
 
+// live count of metrics awaiting audit — only on the Metrics Entry nav item
+function PendingBadge({ id }: { id: string }) {
+  const { state } = useErp()
+  if (id !== 'metrics') return null
+  const n = state.metrics.filter((m) => m.status === 'pending').length
+  if (n === 0) return null
+  return <span className="nav-badge" title={`${n} awaiting review`}>{n}</span>
+}
+
 export default function App() {
   const [active, setActive] = useState<string>('overview')
   const [tour, setTour] = useState<number | null>(null)
@@ -295,6 +304,7 @@ export default function App() {
     <ErpProvider>
     <SpineProvider>
     <ToastProvider>
+    <a href="#main-content" className="skip-link">Skip to content</a>
     <div className={tour !== null ? 'app touring' : 'app'}>
 
       {/* mobile top bar — brand + hamburger; hidden on desktop */}
@@ -333,6 +343,7 @@ export default function App() {
                   onClick={() => go(m.id)}
                 >
                   {m.name}
+                  <PendingBadge id={m.id} />
                 </button>
               ))}
             </div>
@@ -349,7 +360,7 @@ export default function App() {
         </footer>
       </aside>
 
-      <main className="content">
+      <main className="content" id="main-content">
         {mod.id !== 'overview' && (
           <header>
             <h1>{mod.name}</h1>
