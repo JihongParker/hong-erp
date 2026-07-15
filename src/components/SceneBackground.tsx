@@ -112,6 +112,9 @@ export default function SceneBackground() {
           </g>
         </g>
 
+        {/* refinery + jetty, pushed to the far-left shoreline (down and left)
+            so they sit below the copy, never behind the headline or lede */}
+        <g transform="translate(-236 118)">
         {/* refinery / tank farm on the left shore */}
         <g className="sc-port">
           <rect x="-20" y="430" width="380" height="200" fill="var(--sc-land)" />
@@ -138,6 +141,7 @@ export default function SceneBackground() {
           {[322, 366, 410, 454, 498].map((px) => (
             <rect key={px} x={px} y="484" width="8" height="40" fill="#47555f" />
           ))}
+        </g>
         </g>
 
         {/* the tanker, anchored offshore to the right and clear of the copy */}
