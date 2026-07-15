@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import AppPreview from '../components/AppPreview'
 import HeroArt from '../components/HeroArt'
+import TideFlow from '../components/TideFlow'
 import './Overview.css'
 
 // A scroll-told landing: the headline lives first, then the reader descends
@@ -94,6 +95,8 @@ export default function Overview({
 
   return (
     <div className="ov">
+      <TideFlow />
+
       {/* ── 1 · hero ── */}
       <section className="ov-hero">
         <div className="ov-hero-copy">
