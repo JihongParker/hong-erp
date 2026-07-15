@@ -24,6 +24,15 @@
   align-items: start;
 }
 
+/* the parameter panel stays pinned so sliders and the results table interact
+   in one view */
+.sc-grid > .sc-panel:first-child {
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
 .sc-panel {
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -69,28 +78,7 @@
 
 .sc-sliders {
   display: grid;
-  gap: 10px;
-}
-
-.sc-sliders label {
-  display: grid;
-  grid-template-columns: 138px 1fr 48px;
-  align-items: center;
-  gap: 10px;
-}
-
-.sc-param {
-  color: var(--muted);
-}
-
-.sc-sliders input[type='range'] {
-  accent-color: var(--accent);
-  min-width: 0;
-}
-
-.sc-val {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
+  gap: 2px;
 }
 
 .sc-chart {
@@ -173,6 +161,10 @@
 @media (max-width: 950px) {
   .sc-grid {
     grid-template-columns: 1fr;
+  }
+  .sc-grid > .sc-panel:first-child {
+    position: static;
+    max-height: none;
   }
 }
 

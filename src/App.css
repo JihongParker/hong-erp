@@ -445,13 +445,14 @@ input[type='range']::-moz-range-thumb {
 }
 
 
-/* tour dim: everything fades behind a translucent wash; only the glowing
-   controls, lifted results, and the tour card stay bright */
-.tour-backdrop {
+/* tour dim: an SVG mask overlay with holes cut over the glowing controls and
+   lifted results — the highlighted elements stay at full brightness no matter
+   what stacking context they live in */
+.tour-spot {
   position: fixed;
   inset: 0;
-  background: color-mix(in srgb, #3a3f3c 38%, transparent);
-  backdrop-filter: saturate(0.55);
+  width: 100%;
+  height: 100%;
   z-index: 20;
   pointer-events: none;
   animation: fade-in 0.35s ease both;
@@ -461,12 +462,115 @@ input[type='range']::-moz-range-thumb {
   from { opacity: 0; }
 }
 
-.tour-glow,
 .tour-lift {
-  position: relative;
-  z-index: 25;
-  background: var(--panel);
   border-radius: 12px;
+}
+
+/* ── parameter sliders: filled track + ringed thumb, shared by every deck ── */
+input[type='range'].fancy {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 99px;
+  background: linear-gradient(to right, var(--accent) var(--f, 50%), var(--line) var(--f, 50%));
+  outline-offset: 4px;
+  cursor: pointer;
+}
+
+input[type='range'].fancy::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 99px;
+  background: var(--panel);
+  border: 2.5px solid var(--accent);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.22);
+  cursor: grab;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+input[type='range'].fancy::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.28);
+}
+
+input[type='range'].fancy:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.25);
+}
+
+input[type='range'].fancy::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 99px;
+  background: var(--panel);
+  border: 2.5px solid var(--accent);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.22);
+  cursor: grab;
+  transition: transform 0.12s ease;
+}
+
+input[type='range'].fancy::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* shared parameter row: name column, slider, value chip */
+.param-row {
+  display: grid;
+  grid-template-columns: minmax(96px, auto) 1fr auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 9px;
+  padding: 2px 4px;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.param-row:hover {
+  background: var(--bg);
+}
+
+.param-row input[type='range'] {
+  min-width: 0;
+}
+
+.param-name {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+/* parameter typography: math symbol in serif italic carries the eye,
+   the plain-language name recedes */
+.p-sym {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  margin-right: 6px;
+  letter-spacing: 0.01em;
+}
+
+.p-desc {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* live value readout: accent chip, tabular digits */
+.p-val {
+  justify-self: end;
+  min-width: 44px;
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 6px;
+  padding: 2px 6px;
+  transition: background 0.15s ease;
 }
 
 .sidebar-foot {
