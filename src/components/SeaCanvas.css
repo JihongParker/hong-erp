@@ -1,0 +1,9 @@
+.seacanvas {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  top: 52vh;
+  height: 108vh;
+  display: block;
+  z-index: 0;
+}

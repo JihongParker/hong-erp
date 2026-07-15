@@ -22,11 +22,10 @@
   background: linear-gradient(
     180deg,
     #cfe0f0 0,
-    #e8eef4 24vh,
-    #f3ebda 44vh,
-    #bfd8ea 60vh,
-    #a6c8e2 82vh,
-    #8fb7d6 100%
+    #e8eef4 26vh,
+    #f3ebda 46vh,
+    #6f9abf 56vh,
+    #6f9abf 100%
   );
   animation: scene-expand 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -45,7 +44,7 @@
 
 :root[data-theme='dark'] .scene,
 .scene.is-dark {
-  background: linear-gradient(180deg, #2a3a4c 0, #33465a 24vh, #3d4453 44vh, #2c4258 60vh, #223c52 82vh, #1a3145 100%);
+  background: linear-gradient(180deg, #2a3a4c 0, #33465a 26vh, #3d4453 46vh, #1f3547 56vh, #1f3547 100%);
   --sc-cloud: #cdd6de;
   --sc-land: #46545f;
   --sc-port-c: #55697a;
@@ -58,7 +57,7 @@
 
 @media (prefers-color-scheme: dark) {
   .scene {
-    background: linear-gradient(180deg, #2a3a4c 0, #33465a 24vh, #3d4453 44vh, #2c4258 60vh, #223c52 82vh, #1a3145 100%);
+    background: linear-gradient(180deg, #2a3a4c 0, #33465a 26vh, #3d4453 46vh, #1f3547 56vh, #1f3547 100%);
     --sc-cloud: #cdd6de;
     --sc-land: #46545f;
     --sc-port-c: #55697a;
@@ -85,6 +84,7 @@
   height: 66vh;
   min-height: 460px;
   display: block;
+  z-index: 1;
 }
 
 /* deep water below the surface */
@@ -124,10 +124,10 @@
 @keyframes sc-cloud-a { from { transform: translate(120px, 80px); } to { transform: translate(1320px, 80px); } }
 @keyframes sc-cloud-b { from { transform: translate(40px, 176px); } to { transform: translate(1300px, 176px); } }
 
-.sc-plane { animation: sc-plane 26s linear infinite; }
+.sc-plane { animation: sc-plane 30s linear infinite; }
 @keyframes sc-plane {
-  from { transform: translate(-120px, 84px); }
-  to { transform: translate(1360px, 40px); }
+  from { transform: translate(220px, 92px); }
+  to { transform: translate(1420px, 44px); }
 }
 
 .sc-gulls { animation: sc-gulls 44s linear infinite; }
