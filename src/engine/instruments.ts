@@ -73,11 +73,85 @@ export function solveZeroCostFloor(capK: number, m: MarketParams): CollarSolutio
   return { capK, floorK, callPremium: target, putPremium, netPremium: target - putPremium }
 }
 
-// Effective purchase cost per strategy at terminal price s
+// ── zero-cost multi-leg extensions (three-way collar, seagull) ──────────────
+// Both cheapen or improve the plain collar by SELLING an extra wing, and both
+// reintroduce a tail the collar had removed — the same "sold barrier/wing pays
+// for the strikes" mechanism that turns a collar into a KIKO. Solved for exact
+// zero cost by bisection on the one free strike; the sold wing's strike is a
+// user choice (how far out you push the torn protection).
+
+export interface ThreeWaySolution {
+  capK: number // long call (protection cap)
+  floorK: number // short put (participation floor) — solved for zero cost
+  subFloorK: number // second short put, below the floor (the sold wing)
+  netPremium: number
+  tearsBelow: number // crash level under which protection inverts (= subFloorK)
+}
+
+// Long call Kc, short put Kf, short put Kp2 (< Kf). The extra credit from the
+// deep put lets the floor sit HIGHER than a plain collar (less downside given
+// up) — but below Kp2 the buyer owes on the second put and effective cost rises
+// back above the floor. Given Kc and Kp2, solve Kf so call = put(Kf)+put(Kp2).
+export function solveThreeWay(capK: number, subFloorK: number, m: MarketParams): ThreeWaySolution {
+  const target = black76Call(capK, m) - black76Put(subFloorK, m)
+  // target is the put(Kf) value we must match; if the deep put already over-
+  // finances the call, the floor collapses to the sub-floor (degenerate corner)
+  if (target <= black76Put(subFloorK, m)) {
+    const fk = Math.max(subFloorK, 0.01 * m.F)
+    return { capK, floorK: fk, subFloorK, netPremium: black76Call(capK, m) - black76Put(fk, m) - black76Put(subFloorK, m), tearsBelow: subFloorK }
+  }
+  let lo = subFloorK
+  let hi = capK
+  for (let i = 0; i < 200; i++) {
+    const mid = (lo + hi) / 2
+    if (black76Put(mid, m) < target) lo = mid
+    else hi = mid
+  }
+  const floorK = (lo + hi) / 2
+  const netPremium = black76Call(capK, m) - black76Put(floorK, m) - black76Put(subFloorK, m)
+  return { capK, floorK, subFloorK, netPremium, tearsBelow: subFloorK }
+}
+
+export interface SeagullSolution {
+  capK: number // long call (protection starts)
+  ceilK: number // short call (protection ends — the sold wing)
+  floorK: number // short put — solved for zero cost
+  netPremium: number
+  tearsAbove: number // spike level over which protection inverts (= ceilK)
+}
+
+// Long call Kc, short call Kceil (> Kc), short put Kf. The sold far call caps
+// the protection: above Kceil the buyer is re-exposed to a price spike. Given
+// Kc and Kceil, solve Kf so call(Kc) - call(Kceil) = put(Kf).
+export function solveSeagull(capK: number, ceilK: number, m: MarketParams): SeagullSolution {
+  const target = black76Call(capK, m) - black76Call(ceilK, m)
+  let lo = 0.01 * m.F
+  let hi = capK
+  if (black76Put(hi, m) < target) {
+    return { capK, ceilK, floorK: hi, netPremium: target - black76Put(hi, m), tearsAbove: ceilK }
+  }
+  for (let i = 0; i < 200; i++) {
+    const mid = (lo + hi) / 2
+    if (black76Put(mid, m) < target) lo = mid
+    else hi = mid
+  }
+  const floorK = (lo + hi) / 2
+  const netPremium = target - black76Put(floorK, m)
+  return { capK, ceilK, floorK, netPremium, tearsAbove: ceilK }
+}
+
+// Effective purchase cost per strategy at terminal price s (importer view:
+// higher price = higher cost, so protection means capping the upside).
 export const effectiveCost = {
   unhedged: (s: number) => s,
   forward: (_s: number, F: number) => F,
   collar: (s: number, floorK: number, capK: number) => Math.min(capK, Math.max(floorK, s)),
   // cap-only (premium paid upfront, added as amortized cost)
   capOnly: (s: number, capK: number, premium: number) => Math.min(s, capK) + premium,
+  // three-way: collar that tears open again below the sub-floor
+  threeWay: (s: number, floorK: number, capK: number, subFloorK: number) =>
+    s - Math.max(s - capK, 0) + Math.max(floorK - s, 0) + Math.max(subFloorK - s, 0),
+  // seagull: collar whose upside protection ends at the ceiling (spike re-exposes)
+  seagull: (s: number, floorK: number, capK: number, ceilK: number) =>
+    s - Math.max(s - capK, 0) + Math.max(s - ceilK, 0) + Math.max(floorK - s, 0),
 }
