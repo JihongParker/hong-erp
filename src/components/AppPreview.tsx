@@ -207,7 +207,7 @@ const CARDS: Card[] = [
     tiles: () => [
       { l: '|ineff| A', v: '₩23.4bn', c: C_FIN },
       { l: '|ineff| B', v: '₩6.4bn', c: C_CLI },
-      { l: 'B vs A', v: '3.7× cleaner' },
+      { l: 'B vs A', v: '3.7×' },
     ],
     draw: accounting,
   },

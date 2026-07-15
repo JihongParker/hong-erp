@@ -36,7 +36,7 @@
 .ap-window {
   position: relative;
   z-index: 2;
-  min-height: 372px;
+  height: 384px;
   border: 1px solid var(--line);
   border-radius: 16px;
   background: var(--panel);
@@ -114,10 +114,11 @@
 }
 
 .ap-tv {
-  font-size: 21px;
+  font-size: 20px;
   font-weight: 750;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .ap-chart {
@@ -153,19 +154,19 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 4;
-  width: 36px;
-  height: 36px;
+  width: 60px;
+  height: 60px;
   display: grid;
   place-items: center;
   border: 1px solid var(--line);
   border-radius: 99px;
   background: var(--panel);
   color: var(--text);
-  font-size: 22px;
+  font-size: 34px;
   line-height: 1;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgb(0 0 0 / 0.12);
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.14);
+  transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
 }
 
 .ap-arrow:hover {
@@ -174,11 +175,11 @@
 }
 
 .ap-arrow.left {
-  left: -30px;
+  left: -84px;
 }
 
 .ap-arrow.right {
-  right: -30px;
+  right: -84px;
 }
 
 .ap-arrow.left:hover {
@@ -225,11 +226,28 @@
   .ap-ghost {
     display: none;
   }
+  .ap-arrow {
+    width: 46px;
+    height: 46px;
+    font-size: 26px;
+  }
   .ap-arrow.left {
-    left: 4px;
+    left: -8px;
   }
   .ap-arrow.right {
-    right: 4px;
+    right: -8px;
+  }
+}
+
+@media (max-width: 560px) {
+  .ap-window {
+    height: 360px;
+  }
+  .ap-arrow.left {
+    left: -6px;
+  }
+  .ap-arrow.right {
+    right: -6px;
   }
 }
 

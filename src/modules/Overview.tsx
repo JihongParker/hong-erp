@@ -148,7 +148,7 @@ export default function Overview({
           {PAPERS.map((p, i) => (
             <article
               key={p.n}
-              className={`chain-item reveal ${i % 2 ? 'right' : 'left'}`}
+              className="chain-item reveal"
               style={{ ['--node-c' as string]: nodeColor(i, PAPERS.length) }}
             >
               <span className="chain-node">{p.n}</span>
