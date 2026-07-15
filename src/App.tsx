@@ -30,7 +30,7 @@ const GROUPS: {
     items: [
       { id: 'decision', name: 'Decision Dashboard', desc: 'Optimal disclosure d* and hedge ratios h* — live from the frozen engine' },
       { id: 'budget', name: 'Hedge Budget', desc: 'Fixed budget → optimal WTI/FX coverage split (constrained minimum variance)' },
-      { id: 'instruments', name: 'Hedge Instruments', desc: 'Zero-cost collar (industry standard) · double-KO quanto (research) · forward baseline' },
+      { id: 'instruments', name: 'Hedge Instruments', desc: 'Vanilla library — swap · cap · collar · three-way · seagull (Black-76) + crack spread & FX benchmark · double-KO quanto (research)' },
       { id: 'accounting', name: 'Hedge Accounting', desc: 'IFRS 9 CFH designation: combined vs split — OCI, ineffectiveness, KO aftermath' },
     ],
   },

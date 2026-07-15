@@ -32,7 +32,13 @@ export interface MetricRecord {
 export interface Trade {
   id: string
   division: string
-  instrument: 'Zero-cost collar' | 'Double-KO quanto'
+  instrument:
+    | 'Zero-cost collar'
+    | 'Double-KO quanto'
+    | 'Swap / forward'
+    | 'Cap (bought call)'
+    | 'Three-way collar'
+    | 'Seagull'
   terms: string
   notional: string
   by: string
