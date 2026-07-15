@@ -212,11 +212,6 @@
   background: var(--accent);
 }
 
-.ap-caption {
-  font-size: 12px;
-  color: var(--muted);
-  text-align: center;
-}
 
 @media (max-width: 1100px) {
   .ap-window,

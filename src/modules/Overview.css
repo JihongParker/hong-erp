@@ -31,21 +31,41 @@
   }
 }
 
-/* ── 1 · hero ── */
+/* ── 1 · hero: copy left, illustrated seascape right ── */
 .ov-hero {
   position: relative;
-  min-height: 86vh;
-  display: flex;
+  min-height: 82vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(340px, 0.98fr);
+  gap: 56px;
   align-items: center;
-  overflow: hidden;
-  margin: -22px -48px 0;
-  padding: 40px 48px;
+  padding: 12px 0 48px;
 }
 
 .ov-hero-copy {
   position: relative;
   z-index: 1;
-  max-width: 760px;
+  max-width: 640px;
+}
+
+.ov-hero-art {
+  justify-self: end;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 1000px) {
+  .ov-hero {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    min-height: 0;
+    padding-bottom: 24px;
+  }
+  .ov-hero-art {
+    justify-content: flex-start;
+    max-width: 460px;
+  }
 }
 
 .ov-kicker {
@@ -183,14 +203,26 @@
   border-radius: 4px;
 }
 
+/* liquid keeps flowing down the filled length of the spine */
 .chain-fill {
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
   height: calc(var(--chain, 0) * 100%);
-  background: linear-gradient(180deg, var(--accent), #2f6db4);
+  background: linear-gradient(180deg, var(--accent) 0%, #2f6db4 50%, var(--accent) 100%);
+  background-size: 100% 220%;
   border-radius: 4px;
+  animation: chain-flow 2.6s linear infinite;
+}
+
+@keyframes chain-flow {
+  from { background-position: 0 0; }
+  to { background-position: 0 -220%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chain-fill { animation: none; }
 }
 
 /* the droplet travelling down the spine as you scroll */
@@ -235,7 +267,7 @@
   margin-left: 55%;
 }
 
-/* node sits on the spine at the row's centre */
+/* node sits on the spine; dormant until the row scrolls in, then it lights */
 .chain-node {
   position: absolute;
   left: 50%;
@@ -243,15 +275,42 @@
   transform: translate(-50%, -50%);
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 99px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 12px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 12.5px;
   font-weight: 700;
+  border: 2px solid var(--line);
   box-shadow: 0 0 0 5px var(--bg);
   z-index: 2;
+  transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+.chain-item.in .chain-node {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.chain-item.in .chain-node::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 99px;
+  border: 2px solid var(--accent);
+  opacity: 0;
+  animation: node-ping 0.9s ease-out 0.1s;
+}
+
+@keyframes node-ping {
+  0% { opacity: 0.6; transform: scale(0.7); }
+  100% { opacity: 0; transform: scale(1.25); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chain-item.in .chain-node::after { animation: none; }
 }
 
 .chain-card {
@@ -275,26 +334,27 @@
 }
 
 .chain-title {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.35;
+  font-size: 20px;
+  font-weight: 750;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .chain-plain {
-  font-size: 13.5px;
+  font-size: 14.5px;
   line-height: 1.6;
   color: var(--text);
-  opacity: 0.82;
+  opacity: 0.84;
 }
 
 .chain-result {
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.55;
   color: var(--muted);
 }
 
 .chain-link {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 650;
   color: var(--accent);
 }
@@ -371,16 +431,17 @@
 
 .ov-node {
   display: grid;
-  gap: 2px;
+  gap: 4px;
   flex: 1;
   min-width: 0;
-  padding: 12px 14px;
+  padding: 16px 18px;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--panel);
   font: inherit;
   text-align: left;
   cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
 
 .ov-node-label,
@@ -392,22 +453,24 @@
 
 .ov-node:hover {
   border-color: var(--accent);
+  transform: translateY(-2px);
 }
 
 .ov-node-label {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .ov-node-sub {
-  font-size: 11.5px;
+  font-size: 13px;
   color: var(--muted);
 }
 
 .ov-arrow {
   color: var(--accent);
-  font-size: 16px;
-  padding: 0 4px;
+  font-size: 20px;
+  padding: 0 6px;
 }
 
 .ov-flow-note {
@@ -493,10 +556,3 @@
   color: var(--muted);
 }
 
-@media (max-width: 860px) {
-  .ov-hero {
-    margin: -22px -18px 0;
-    padding: 40px 18px;
-    min-height: 78vh;
-  }
-}

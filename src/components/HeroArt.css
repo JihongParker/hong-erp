@@ -1,0 +1,137 @@
+.ha {
+  --ha-sky-1: #cfe0f0;
+  --ha-sky-2: #eaf1f6;
+  --ha-sky-3: #f4f0e6;
+  --ha-sun-1: #f2c078;
+  --ha-sun-2: #e79a4a;
+  --ha-sea-1: #7fa8cc;
+  --ha-sea-2: #4d7ba6;
+  --ha-port-c: #6d7f8f;
+  --ha-flare: #e08a3c;
+  --ha-plume: #9fb0bd;
+  --ha-surf-a: #6fa0c8;
+  --ha-surf-b: #5a8cb8;
+  --ha-surf-c: #46739c;
+  width: 100%;
+  max-width: 560px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 30px 70px -30px rgb(30 50 70 / 0.45), 0 2px 8px rgb(0 0 0 / 0.06);
+}
+
+:root[data-theme='dark'] .ha {
+  --ha-sky-1: #2a3a4c;
+  --ha-sky-2: #33465a;
+  --ha-sky-3: #3d4453;
+  --ha-sea-1: #33526f;
+  --ha-sea-2: #22384c;
+  --ha-surf-a: #33526f;
+  --ha-surf-b: #294559;
+  --ha-surf-c: #1f3547;
+  --ha-port-c: #55697a;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ha {
+    --ha-sky-1: #2a3a4c;
+    --ha-sky-2: #33465a;
+    --ha-sky-3: #3d4453;
+    --ha-sea-1: #33526f;
+    --ha-sea-2: #22384c;
+    --ha-surf-a: #33526f;
+    --ha-surf-b: #294559;
+    --ha-surf-c: #1f3547;
+    --ha-port-c: #55697a;
+  }
+}
+
+.ha-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 620 / 520;
+}
+
+/* pointer parallax depth */
+.ha-sun {
+  transform: translate(calc(var(--mx, 0) * 10px), calc(var(--my, 0) * 6px));
+  transition: transform 0.3s ease-out;
+}
+.ha-port {
+  transform: translateX(calc(var(--mx, 0) * -5px));
+  transition: transform 0.3s ease-out;
+}
+.ha-ship {
+  transform: translate(calc(var(--mx, 0) * 6px), calc(var(--my, 0) * 3px));
+  transition: transform 0.3s ease-out;
+  animation: ha-bob 6s ease-in-out infinite;
+}
+
+@keyframes ha-bob {
+  0%, 100% { translate: 0 0; rotate: -0.6deg; }
+  50% { translate: 0 4px; rotate: 0.6deg; }
+}
+
+/* the surf washes in and draws back — ease in/out, alternating like tide */
+.ha-surf {
+  will-change: transform;
+}
+.ha-surf-1 {
+  animation: ha-wash-1 6.5s ease-in-out infinite alternate;
+}
+.ha-surf-2 {
+  animation: ha-wash-2 8s ease-in-out infinite alternate;
+}
+.ha-surf-3 {
+  animation: ha-wash-3 9.5s ease-in-out infinite alternate;
+}
+
+@keyframes ha-wash-1 {
+  from { transform: translate(-26px, 10px); }
+  to { transform: translate(20px, 0); }
+}
+@keyframes ha-wash-2 {
+  from { transform: translate(18px, 8px); }
+  to { transform: translate(-22px, 0); }
+}
+@keyframes ha-wash-3 {
+  from { transform: translate(-14px, 6px); }
+  to { transform: translate(16px, 0); }
+}
+
+.ha-flare {
+  transform-origin: 253px 283px;
+  animation: ha-flicker 1.4s ease-in-out infinite;
+}
+@keyframes ha-flicker {
+  0%, 100% { transform: scaleY(1); opacity: 0.9; }
+  50% { transform: scaleY(1.25); opacity: 1; }
+}
+
+.ha-plume {
+  animation: ha-rise 5s ease-in-out infinite;
+}
+@keyframes ha-rise {
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  50% { opacity: 0.5; transform: translateY(-4px); }
+}
+
+.ha-reflect {
+  animation: ha-shimmer 4s ease-in-out infinite;
+}
+@keyframes ha-shimmer {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.25; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ha-ship,
+  .ha-surf-1,
+  .ha-surf-2,
+  .ha-surf-3,
+  .ha-flare,
+  .ha-plume,
+  .ha-reflect {
+    animation: none;
+  }
+}
