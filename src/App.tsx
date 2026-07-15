@@ -11,6 +11,7 @@ import Accounting from './modules/Accounting'
 import { SpineProvider } from './state/spine'
 import { ErpProvider, useErp } from './state/erp'
 import Backdrop from './components/Backdrop'
+import { MARKET, marketDate } from './state/market'
 import './App.css'
 
 // Sidebar = the product map. Groups tell a first-time visitor what kind of
@@ -234,6 +235,11 @@ export default function App() {
           ))}
         </nav>
         <footer className="sidebar-foot">
+          <div className="sidebar-market" title={`FRED snapshot · refreshed weekdays by GitHub Actions · fetched ${MARKET.fetchedAt}`}>
+            <span className="market-dot" /> WTI <strong>${MARKET.wti.value.toFixed(2)}</strong> · ₩
+            <strong>{MARKET.usdkrw.value.toLocaleString()}</strong>
+            <span className="market-date">FRED {marketDate}</span>
+          </div>
           <ResetDemo />
           v1 · <a href="https://github.com/JihongParker/hong-erp" target="_blank" rel="noreferrer">GitHub</a>
         </footer>

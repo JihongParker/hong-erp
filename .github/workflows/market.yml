@@ -1,0 +1,44 @@
+name: Refresh market snapshot
+
+on:
+  schedule:
+    # Weekdays 06:30 UTC (15:30 KST) — after FRED posts the prior US close
+    - cron: '30 6 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Fetch FRED snapshot
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: node scripts/fetch-market.mjs
+      - name: Commit if changed
+        id: commit
+        run: |
+          if git diff --quiet src/data/market_snapshot.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git config user.name "market-bot"
+            git config user.email "actions@github.com"
+            git add src/data/market_snapshot.json
+            git commit -m "market: FRED snapshot $(date -u +%F)"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      # Pushes made with GITHUB_TOKEN do not trigger other workflows,
+      # so kick the Pages deploy explicitly.
+      - name: Trigger Pages deploy
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml -R ${{ github.repository }}
