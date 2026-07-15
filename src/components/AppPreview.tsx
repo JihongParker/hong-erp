@@ -21,7 +21,6 @@ type Card = {
   chartTitle: string
   tiles: (d: number) => { l: string; v: string; c?: string }[]
   draw: (d: number) => ReactElement
-  caption: string
 }
 
 const line = (f: (t: number) => number, X: (t: number) => number, Y: (v: number) => number) =>
@@ -150,8 +149,7 @@ function accounting(d: number) {
 const CARDS: Card[] = [
   {
     url: 'Decision Dashboard · d* × h*',
-    chartTitle: 'Hedge ratios as disclosure varies — h(d)',
-    caption: 'Live equilibrium — both hedge ratios fall as disclosure rises',
+    chartTitle: 'Hedge ratios vs disclosure · h(d)',
     tiles: (d) => {
       const ft = 0.18 + d * 0.5
       return [
@@ -165,7 +163,6 @@ const CARDS: Card[] = [
   {
     url: 'Hedge Budget · coverage split',
     chartTitle: 'Feasible corner & the optimum',
-    caption: 'The optimum is constraint-pinned at the vertex',
     tiles: (d) => {
       const w2 = 0.02 + d * 0.06
       const w1 = 0.985 - w2 - d * 0.01
@@ -180,7 +177,6 @@ const CARDS: Card[] = [
   {
     url: 'Hedge Instruments · zero-cost collar',
     chartTitle: 'Effective purchase cost at expiry',
-    caption: 'Written floor finances the cap — net premium zero',
     tiles: (d) => {
       const cap = 90 + d * 24
       const floor = 72 - d * 12
@@ -195,7 +191,6 @@ const CARDS: Card[] = [
   {
     url: 'Exotic Desk · barrier monitor',
     chartTitle: 'The barrier squeeze',
-    caption: 'Near a barrier the textbook hedge reverses sign',
     tiles: (d) => {
       const ko = (0.30 + 0.62 * Math.abs(2 * d - 1) ** 1.5) * 100
       return [
@@ -209,7 +204,6 @@ const CARDS: Card[] = [
   {
     url: 'Hedge Accounting · A vs B',
     chartTitle: 'Cumulative ineffectiveness in P&L',
-    caption: 'Same economics, very different books',
     tiles: () => [
       { l: '|ineff| A', v: '₩23.4bn', c: C_FIN },
       { l: '|ineff| B', v: '₩6.4bn', c: C_CLI },
@@ -327,7 +321,6 @@ export default function AppPreview() {
             />
           ))}
         </div>
-        <div className="ap-caption">{card.caption}</div>
       </div>
     </div>
   )

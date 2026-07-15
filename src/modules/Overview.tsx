@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import AppPreview from '../components/AppPreview'
-import LiquidScene from '../components/LiquidScene'
+import HeroArt from '../components/HeroArt'
 import './Overview.css'
 
 // A scroll-told landing: the headline lives first, then the reader descends
@@ -13,15 +13,15 @@ const PAPERS = [
     n: 'P1',
     title: 'Optimal WTI–FX hedge ratios under a fixed budget',
     plain: 'Given a fixed premium budget, how much of the oil leg and the currency leg should a Korean importer actually cover?',
-    result: 'Vertex optimum 97.0% / 2.9% reproduced live — budget-exact at ₩45bn',
+    result: 'Vertex optimum 97.0% / 2.9% reproduced live, budget-exact at ₩45bn',
     module: 'budget',
     moduleName: 'Hedge Budget',
   },
   {
     n: 'P2',
     title: 'Covariance-aware delta hedging of a double-KO quanto',
-    plain: 'Run a dynamic hedge on an exotic barrier option written on that same exposure — and watch where textbook deltas break.',
-    result: 'Paper engine surfaces: KO probability anchored 43.5% vs 43.7%',
+    plain: 'Run a dynamic hedge on an exotic barrier option written on that same exposure, then watch where textbook deltas break.',
+    result: 'Paper engine surfaces, KO probability anchored 43.5% vs 43.7%',
     module: 'instruments',
     moduleName: 'Hedge Instruments',
   },
@@ -36,7 +36,7 @@ const PAPERS = [
   {
     n: 'P4',
     title: 'ESG disclosure mandates and corporate hedging',
-    plain: 'Ask what sets the decision to hedge in the first place — and prove disclosure moves it only through the price of risk.',
+    plain: 'Ask what sets the decision to hedge in the first place, and prove disclosure moves it only through the price of risk.',
     result: 'Closed form certified vs independent minimizer, 200 draws, gap ≤3×10⁻⁶',
     module: 'decision',
     moduleName: 'Decision Dashboard',
@@ -96,7 +96,6 @@ export default function Overview({
     <div className="ov">
       {/* ── 1 · hero ── */}
       <section className="ov-hero">
-        <LiquidScene />
         <div className="ov-hero-copy">
           <div className="ov-kicker reveal in">HongERP · ESG decision layer</div>
           <h2 className="ov-title reveal in">
@@ -107,15 +106,19 @@ export default function Overview({
             </span>
           </h2>
           <p className="ov-lede reveal in">
-            Most ESG software is a filing cabinet: it collects disclosures, checks
-            the boxes, and stops. <strong>HongERP is built like a trading desk.</strong>{' '}
-            Give it a company's risk exposures and it works out two things at once —{' '}
-            <strong>how much to hedge</strong> and <strong>how much to disclose</strong> —
-            because disclosing risk makes carrying it cheaper.
+            ESG platforms are good at recording what a company discloses and bad
+            at using it. <strong>HongERP treats that risk the way a trading desk
+            would.</strong> Give it a company's exposures and it works out two
+            answers together: <strong>how much to hedge</strong> and{' '}
+            <strong>how much to disclose</strong>. Disclosing a risk makes carrying
+            it cheaper, so the two decisions are really one.
           </p>
           <button className="ov-scrollcue reveal in" onClick={() => chainRef.current?.scrollIntoView({ behavior: 'smooth' })}>
             Follow the chain <span className="ov-cue-arrow">↓</span>
           </button>
+        </div>
+        <div className="ov-hero-art reveal in">
+          <HeroArt />
         </div>
       </section>
 
@@ -124,9 +127,9 @@ export default function Overview({
         <div className="ov-chain-head reveal">
           <h3>One position, four papers, one chain</h3>
           <p>
-            Every screen runs the actual model from a finance paper — all four
-            interrogating a single Korean oil importer's WTI × USD/KRW exposure,
-            each picking up where the last leaves off.
+            Every screen runs the actual model from a finance paper. All four
+            interrogate one Korean oil importer's WTI × USD/KRW exposure, and each
+            picks up where the last leaves off.
           </p>
         </div>
 
@@ -155,7 +158,7 @@ export default function Overview({
         <div className="ov-live-head">
           <h3>And it all moves</h3>
           <p>
-            The models run live in your browser — drag a dial and the equilibrium
+            The models run live in your browser. Drag a dial and the equilibrium
             recomputes. Flip through the screens, or let them play.
           </p>
         </div>
@@ -178,8 +181,8 @@ export default function Overview({
         </div>
         <p className="ov-flow-note">
           Material risks feed the exposure parameters, the budget split lands on
-          the instrument desks, the exotic desk's live knock-out odds drive the
-          accounting module's post-KO exposure — and the disclosure optimum closes
+          the instrument desks, and the exotic desk's live knock-out odds drive
+          the accounting module's post-KO exposure. The disclosure optimum closes
           the loop.
         </p>
       </section>
