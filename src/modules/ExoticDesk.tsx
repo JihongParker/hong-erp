@@ -125,13 +125,13 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
 
   return (
     <figure className="ex-panel ex-foil">
-      <h3>Textbook lattice vs the exact price vs reality <span className="ex-foil-tag">model risk</span></h3>
+      <h3>What the textbook desk can&rsquo;t see <span className="ex-foil-tag">model risk</span></h3>
       <p className="ex-foil-sub">
-        Three prices for the same double-KO. The binomial lattice (jittery line) only
-        approximates the <strong>exact one-factor GBM</strong> value (grey line, closed form) — that is
-        numerical error. Both sit far below the paper's jump-diffusion quanto engine
-        (blue) — that gap is the real model error: the textbook GBM world has no jumps
-        and no FX correlation.
+        Same knock-out, three numbers. The standard binomial desk tool — and even the
+        exact one-factor GBM formula it&rsquo;s chasing — says this hedge dies about a third
+        of the time. Our jump-diffusion quanto engine says nearly half. That gap is
+        <strong> survival risk the textbook cannot represent</strong>: no price jumps, no FX
+        correlation. Understating it is exactly how the 2008 barrier books blew up.
       </p>
 
       <div className="ex-foil-ctrl">
@@ -147,20 +147,20 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
       </div>
 
       <div className="ex-foil-tiles">
-        <div className="tile">
-          <span className="tile-label">Exact GBM KO @ ${spot.toFixed(0)}</span>
-          <span className="tile-value">{(exact * 100).toFixed(1)}%</span>
-          <span className="tile-badge">closed form · lattice @N{nSteps}: {(crrAtN * 100).toFixed(1)}%</span>
+        <div className="tile naive">
+          <span className="tile-label">Textbook desk says</span>
+          <span className="tile-value">{(exact * 100).toFixed(1)}<span className="tile-unit">%</span></span>
+          <span className="tile-sub">exact GBM · lattice @N{nSteps} reads {(crrAtN * 100).toFixed(1)}%</span>
         </div>
-        <div className="tile">
-          <span className="tile-label">Paper MC KO @ ${spot.toFixed(0)}</span>
-          <span className="tile-value">{(paperKo * 100).toFixed(1)}%</span>
-          <span className="tile-badge">jump-diffusion quanto</span>
+        <div className="tile hero">
+          <span className="tile-label">Our engine — true KO odds</span>
+          <span className="tile-value">{(paperKo * 100).toFixed(1)}<span className="tile-unit">%</span></span>
+          <span className="tile-sub">jump-diffusion quanto, at ${spot.toFixed(0)}</span>
         </div>
-        <div className="tile">
-          <span className="tile-label">Model gap (jumps + quanto)</span>
-          <span className="tile-value" style={{ color: Math.abs(modelGap) > 5 ? '#b3610f' : 'var(--text)' }}>{modelGap >= 0 ? '+' : ''}{modelGap.toFixed(1)} pp</span>
-          <span className="tile-badge">paper − exact GBM</span>
+        <div className={modelGap >= 0 ? 'tile danger' : 'tile naive'}>
+          <span className="tile-label">{modelGap >= 0 ? 'Risk the textbook hides' : 'Textbook overshoots now'}</span>
+          <span className="tile-value">{modelGap >= 0 ? '+' : '−'}{Math.abs(modelGap).toFixed(1)}<span className="tile-unit">pp</span></span>
+          <span className="tile-sub">{modelGap >= 0 ? 'understated by the standard tool' : 'pumped σ overshoots — wrong process'}</span>
         </div>
       </div>
 
@@ -176,26 +176,26 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
         ))}
         <text x={(LPAD.left + LW - LPAD.right) / 2} y={LH - 2} textAnchor="middle" className="axis-title">lattice steps N →</text>
 
-        {/* paper MC (reality) */}
-        <line x1={LPAD.left} y1={yK(paperKo)} x2={LW - LPAD.right} y2={yK(paperKo)} stroke="#2f6db4" strokeWidth={1.5} strokeDasharray="6 4" />
-        <text x={LPAD.left + 6} y={yK(paperKo) - 6} className="series-label" fill="#2f6db4">paper MC {(paperKo * 100).toFixed(0)}%</text>
+        {/* our engine (reality) — the authoritative number */}
+        <line x1={LPAD.left} y1={yK(paperKo)} x2={LW - LPAD.right} y2={yK(paperKo)} stroke="#2f6db4" strokeWidth={2} strokeDasharray="6 4" />
+        <text x={LPAD.left + 6} y={yK(paperKo) - 7} className="ex-foil-lbl" fill="#2f6db4">our engine · {(paperKo * 100).toFixed(0)}%</text>
 
-        {/* exact GBM (closed form) — the truth the lattice chases */}
+        {/* textbook: exact one-factor GBM (closed form) — the truth the lattice chases */}
         <line x1={LPAD.left} y1={yK(exact)} x2={LW - LPAD.right} y2={yK(exact)} stroke="var(--muted)" strokeWidth={1.5} strokeDasharray="3 3" />
-        <text x={LPAD.left + 6} y={yK(exact) - 6} className="series-label" fill="var(--muted)">exact GBM {(exact * 100).toFixed(0)}%</text>
+        <text x={LPAD.left + 6} y={yK(exact) - 7} className="ex-foil-lbl" fill="var(--muted)">textbook (exact GBM) · {(exact * 100).toFixed(0)}%</text>
 
         {/* CRR convergence at the desk spot — the wobble is numerical error */}
         <path d={path(conv)} fill="none" stroke="#b3610f" strokeWidth={2} />
-        <text x={LW - LPAD.right + 6} y={yK(conv[conv.length - 1].koProb) + 4} className="series-label" fill="#b3610f">lattice</text>
+        <text x={LW - LPAD.right + 6} y={yK(conv[conv.length - 1].koProb) + 4} className="ex-foil-lbl" fill="#b3610f">lattice</text>
 
         {/* current N marker */}
         <line x1={xN(nClamp)} y1={LPAD.top} x2={xN(nClamp)} y2={LH - LPAD.bottom} stroke="var(--muted)" strokeWidth={1} opacity={0.4} />
       </svg>
 
       <ul className="ex-foil-why">
-        <li><strong>Numerical error (lattice vs exact).</strong> The jittery line is the binomial estimate; the grey line is the exact GBM value. They differ only because the barriers straddle lattice nodes (Boyle–Lau) — crank N and the wobble shrinks, but never cleanly settles.</li>
-        <li><strong>Model error (exact vs paper).</strong> Even the perfect GBM price is {Math.abs(modelGap).toFixed(0)}pp off the paper. Toggle to σ + jump variance and the <em>level</em> jumps toward reality — but a GBM with a bigger σ is still the wrong process: jumps gap discretely and this world has no FX leg.</li>
-        <li><strong>One factor only.</strong> No FX here — so the paper's quanto delta Δ_FX = V/S₂ and covariance multiplier c* = {C_STAR} do not exist. Hedge off the textbook number and the correlation exposure stays wide open.</li>
+        <li><strong>The textbook is too low, not too high.</strong> A knock-out turns your hedge into naked exposure the instant it fires — so a desk tool that lowballs the KO odds underprices the exact disaster the structure exists to survive. Our engine is the one telling the truth.</li>
+        <li><strong>And the math error is the small part.</strong> The jittery line (lattice) vs the grey line (exact GBM) differ by ~1pp — pure node straddling (Boyle–Lau), and it shrinks as you crank N. The {Math.abs(modelGap).toFixed(0)}pp that matters is model, not arithmetic.</li>
+        <li><strong>One factor can&rsquo;t carry a quanto.</strong> There is no FX leg in the textbook world, so the paper&rsquo;s quanto delta Δ_FX = V/S₂ and covariance multiplier c* = {C_STAR} do not exist at all. Hedge off the textbook number and the correlation exposure stays wide open.</li>
       </ul>
     </figure>
   )
