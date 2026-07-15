@@ -159,7 +159,7 @@ export default function Overview({
             <article
               key={p.n}
               className="chain-item reveal"
-              style={{ ['--node-c' as string]: nodeColor(i, PAPERS.length) }}
+              style={{ ['--node-c' as string]: nodeColor(i, PAPERS.length), ['--i' as string]: i }}
             >
               <span className="chain-node">{p.n}</span>
               <button className="chain-card" onClick={() => onNavigate(p.module)}>
