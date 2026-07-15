@@ -60,20 +60,15 @@
   padding: 6vh 0 40px;
 }
 
-/* soft halo behind the copy — a feathered radial, no hard parallel edge */
-.ov-hero::before {
-  content: '';
-  position: absolute;
-  inset: -36px -48px -40px -48px;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    135% 105% at 16% 42%,
-    var(--bg) 0%,
-    color-mix(in srgb, var(--bg) 70%, transparent) 30%,
-    color-mix(in srgb, var(--bg) 30%, transparent) 52%,
-    transparent 68%
-  );
+/* no dim panel behind the copy (it read as a hard edge). Legibility comes from
+   a soft per-glyph glow in the page colour, which has no boundary of its own. */
+.ov-hero-copy .ov-kicker,
+.ov-hero-copy .ov-title,
+.ov-hero-copy .ov-lede,
+.ov-hero-copy .ov-scrollcue {
+  text-shadow:
+    0 0 16px color-mix(in srgb, var(--bg) 78%, transparent),
+    0 1px 2px color-mix(in srgb, var(--bg) 60%, transparent);
 }
 
 .ov-hero-copy {
