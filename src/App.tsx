@@ -221,6 +221,8 @@ export default function App() {
   // tour dialog: Esc to close, focus moves in on open and is trapped, restored
   // on close (aria-modal announced to screen readers)
   const tourCardRef = useRef<HTMLElement | null>(null)
+  // mobile: swipe the open drawer left to close it
+  const drawerTouchX = useRef<number | null>(null)
   useEffect(() => {
     if (tour === null) return
     const prevFocus = document.activeElement as HTMLElement | null
@@ -324,7 +326,14 @@ export default function App() {
       </div>
       {navOpen && <div className="nav-scrim" onClick={() => setNavOpen(false)} />}
 
-      <aside className={navOpen ? 'sidebar open' : 'sidebar'}>
+      <aside
+        className={navOpen ? 'sidebar open' : 'sidebar'}
+        onTouchStart={(e) => { drawerTouchX.current = e.touches[0].clientX }}
+        onTouchEnd={(e) => {
+          if (drawerTouchX.current !== null && e.changedTouches[0].clientX - drawerTouchX.current < -55) setNavOpen(false)
+          drawerTouchX.current = null
+        }}
+      >
         <button className="brand brand-desktop" onClick={() => go('overview')}>
           <span className="brand-mark">홍</span>
           <div>
