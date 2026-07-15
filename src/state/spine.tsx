@@ -66,7 +66,7 @@ export function useSpine(): Spine {
 export function Chip({ from, children }: { from: string; children: ReactNode }) {
   return (
     <span className="spine-chip">
-      <span className="spine-from">{from}</span> {children}
+      <span className="spine-from">{from}</span> <span className="spine-body">{children}</span>
     </span>
   )
 }

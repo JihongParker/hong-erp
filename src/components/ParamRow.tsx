@@ -10,6 +10,7 @@ export default function ParamRow({
   step,
   value,
   onChange,
+  fmt,
 }: {
   label: string
   min: number
@@ -17,6 +18,7 @@ export default function ParamRow({
   step: number
   value: number
   onChange: (v: number) => void
+  fmt?: (v: number) => string
 }) {
   const [sym, ...rest] = label.split(' ')
   const fill = `${((value - min) / (max - min)) * 100}%`
@@ -36,7 +38,7 @@ export default function ParamRow({
         style={{ '--f': fill } as CSSProperties}
         onChange={(e) => onChange(Number(e.target.value))}
       />
-      <span className="p-val">{value.toFixed(2)}</span>
+      <span className="p-val">{fmt ? fmt(value) : value.toFixed(2)}</span>
     </label>
   )
 }

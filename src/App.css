@@ -193,6 +193,17 @@ nav {
   font-size: 14.5px;
 }
 
+/* chip text is one inline flow — numbers never wrap onto their own line */
+.spine-body {
+  display: inline;
+  min-width: 0;
+  line-height: 1.5;
+}
+
+.spine-body strong {
+  white-space: nowrap;
+}
+
 .spine-from {
   font-weight: 750;
   font-size: 11px;
