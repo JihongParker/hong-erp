@@ -6,6 +6,7 @@ import {
   type Regime,
 } from '../engine/budget'
 import { Chip, useSpine } from '../state/spine'
+import ParamRow from '../components/ParamRow'
 import './Budget.css'
 
 const C_WTI = '#2f6db4'
@@ -74,6 +75,57 @@ export default function Budget() {
         </Chip>
       </div>
       <div className="bg-grid">
+        {/* ── control rail ── */}
+        <div className="bg-panel bg-deck">
+          <h3>Program inputs</h3>
+          <div className="bg-tabs">
+            {(
+              [
+                ['european', 'European (B76 + GK)'],
+                ['american', 'American KO (Shapley)'],
+              ] as const
+            ).map(([r, label]) => (
+              <button key={r} className={regime === r ? 'bg-tab active' : 'bg-tab'} onClick={() => setRegime(r)}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="bg-sliders" data-tour="budget-b">
+            <ParamRow
+              label="B budget"
+              min={30e9}
+              max={60e9}
+              step={0.5e9}
+              value={B}
+              onChange={setB}
+              fmt={bn}
+            />
+            <ParamRow
+              label="S̄ stress WTI"
+              min={90}
+              max={130}
+              step={1}
+              value={stressWTI}
+              onChange={setStressWTI}
+              fmt={(v) => `$${v.toFixed(0)}`}
+            />
+          </div>
+          <p className="bg-muted">
+            Fixed (paper Table 1): 2.0M bbl/mo, $157.88M/mo, spot 78.94 /
+            1540.64, stress FX 1550, σ₁ {regime === 'european' ? '0.395 (raw)' : '0.324 (diffusive)'},
+            σ₂ 0.093, ρ 0.088.
+          </p>
+
+          <div className="bg-ko">
+            <strong>Instrument rule (§7–8):</strong> stress KO odds{' '}
+            {(P1_INPUTS.p_KO_stress * 100).toFixed(0)}% ≫{' '}
+            {(P1_INPUTS.p_KO_breakeven * 100).toFixed(1)}% break-even — under
+            stress, keep the WTI book <em>vanilla</em>. Live odds: Exotic Desk.
+          </div>
+        </div>
+
+        {/* ── results ── */}
+        <div className="bg-main">
         <div className="bg-tiles">
             <div className="tile">
               <span className="tile-label">WTI coverage w₁*</span>
@@ -96,70 +148,7 @@ export default function Budget() {
             </div>
           </div>
 
-        <div className="bg-panel bg-deck">
-          <h3>Program inputs</h3>
-          <div className="bg-tabs">
-            {(
-              [
-                ['european', 'European (B76 + GK)'],
-                ['american', 'American KO (Shapley)'],
-              ] as const
-            ).map(([r, label]) => (
-              <button key={r} className={regime === r ? 'bg-tab active' : 'bg-tab'} onClick={() => setRegime(r)}>
-                {label}
-              </button>
-            ))}
-          </div>
-          <div className="bg-sliders">
-          <label data-tour="budget-b">
-            <span className="bg-plabel">Budget B</span>
-            <input type="range" min={30e9} max={60e9} step={0.5e9} value={B} onChange={(e) => setB(Number(e.target.value))} />
-            <span className="bg-pval">{bn(B)}</span>
-          </label>
-          <label>
-            <span className="bg-plabel">Stress WTI</span>
-            <input type="range" min={90} max={130} step={1} value={stressWTI} onChange={(e) => setStressWTI(Number(e.target.value))} />
-            <span className="bg-pval">${stressWTI}</span>
-          </label>
-          <p className="bg-muted">
-            Fixed (paper Table 1): 2.0M bbl/mo, $157.88M/mo, spot 78.94 /
-            1540.64, stress FX 1550, σ₁ {regime === 'european' ? '0.395 (raw)' : '0.324 (diffusive)'},
-            σ₂ 0.093, ρ 0.088.
-          </p>
-          </div>
-
-          <div className="bg-ko">
-            <strong>Instrument rule (§7–8):</strong> stress KO odds{' '}
-            {(P1_INPUTS.p_KO_stress * 100).toFixed(0)}% ≫{' '}
-            {(P1_INPUTS.p_KO_breakeven * 100).toFixed(1)}% break-even — under
-            stress, keep the WTI book <em>vanilla</em>. Live odds: Exotic Desk.
-          </div>
-        </div>
-
-        <div className="bg-panel">
-            <h3>The split</h3>
-            {(
-              [
-                { name: 'WTI leg', w: sol.w1, c: C_WTI },
-                { name: 'FX leg', w: sol.w2, c: C_FX },
-              ] as const
-            ).map((leg) => (
-              <div key={leg.name} className="bg-row">
-                <span className="bg-name">{leg.name}</span>
-                <div className="bg-track">
-                  <div className="bg-fill" style={{ width: `${leg.w * 100}%`, background: leg.c }} />
-                </div>
-                <span className="bg-num">{(leg.w * 100).toFixed(1)}%</span>
-              </div>
-            ))}
-            <p className="bg-muted">
-              The asymmetry is structural, not budgetary: σ₁²/σ₂² ≈{' '}
-              {((regime === 'european' ? P1_INPUTS.sigma1EU : P1_INPUTS.sigma1AM) ** 2 / P1_INPUTS.sigma2 ** 2).toFixed(0)}
-              × and ρ ≈ 0.09 mean the minimum-variance split leaves the FX leg
-              almost entirely open even with the budget deleted (paper §6.2).
-            </p>
-          </div>
-
+        <div className="bg-mid">
         <figure className="bg-panel bg-plot">
             <h3>Feasible corner &amp; the optimum</h3>
             <svg viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label="Feasible region and optimum">
@@ -193,6 +182,32 @@ export default function Budget() {
               <em>delivers</em>, not what it <em>is</em> (paper §6.5).
             </figcaption>
         </figure>
+
+        <div className="bg-panel">
+            <h3>The split</h3>
+            {(
+              [
+                { name: 'WTI leg', w: sol.w1, c: C_WTI },
+                { name: 'FX leg', w: sol.w2, c: C_FX },
+              ] as const
+            ).map((leg) => (
+              <div key={leg.name} className="bg-row">
+                <span className="bg-name">{leg.name}</span>
+                <div className="bg-track">
+                  <div className="bg-fill" style={{ width: `${leg.w * 100}%`, background: leg.c }} />
+                </div>
+                <span className="bg-num">{(leg.w * 100).toFixed(1)}%</span>
+              </div>
+            ))}
+            <p className="bg-muted">
+              The asymmetry is structural, not budgetary: σ₁²/σ₂² ≈{' '}
+              {((regime === 'european' ? P1_INPUTS.sigma1EU : P1_INPUTS.sigma1AM) ** 2 / P1_INPUTS.sigma2 ** 2).toFixed(0)}
+              × and ρ ≈ 0.09 mean the minimum-variance split leaves the FX leg
+              almost entirely open even with the budget deleted (paper §6.2).
+            </p>
+          </div>
+        </div>
+        </div>
       </div>
     </div>
   )
