@@ -1,20 +1,26 @@
+import { useEffect, useRef } from 'react'
 import AppPreview from '../components/AppPreview'
+import LiquidScene from '../components/LiquidScene'
 import './Overview.css'
 
-// The landing page: a researcher or recruiter should get the whole idea in
-// fifteen seconds — what this is, what it is built on, and what is proven.
+// A scroll-told landing: the headline lives first, then the reader descends
+// through the chain of four papers (a droplet travels the spine as they
+// scroll), watches the screens move, sees how the modules connect, and lands
+// on the two calls to action. Nothing is crammed into one screen.
 
 const PAPERS = [
   {
     n: 'P1',
     title: 'Optimal WTI–FX hedge ratios under a fixed budget',
-    result: 'Vertex optimum (97.0% / 2.9%) reproduced live — budget-exact at ₩45bn',
+    plain: 'Given a fixed premium budget, how much of the oil leg and the currency leg should a Korean importer actually cover?',
+    result: 'Vertex optimum 97.0% / 2.9% reproduced live — budget-exact at ₩45bn',
     module: 'budget',
     moduleName: 'Hedge Budget',
   },
   {
     n: 'P2',
     title: 'Covariance-aware delta hedging of a double-KO quanto',
+    plain: 'Run a dynamic hedge on an exotic barrier option written on that same exposure — and watch where textbook deltas break.',
     result: 'Paper engine surfaces: KO probability anchored 43.5% vs 43.7%',
     module: 'instruments',
     moduleName: 'Hedge Instruments',
@@ -22,6 +28,7 @@ const PAPERS = [
   {
     n: 'P3',
     title: 'IFRS 9 cash-flow-hedge accounting: combined vs split',
+    plain: 'Book the resulting hedge two legal ways. Same economics, very different earnings.',
     result: 'Designation ledgers verbatim: ineffectiveness ₩23.4bn vs ₩6.4bn',
     module: 'accounting',
     moduleName: 'Hedge Accounting',
@@ -29,6 +36,7 @@ const PAPERS = [
   {
     n: 'P4',
     title: 'ESG disclosure mandates and corporate hedging',
+    plain: 'Ask what sets the decision to hedge in the first place — and prove disclosure moves it only through the price of risk.',
     result: 'Closed form certified vs independent minimizer, 200 draws, gap ≤3×10⁻⁶',
     module: 'decision',
     moduleName: 'Decision Dashboard',
@@ -50,50 +58,116 @@ export default function Overview({
   onNavigate: (id: string) => void
   onStartTour: () => void
 }) {
+  const chainRef = useRef<HTMLElement | null>(null)
+
+  // reveal-on-scroll for anything marked .reveal
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add('in')),
+      { threshold: 0.16 },
+    )
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+
+  // drive the chain droplet down the spine as the section scrolls through view
+  useEffect(() => {
+    const sec = chainRef.current
+    if (!sec) return
+    let raf = 0
+    const onScroll = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const r = sec.getBoundingClientRect()
+        const vh = window.innerHeight
+        const p = Math.max(0, Math.min(1, (vh * 0.72 - r.top) / (r.height * 0.8)))
+        sec.style.setProperty('--chain', String(p))
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(raf)
+    }
+  }, [])
+
   return (
     <div className="ov">
-      <div className="ov-top">
-      <div className="ov-top-left">
+      {/* ── 1 · hero ── */}
       <section className="ov-hero">
-        <h2 className="rise" style={{ animationDelay: '60ms' }}>
-          The decision layer that ESG platforms{' '}
-          <span className="ov-accent">leave empty</span>
-        </h2>
-        <p className="ov-lede rise" style={{ animationDelay: '160ms' }}>
-          Most ESG software is a filing cabinet: it collects disclosures, checks
-          the boxes, and stops. <strong>HongERP is built like a trading desk.</strong>{' '}
-          Give it a company's risk exposures and it works out two things at once —{' '}
-          <strong>how much to hedge</strong> and <strong>how much to disclose</strong> —
-          because disclosing risk makes carrying it cheaper. Under the hood: the
-          actual models from four finance papers on a Korean oil importer's
-          WTI × USD/KRW exposure, running live in your browser.
-        </p>
-        <div className="ov-cta rise" style={{ animationDelay: '240ms' }}>
-          <button className="ov-btn big primary" onClick={onStartTour}>
-            Take a look
-            <span className="ov-btn-sub">guided · no finance needed</span>
-          </button>
-          <button className="ov-btn big" onClick={() => onNavigate('decision')}>
-            Start
-            <span className="ov-btn-sub">open the Decision Dashboard</span>
+        <LiquidScene />
+        <div className="ov-hero-copy">
+          <div className="ov-kicker reveal in">HongERP · ESG decision layer</div>
+          <h2 className="ov-title reveal in">
+            The decision layer that ESG platforms{' '}
+            <span className="ov-accent-wrap">
+              <span className="ov-accent">leave empty</span>
+              <span className="ov-underflow" aria-hidden />
+            </span>
+          </h2>
+          <p className="ov-lede reveal in">
+            Most ESG software is a filing cabinet: it collects disclosures, checks
+            the boxes, and stops. <strong>HongERP is built like a trading desk.</strong>{' '}
+            Give it a company's risk exposures and it works out two things at once —{' '}
+            <strong>how much to hedge</strong> and <strong>how much to disclose</strong> —
+            because disclosing risk makes carrying it cheaper.
+          </p>
+          <button className="ov-scrollcue reveal in" onClick={() => chainRef.current?.scrollIntoView({ behavior: 'smooth' })}>
+            Follow the chain <span className="ov-cue-arrow">↓</span>
           </button>
         </div>
-        <a className="ov-gh rise" style={{ animationDelay: '300ms' }} href="https://github.com/JihongParker/hong-erp" target="_blank" rel="noreferrer">
-          Source on GitHub →
-        </a>
       </section>
-      </div>
 
-      <div className="ov-stage rise" style={{ animationDelay: '200ms' }}>
+      {/* ── 2 · the research chain ── */}
+      <section className="ov-chain" ref={chainRef}>
+        <div className="ov-chain-head reveal">
+          <h3>One position, four papers, one chain</h3>
+          <p>
+            Every screen runs the actual model from a finance paper — all four
+            interrogating a single Korean oil importer's WTI × USD/KRW exposure,
+            each picking up where the last leaves off.
+          </p>
+        </div>
+
+        <div className="chain-track">
+          <div className="chain-spine">
+            <span className="chain-fill" />
+            <span className="chain-drop" />
+          </div>
+
+          {PAPERS.map((p, i) => (
+            <article key={p.n} className={`chain-item reveal ${i % 2 ? 'right' : 'left'}`}>
+              <span className="chain-node">{p.n}</span>
+              <button className="chain-card" onClick={() => onNavigate(p.module)}>
+                <span className="chain-title">{p.title}</span>
+                <span className="chain-plain">{p.plain}</span>
+                <span className="chain-result">{p.result}</span>
+                <span className="chain-link">{p.moduleName} →</span>
+              </button>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 3 · live screens ── */}
+      <section className="ov-live reveal">
+        <div className="ov-live-head">
+          <h3>And it all moves</h3>
+          <p>
+            The models run live in your browser — drag a dial and the equilibrium
+            recomputes. Flip through the screens, or let them play.
+          </p>
+        </div>
         <AppPreview />
-      </div>
-      </div>
+      </section>
 
-      <section className="ov-flow">
+      {/* ── 4 · data-flow map ── */}
+      <section className="ov-flow reveal">
         <h3>The sidebar is a data flow, not a menu</h3>
         <div className="ov-flow-row">
           {FLOW.map((f, i) => (
-            <div key={f.id} className="ov-flow-item rise" style={{ animationDelay: `${380 + i * 90}ms` }}>
+            <div key={f.id} className="ov-flow-item">
               <button className="ov-node" onClick={() => onNavigate(f.id)}>
                 <span className="ov-node-label">{f.label}</span>
                 <span className="ov-node-sub">{f.sub}</span>
@@ -103,27 +177,30 @@ export default function Overview({
           ))}
         </div>
         <p className="ov-flow-note">
-          Every screen carries provenance chips: material risks feed the
-          exposure parameters, the budget split lands on the instrument desks,
-          the exotic desk's live knock-out odds drive the accounting module's
-          post-KO exposure — and the disclosure optimum closes the loop.
+          Material risks feed the exposure parameters, the budget split lands on
+          the instrument desks, the exotic desk's live knock-out odds drive the
+          accounting module's post-KO exposure — and the disclosure optimum closes
+          the loop.
         </p>
       </section>
 
-      <section>
-        <h3>Four papers, four screens</h3>
-        <div className="ov-papers">
-          {PAPERS.map((p) => (
-            <button key={p.n} className="ov-paper" onClick={() => onNavigate(p.module)}>
-              <span className="ov-paper-n">{p.n}</span>
-              <span className="ov-paper-title">{p.title}</span>
-              <span className="ov-paper-result">{p.result}</span>
-              <span className="ov-paper-link">{p.moduleName} →</span>
-            </button>
-          ))}
+      {/* ── 5 · culmination ── */}
+      <section className="ov-cta reveal">
+        <h3 className="ov-cta-h">See where the decision gets made.</h3>
+        <div className="ov-cta-btns">
+          <button className="ov-btn big primary" onClick={onStartTour}>
+            Take a look
+            <span className="ov-btn-sub">guided · no finance needed</span>
+          </button>
+          <button className="ov-btn big" onClick={() => onNavigate('decision')}>
+            Start
+            <span className="ov-btn-sub">open the Decision Dashboard</span>
+          </button>
         </div>
+        <a className="ov-gh" href="https://github.com/JihongParker/hong-erp" target="_blank" rel="noreferrer">
+          Source on GitHub →
+        </a>
       </section>
-
     </div>
   )
 }
