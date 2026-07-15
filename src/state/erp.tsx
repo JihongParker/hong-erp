@@ -116,11 +116,32 @@ function log(s: ErpState, actor: string, action: string, detail: string): ErpEve
   return [{ id: nid('EV'), ts: Date.now(), actor, action, detail }, ...s.events].slice(0, 80)
 }
 
+// Ledgers are capped so a demo visitor mashing Book/Submit can't grow
+// localStorage without bound — oldest records fall off, audit trail included.
+const MAX_TRADES = 40
+const MAX_METRICS = 60
+
 function reducer(s: ErpState, a: Action): ErpState {
   switch (a.type) {
     case 'submitMetric': {
+      // identical pending submission → no-op instead of a duplicate queue entry
+      if (
+        s.metrics.some(
+          (m) =>
+            m.status === 'pending' &&
+            m.division === a.rec.division &&
+            m.datapoint === a.rec.datapoint &&
+            m.year === a.rec.year &&
+            m.value === a.rec.value,
+        )
+      )
+        return s
       const rec: MetricRecord = { ...a.rec, id: nid('MR'), ts: Date.now(), status: 'pending' as const }
-      return { ...s, metrics: [rec, ...s.metrics], events: log(s, rec.by, 'submitted', `${divName(s, rec.division)} · ${rec.name} FY${rec.year}`) }
+      return {
+        ...s,
+        metrics: [rec, ...s.metrics].slice(0, MAX_METRICS),
+        events: log(s, rec.by, 'submitted', `${divName(s, rec.division)} · ${rec.name} FY${rec.year}`),
+      }
     }
     case 'reviewMetric': {
       const m = s.metrics.find((x) => x.id === a.id)
@@ -132,8 +153,25 @@ function reducer(s: ErpState, a: Action): ErpState {
       }
     }
     case 'bookTrade': {
-      const t: Trade = { ...a.trade, id: nid('TR'), ts: Date.now() }
-      return { ...s, trades: [t, ...s.trades], events: log(s, t.by, 'booked', `${divName(s, t.division)} · ${t.instrument.toLowerCase()} · ${t.notional}`) }
+      const now = Date.now()
+      // rapid-fire duplicate (same structure, same division, within 5s) → no-op
+      if (
+        s.trades.some(
+          (t) =>
+            now - t.ts < 5000 &&
+            t.division === a.trade.division &&
+            t.instrument === a.trade.instrument &&
+            t.terms === a.trade.terms &&
+            t.notional === a.trade.notional,
+        )
+      )
+        return s
+      const t: Trade = { ...a.trade, id: nid('TR'), ts: now }
+      return {
+        ...s,
+        trades: [t, ...s.trades].slice(0, MAX_TRADES),
+        events: log(s, t.by, 'booked', `${divName(s, t.division)} · ${t.instrument.toLowerCase()} · ${t.notional}`),
+      }
     }
     case 'designate': {
       const t = s.trades.find((x) => x.id === a.id)

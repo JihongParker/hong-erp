@@ -158,11 +158,10 @@ export default function MetricEntry() {
           <h3 className="me-h3gap">Recent activity</h3>
           <Activity limit={5} />
         </div>
-      </div>
 
-      {/* ── division ledger ── */}
-      <div className="me-panel">
-        <h3>{div.name} — submission ledger</h3>
+        {/* ── division ledger ── */}
+        <div className="me-panel">
+          <h3>{div.name} — submission ledger</h3>
         <div className="me-ledger">
           <table>
             <thead>
@@ -192,6 +191,7 @@ export default function MetricEntry() {
               ))}
             </tbody>
           </table>
+        </div>
         </div>
       </div>
     </div>

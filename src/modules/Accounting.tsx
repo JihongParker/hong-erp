@@ -31,7 +31,7 @@ const C_B = '#2e7d52'
 const bn = (v: number) => `₩${(v / 1e9).toFixed(1)}bn`
 
 const CW = 620
-const CH = 240
+const CH = 210
 const PAD = { top: 14, right: 96, bottom: 32, left: 60 }
 
 function Chart({
@@ -92,6 +92,29 @@ export default function Accounting() {
           {spine.budgetRegime === 'american' ? 'American KO structure selected upstream' : 'European vanilla structure selected upstream'}
         </Chip>
       </div>
+      <div className="ac-tiles">
+        <div className="tile">
+          <span className="tile-label">Mean |ineffectiveness| — A combined</span>
+          <span className="tile-value" style={{ color: C_A }}>{bn(S.ineffA)}</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">Mean |ineffectiveness| — B split</span>
+          <span className="tile-value" style={{ color: C_B }}>{bn(S.ineffB)}</span>
+          <span className="tile-badge">3.7× cleaner in P&L</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">Economic σ — A vs B</span>
+          <span className="tile-value small">{(S.sigmaEconA / 1e9).toFixed(1)} / {(S.sigmaEconB / 1e9).toFixed(1)} bn</span>
+          <span className="tile-badge">≈ same economics</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">KO probability (engine)</span>
+          <span className="tile-value">{(S.koProb * 100).toFixed(1)}%</span>
+        </div>
+      </div>
+
+      <div className="ac-cols">
+      <div className="ac-col">
       <div className="ac-panel">
         <h3>Trade blotter <span className="ac-count">{erp.trades.length}</span></h3>
         <div className="ac-blotter">
@@ -120,8 +143,8 @@ export default function Accounting() {
                       value={t.designation}
                       onChange={(e) => dispatch({ type: 'designate', id: t.id, designation: e.target.value as Designation })}
                     >
-                      <option value="CFH-A">CFH-A (combined)</option>
-                      <option value="CFH-B">CFH-B (split)</option>
+                      <option value="CFH-A" title="Cash-flow hedge, combined designation">CFH-A</option>
+                      <option value="CFH-B" title="Cash-flow hedge, split designation">CFH-B</option>
                       <option value="FVTPL">FVTPL</option>
                     </select>
                   </td>
@@ -137,33 +160,36 @@ export default function Accounting() {
         </p>
       </div>
 
-      <div className="ac-banner">
-        The question IFRS 9 forces: designate the quanto as{' '}
-        <strong>one combined hedge (A)</strong> or <strong>split it into two
-        lines (B)</strong>? Same economics — very different books.
+      <div className="ac-panel">
+        <h3>The designation trade-off</h3>
+        <p className="ac-banner-inline">
+          The question IFRS 9 forces: designate the quanto as{' '}
+          <strong>one combined hedge (A)</strong> or <strong>split it into
+          two lines (B)</strong>? Same economics — very different books.
+        </p>
+        <table>
+          <thead>
+            <tr><th></th><th>A — combined</th><th>B — split</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Hedge lines to document</td><td>1</td><td>2 (WTI + FX)</td></tr>
+            <tr><td>Mean |ineffectiveness|</td><td>{bn(S.ineffA)}</td><td><strong>{bn(S.ineffB)}</strong></td></tr>
+            <tr><td>Economic cash-flow σ</td><td>{bn(S.sigmaEconA)}</td><td>{bn(S.sigmaEconB)}</td></tr>
+            <tr><td>OCI → P&L reclass at maturity</td><td>{bn(S.ociReclassA)}</td><td>—</td></tr>
+            <tr><td>Post-KO FVTPL noise (σ)</td><td>—</td><td>{bn(S.postKoFvtplStdB)}</td></tr>
+          </tbody>
+        </table>
+        <p className="ac-note">
+          The economics barely differ; the accounting does. Splitting (B)
+          cuts P&L ineffectiveness 3.7× — but if the KO leg dies (
+          {(S.koProb * 100).toFixed(0)}% probability), its replacement
+          trades at FVTPL and injects {bn(S.postKoFvtplStdB)} of earnings
+          noise. Designation is a risk decision, not paperwork.
+        </p>
+      </div>
       </div>
 
-      <div className="ac-tiles">
-        <div className="tile">
-          <span className="tile-label">Mean |ineffectiveness| — A combined</span>
-          <span className="tile-value" style={{ color: C_A }}>{bn(S.ineffA)}</span>
-        </div>
-        <div className="tile">
-          <span className="tile-label">Mean |ineffectiveness| — B split</span>
-          <span className="tile-value" style={{ color: C_B }}>{bn(S.ineffB)}</span>
-          <span className="tile-badge">3.7× cleaner in P&L</span>
-        </div>
-        <div className="tile">
-          <span className="tile-label">Economic σ — A vs B</span>
-          <span className="tile-value small">{(S.sigmaEconA / 1e9).toFixed(1)} / {(S.sigmaEconB / 1e9).toFixed(1)} bn</span>
-          <span className="tile-badge">≈ same economics</span>
-        </div>
-        <div className="tile">
-          <span className="tile-label">KO probability (engine)</span>
-          <span className="tile-value">{(S.koProb * 100).toFixed(1)}%</span>
-        </div>
-      </div>
-
+      <div className="ac-col">
       <figure className="ac-panel">
         <div className="ac-head">
           <h3>{view === 'ineff' ? 'Cumulative ineffectiveness charged to P&L' : 'OCI hedge reserve path'}</h3>
@@ -195,49 +221,27 @@ export default function Accounting() {
         </figcaption>
       </figure>
 
-      <div className="ac-grid2">
-        <div className="ac-panel">
-          <h3>The designation trade-off</h3>
-          <table>
-            <thead>
-              <tr><th></th><th>A — combined</th><th>B — split</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Hedge lines to document</td><td>1</td><td>2 (WTI + FX)</td></tr>
-              <tr><td>Mean |ineffectiveness|</td><td>{bn(S.ineffA)}</td><td><strong>{bn(S.ineffB)}</strong></td></tr>
-              <tr><td>Economic cash-flow σ</td><td>{bn(S.sigmaEconA)}</td><td>{bn(S.sigmaEconB)}</td></tr>
-              <tr><td>OCI → P&L reclass at maturity</td><td>{bn(S.ociReclassA)}</td><td>—</td></tr>
-              <tr><td>Post-KO FVTPL noise (σ)</td><td>—</td><td>{bn(S.postKoFvtplStdB)}</td></tr>
-            </tbody>
-          </table>
-          <p className="ac-note">
-            The economics barely differ; the accounting does. Splitting (B)
-            cuts P&L ineffectiveness 3.7× — but if the KO leg dies (
-            {(S.koProb * 100).toFixed(0)}% probability), its replacement
-            trades at FVTPL and injects {bn(S.postKoFvtplStdB)} of earnings
-            noise. Designation is a risk decision, not paperwork.
-          </p>
-        </div>
-        <div className="ac-panel">
-          <h3>Where this connects</h3>
-          <ul className="ac-links">
-            <li>
-              <strong>Hedge Instruments →</strong> a collar's aligned time value
-              goes to OCI under IFRS 9 — the same designation machinery, on the
-              instrument desks actually use.
-            </li>
-            <li>
-              <strong>Exotic Desk →</strong> the KO probability driving B's
-              post-knock-out FVTPL noise is the Barrier Risk Monitor's number.
-            </li>
-            <li>
-              <strong>Decision Dashboard →</strong> hedge-accounting adoption is
-              the ESG paper's outcome variable: the precisely-estimated null on
-              disclosure mandates was measured on exactly this designation
-              choice.
-            </li>
-          </ul>
-        </div>
+      <div className="ac-panel">
+        <h3>Where this connects</h3>
+        <ul className="ac-links">
+          <li>
+            <strong>Hedge Instruments →</strong> a collar's aligned time value
+            goes to OCI under IFRS 9 — the same designation machinery the
+            instrument desks actually use.
+          </li>
+          <li>
+            <strong>Exotic Desk →</strong> the KO probability driving B's
+            post-knock-out FVTPL noise is the Barrier Risk Monitor's number.
+          </li>
+          <li>
+            <strong>Decision Dashboard →</strong> hedge-accounting adoption is
+            the ESG paper's outcome variable: the precisely-estimated null on
+            disclosure mandates was measured on exactly this designation
+            choice.
+          </li>
+        </ul>
+      </div>
+      </div>
       </div>
     </div>
   )
