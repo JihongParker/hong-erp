@@ -8,8 +8,8 @@ import './SeaCanvas.css'
 type RGB = [number, number, number]
 type Pal = { back: RGB; mid: RGB; front: RGB; foam: RGB }
 // blue at the surface, sea-green in the depths — lerped by scroll depth
-const LIGHT_TOP: Pal = { back: [174, 205, 227], mid: [139, 176, 208], front: [111, 154, 191], foam: [255, 255, 255] }
-const LIGHT_DEEP: Pal = { back: [160, 206, 180], mid: [107, 170, 132], front: [86, 148, 116], foam: [232, 247, 238] }
+const LIGHT_TOP: Pal = { back: [188, 214, 233], mid: [157, 189, 216], front: [133, 171, 202], foam: [255, 255, 255] }
+const LIGHT_DEEP: Pal = { back: [186, 220, 199], mid: [143, 191, 163], front: [123, 172, 147], foam: [240, 250, 244] }
 const DARK_TOP: Pal = { back: [51, 82, 111], mid: [41, 69, 89], front: [31, 53, 71], foam: [188, 211, 230] }
 const DARK_DEEP: Pal = { back: [40, 84, 68], mid: [30, 66, 52], front: [22, 48, 40], foam: [180, 214, 196] }
 

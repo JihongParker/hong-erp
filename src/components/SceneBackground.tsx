@@ -18,8 +18,9 @@ export default function SceneBackground() {
     if (!el) return
     let raf = 0
     // the water below the surf shifts from blue to sea-green as you descend
-    const TOP = [111, 154, 191]
-    const DEEP = [86, 148, 116]
+    // (softened ~20% so it stays easy on the eyes)
+    const TOP = [133, 171, 202]
+    const DEEP = [123, 172, 147]
     const onScroll = () => {
       cancelAnimationFrame(raf)
       raf = requestAnimationFrame(() => {
