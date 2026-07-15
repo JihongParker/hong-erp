@@ -1,4 +1,4 @@
-import HeroScene from '../components/HeroScene'
+import AppPreview from '../components/AppPreview'
 import './Overview.css'
 
 // The landing page: a researcher or recruiter should get the whole idea in
@@ -82,6 +82,12 @@ export default function Overview({
           Source on GitHub →
         </a>
       </section>
+      </div>
+
+      <div className="ov-stage rise" style={{ animationDelay: '200ms' }}>
+        <AppPreview />
+      </div>
+      </div>
 
       <section className="ov-flow">
         <h3>The sidebar is a data flow, not a menu</h3>
@@ -103,12 +109,6 @@ export default function Overview({
           post-KO exposure — and the disclosure optimum closes the loop.
         </p>
       </section>
-      </div>
-
-      <div className="ov-stage rise" style={{ animationDelay: '200ms' }}>
-        <HeroScene />
-      </div>
-      </div>
 
       <section>
         <h3>Four papers, four screens</h3>

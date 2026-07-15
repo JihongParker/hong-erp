@@ -21,11 +21,16 @@ export default function ParamRow({
   fmt?: (v: number) => string
 }) {
   const [sym, ...rest] = label.split(' ')
+  // render "p_f" / "h_c" with a true subscript so the math reads like a paper
+  const [base, subMark] = sym.split('_')
   const fill = `${((value - min) / (max - min)) * 100}%`
   return (
     <label className="param-row">
       <span className="param-name">
-        <span className="p-sym">{sym}</span>
+        <span className="p-sym">
+          {base}
+          {subMark && <sub className="p-sub">{subMark}</sub>}
+        </span>
         <span className="p-desc">{rest.join(' ')}</span>
       </span>
       <input

@@ -133,29 +133,49 @@
 }
 
 /* flow */
+/* the five stages stay on one line — arrows never point into a wrap; on a
+   narrow viewport the row scrolls horizontally instead of breaking */
 .ov-flow-row {
   display: flex;
   align-items: stretch;
   gap: 4px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 4px;
 }
 
 .ov-flow-item {
   display: flex;
   align-items: center;
   gap: 4px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* the last stage has no trailing arrow, so it needs no arrow gutter */
+.ov-flow-item:last-child {
+  flex-grow: 0.6;
 }
 
 .ov-node {
   display: grid;
   gap: 2px;
-  padding: 12px 18px;
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--panel);
   font: inherit;
   text-align: left;
   cursor: pointer;
+}
+
+.ov-node-label,
+.ov-node-sub {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ov-node:hover {
@@ -187,9 +207,10 @@
 }
 
 /* paper cards */
+/* 2×2 so P4 is never orphaned on its own row */
 .ov-papers {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 
