@@ -15,7 +15,7 @@
   --sc-surf-b: #79a6c9;
   --sc-surf-c: #689abf;
 
-  --sea-deep: #6f9abf;
+  --sea-deep: #85abca;
   position: absolute;
   inset: -36px -48px -48px -48px;
   z-index: -1;
@@ -105,16 +105,21 @@
   top: -20%;
   height: 150%;
   width: 130px;
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.14), transparent);
-  filter: blur(6px);
-  transform: rotate(9deg);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.16), transparent);
+  filter: blur(7px);
+  transform-origin: center top;
 }
-.scene-ray-1 { left: 18%; animation: sc-ray 13s ease-in-out infinite; }
-.scene-ray-2 { left: 46%; width: 90px; animation: sc-ray 17s ease-in-out infinite 3s; }
-.scene-ray-3 { left: 74%; width: 160px; animation: sc-ray 15s ease-in-out infinite 6s; }
+.scene-ray-1 { left: 18%; animation: sc-ray 8.5s ease-in-out infinite; }
+.scene-ray-2 { left: 46%; width: 90px; animation: sc-ray 10.5s ease-in-out infinite -3s; }
+.scene-ray-3 { left: 74%; width: 160px; animation: sc-ray 9.5s ease-in-out infinite -6s; }
+/* the shafts waver — swaying, breathing width, flickering brightness — like
+   sunlight rippling through water */
 @keyframes sc-ray {
-  0%, 100% { opacity: 0.35; transform: translateX(-30px) rotate(9deg); }
-  50% { opacity: 0.7; transform: translateX(30px) rotate(9deg); }
+  0% { opacity: 0.3; transform: translateX(-26px) rotate(11deg) scaleX(1); }
+  22% { opacity: 0.62; transform: translateX(2px) rotate(7deg) scaleX(1.28); }
+  46% { opacity: 0.42; transform: translateX(26px) rotate(12deg) scaleX(0.86); }
+  70% { opacity: 0.66; transform: translateX(6px) rotate(8deg) scaleX(1.18); }
+  100% { opacity: 0.3; transform: translateX(-26px) rotate(11deg) scaleX(1); }
 }
 
 .scene-bubble {
