@@ -139,7 +139,7 @@ export default function Accounting() {
                   <td>{timeAgo(t.ts)}</td>
                   <td>
                     <select
-                      className="ac-desig"
+                      className={`ac-desig ac-desig-${t.designation.toLowerCase().replace('-', '')}`}
                       value={t.designation}
                       onChange={(e) => dispatch({ type: 'designate', id: t.id, designation: e.target.value as Designation })}
                     >

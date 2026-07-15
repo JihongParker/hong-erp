@@ -13,6 +13,7 @@ import { useErp, type Trade } from '../state/erp'
 import { MARKET } from '../state/market'
 import MarketChip from '../components/MarketChip'
 import ParamRow from '../components/ParamRow'
+import { useToast } from '../components/Toast'
 import './Instruments.css'
 
 // Series colors — validated palette. The selected strategy is the hero line.
@@ -59,10 +60,10 @@ export default function Instruments() {
   const capPrem = useMemo(() => black76Call(capK, mkt), [capK, mkt])
 
   const spine = useSpine()
+  const toast = useToast()
   const { state: erp, dispatch } = useErp()
   const [bookDiv, setBookDiv] = useState(erp.divisions[0].id)
   const [bookNot, setBookNot] = useState('0.50')
-  const [booked, setBooked] = useState<string | null>(null)
 
   // effective purchase cost of a strategy at terminal price s
   const costOf = (strat: Strat, s: number): number => {
@@ -100,8 +101,7 @@ export default function Instruments() {
         designation: 'CFH-B',
       },
     })
-    setBooked(`Booked — ${n.toFixed(2)}M bbl ${STRAT_NAME[strategy]} for ${erp.divisions.find((d) => d.id === bookDiv)?.name}. See the blotter in Hedge Accounting.`)
-    setTimeout(() => setBooked(null), 4000)
+    toast(`Booked — ${n.toFixed(2)}M bbl ${STRAT_NAME[strategy]} for ${erp.divisions.find((d) => d.id === bookDiv)?.name}. See the blotter in Hedge Accounting.`)
   }
 
   const sMin = 0.4 * mkt.F
@@ -259,7 +259,6 @@ export default function Instruments() {
                     <input type="text" inputMode="decimal" value={bookNot} onChange={(e) => setBookNot(e.target.value)} />
                   </label>
                   <button className="ins-bookbtn" onClick={bookStructure}>Book {STRAT_NAME[strategy].toLowerCase()}</button>
-                  {booked && <span className="ins-bookflash">✓ {booked}</span>}
                 </div>
               </div>
             </div>
