@@ -19,9 +19,9 @@
 
 .sc-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.3fr);
+  grid-template-columns: minmax(320px, 1fr) minmax(400px, 1.6fr);
   gap: 20px;
-  align-items: start;
+  align-items: stretch;
 }
 
 /* the parameter panel stays pinned so sliders and the results table interact
@@ -83,15 +83,15 @@
 
 .sc-chart {
   display: grid;
-  gap: 8px;
+  gap: 12px;
 }
 
 .sc-row {
   display: grid;
-  grid-template-columns: 76px 1fr 52px;
+  grid-template-columns: 88px 1fr 56px;
   align-items: center;
-  gap: 10px;
-  font-size: 12.5px;
+  gap: 12px;
+  font-size: 13.5px;
 }
 
 .sc-name {
@@ -100,7 +100,7 @@
 }
 
 .sc-bar-track {
-  height: 14px;
+  height: 20px;
   border-radius: 4px;
   background: var(--bg);
   overflow: hidden;
@@ -131,7 +131,7 @@
 .sc-table-wrap th,
 .sc-table-wrap td {
   text-align: left;
-  padding: 7px 8px;
+  padding: 10px 10px;
   border-bottom: 1px solid var(--line);
   white-space: nowrap;
 }

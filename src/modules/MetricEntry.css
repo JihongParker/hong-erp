@@ -42,10 +42,12 @@
   font-size: 11px;
 }
 
+/* three columns — submit, queue, ledger — so the whole operations flow sits
+   in one viewport */
 .me-grid {
   display: grid;
-  grid-template-columns: minmax(300px, 1.4fr) 1fr;
-  gap: 20px;
+  grid-template-columns: minmax(280px, 1.1fr) 1fr 1.1fr;
+  gap: 16px;
   align-items: start;
 }
 
@@ -208,6 +210,12 @@
   padding-left: 12px;
 }
 
+@media (max-width: 1200px) {
+  .me-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .me-grid {
     grid-template-columns: 1fr;
@@ -340,6 +348,15 @@
 
 .me-ledger {
   overflow-x: auto;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.me-ledger thead th {
+  position: sticky;
+  top: 0;
+  background: var(--panel);
+  z-index: 1;
 }
 
 .me-ledger table {

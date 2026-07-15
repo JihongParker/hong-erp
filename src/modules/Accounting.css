@@ -78,11 +78,31 @@
   color: var(--muted);
 }
 
-.ac-grid2 {
+/* two-column layout: blotter + trade-off left, chart + connections right —
+   the whole module reads in one viewport */
+.ac-cols {
   display: grid;
-  grid-template-columns: 1.3fr 1fr;
+  grid-template-columns: 1.05fr 1fr;
   gap: 16px;
   align-items: start;
+}
+
+.ac-col {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* wide tables scroll inside their panel instead of blowing out the column */
+.ac-col .ac-panel {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.ac-banner-inline {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 10px;
 }
 
 .ac-panel table {
@@ -122,7 +142,7 @@
   .ac-tiles {
     grid-template-columns: repeat(2, 1fr);
   }
-  .ac-grid2 {
+  .ac-cols {
     grid-template-columns: 1fr;
   }
 }
@@ -143,6 +163,17 @@
 
 .ac-blotter {
   overflow-x: auto;
+  /* the ledger is capped in state, and the panel is capped on screen — the
+     newest bookings are visible, the rest scroll inside the panel */
+  max-height: 236px;
+  overflow-y: auto;
+}
+
+.ac-blotter thead th {
+  position: sticky;
+  top: 0;
+  background: var(--panel);
+  z-index: 1;
 }
 
 .ac-blotter table {
@@ -154,9 +185,10 @@
 .ac-blotter th,
 .ac-blotter td {
   text-align: left;
-  padding: 8px 10px;
+  padding: 8px 8px;
   border-bottom: 1px solid var(--line);
   white-space: nowrap;
+  font-size: 12.5px;
 }
 
 .ac-blotter th {
@@ -172,6 +204,9 @@
 .ac-terms {
   color: var(--muted);
   font-size: 12px;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .ac-desig {
