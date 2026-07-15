@@ -1,13 +1,14 @@
 .ov {
   margin-top: 0;
+  position: relative;
 }
 
 /* section titles */
 .ov h3 {
-  font-size: clamp(19px, 2.4vw, 26px);
-  line-height: 1.2;
-  letter-spacing: -0.015em;
-  margin-bottom: 12px;
+  font-size: clamp(30px, 4.4vw, 48px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
   color: var(--text);
 }
 
@@ -31,41 +32,34 @@
   }
 }
 
-/* ── 1 · hero: copy left, illustrated seascape right ── */
+/* ── 1 · hero: copy sits over the seascape sky ── */
 .ov-hero {
   position: relative;
-  min-height: 82vh;
-  display: grid;
-  grid-template-columns: minmax(0, 1.02fr) minmax(340px, 0.98fr);
-  gap: 56px;
-  align-items: center;
-  padding: 12px 0 48px;
+  min-height: 80vh;
+  display: flex;
+  align-items: flex-start;
+  padding: 6vh 0 40px;
+}
+
+/* soft scrim so the copy stays legible over the illustration */
+.ov-hero::before {
+  content: '';
+  position: absolute;
+  inset: -36px -48px -40px -48px;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    var(--bg) 8%,
+    color-mix(in srgb, var(--bg) 62%, transparent) 40%,
+    transparent 66%
+  );
 }
 
 .ov-hero-copy {
   position: relative;
   z-index: 1;
-  max-width: 640px;
-}
-
-.ov-hero-art {
-  justify-self: end;
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-}
-
-@media (max-width: 1000px) {
-  .ov-hero {
-    grid-template-columns: 1fr;
-    gap: 32px;
-    min-height: 0;
-    padding-bottom: 24px;
-  }
-  .ov-hero-art {
-    justify-content: flex-start;
-    max-width: 460px;
-  }
+  max-width: 660px;
 }
 
 .ov-kicker {
@@ -431,12 +425,12 @@
 
 .ov-node {
   display: grid;
-  gap: 4px;
+  gap: 5px;
   flex: 1;
   min-width: 0;
-  padding: 16px 18px;
+  padding: 20px 22px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--panel);
   font: inherit;
   text-align: left;
@@ -457,20 +451,20 @@
 }
 
 .ov-node-label {
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 21px;
+  font-weight: 750;
   letter-spacing: -0.01em;
 }
 
 .ov-node-sub {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
 }
 
 .ov-arrow {
   color: var(--accent);
-  font-size: 20px;
-  padding: 0 6px;
+  font-size: 24px;
+  padding: 0 8px;
 }
 
 .ov-flow-note {
@@ -491,9 +485,10 @@
 }
 
 .ov-cta-h {
-  font-size: clamp(24px, 3.4vw, 38px);
-  letter-spacing: -0.02em;
-  max-width: 620px;
+  font-size: clamp(32px, 4.6vw, 52px);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  max-width: 720px;
   margin-bottom: 0;
 }
 
@@ -529,11 +524,11 @@
 .ov-btn.big {
   flex-direction: column;
   align-items: flex-start;
-  gap: 3px;
-  padding: 16px 34px;
-  font-size: 18px;
-  border-radius: 14px;
-  min-width: 240px;
+  gap: 4px;
+  padding: 22px 46px;
+  font-size: 23px;
+  border-radius: 16px;
+  min-width: 300px;
 }
 
 .ov-btn.big:hover {
@@ -542,7 +537,7 @@
 }
 
 .ov-btn-sub {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   opacity: 0.75;
 }

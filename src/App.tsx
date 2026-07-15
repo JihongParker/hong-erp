@@ -10,7 +10,6 @@ import Budget from './modules/Budget'
 import Accounting from './modules/Accounting'
 import { SpineProvider } from './state/spine'
 import { ErpProvider, useErp } from './state/erp'
-import Backdrop from './components/Backdrop'
 import { MARKET, marketDate } from './state/market'
 import './App.css'
 
@@ -216,7 +215,6 @@ export default function App() {
     <ErpProvider>
     <SpineProvider>
     <div className="app">
-      {active === 'overview' && <Backdrop />}
 
       {/* mobile top bar — brand + hamburger; hidden on desktop */}
       <div className="mobile-bar">

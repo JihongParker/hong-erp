@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import AppPreview from '../components/AppPreview'
-import HeroArt from '../components/HeroArt'
-import TideFlow from '../components/TideFlow'
+import SceneBackground from '../components/SceneBackground'
 import './Overview.css'
 
 // A scroll-told landing: the headline lives first, then the reader descends
@@ -95,7 +94,7 @@ export default function Overview({
 
   return (
     <div className="ov">
-      <TideFlow />
+      <SceneBackground />
 
       {/* ── 1 · hero ── */}
       <section className="ov-hero">
@@ -120,9 +119,6 @@ export default function Overview({
             Follow the chain <span className="ov-cue-arrow">↓</span>
           </button>
         </div>
-        <div className="ov-hero-art reveal in">
-          <HeroArt />
-        </div>
       </section>
 
       {/* ── 2 · the research chain ── */}
@@ -130,8 +126,7 @@ export default function Overview({
         <div className="ov-chain-head reveal">
           <h3>One position, four papers, one chain</h3>
           <p>
-            Every screen runs the actual model from a finance paper. All four
-            interrogate one Korean oil importer's WTI × USD/KRW exposure, and each
+            Four papers, one Korean oil importer's WTI × USD/KRW exposure. Each
             picks up where the last leaves off.
           </p>
         </div>
@@ -160,10 +155,7 @@ export default function Overview({
       <section className="ov-live reveal">
         <div className="ov-live-head">
           <h3>And it all moves</h3>
-          <p>
-            The models run live in your browser. Drag a dial and the equilibrium
-            recomputes. Flip through the screens, or let them play.
-          </p>
+          <p>Drag a dial, the equilibrium recomputes. Flip through, or let them play.</p>
         </div>
         <AppPreview />
       </section>
@@ -183,10 +175,8 @@ export default function Overview({
           ))}
         </div>
         <p className="ov-flow-note">
-          Material risks feed the exposure parameters, the budget split lands on
-          the instrument desks, and the exotic desk's live knock-out odds drive
-          the accounting module's post-KO exposure. The disclosure optimum closes
-          the loop.
+          Risks set the exposure, the budget hits the desks, the desks' knock-out
+          odds drive the books, and disclosure closes the loop.
         </p>
       </section>
 
