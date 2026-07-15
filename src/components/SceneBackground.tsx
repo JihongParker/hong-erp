@@ -70,17 +70,24 @@ export default function SceneBackground() {
           <ellipse cx="-28" cy="-9" rx="26" ry="11" />
         </g>
 
-        {/* airliner with a contrail (scaled up so it reads clearly) */}
+        {/* commercial airliner (side view) with a contrail */}
         <g className="sc-plane">
-          <g transform="scale(2.6)">
-            <line x1="-72" y1="0" x2="-6" y2="0" stroke="var(--sc-cloud)" strokeWidth="2.6" strokeLinecap="round" opacity="0.75" />
+          <g transform="scale(2.2)">
+            <line x1="-74" y1="-2" x2="4" y2="-2" stroke="var(--sc-cloud)" strokeWidth="2.4" strokeLinecap="round" opacity="0.7" />
             <g fill="var(--sc-plane)">
-              <path d="M0 0 L26 -1.6 L35 0 L26 1.6 Z" />
-              <path d="M12 0 L1 -11 L7 -11 L21 -1 Z" />
-              <path d="M12 0 L1 11 L7 11 L21 1 Z" />
-              <path d="M27 -1 L22 -8 L25 -8 L32 -1 Z" />
-              <path d="M27 1 L22 8 L25 8 L32 1 Z" />
+              {/* fuselage */}
+              <path d="M4 0 C4 -3.2 8 -4.8 18 -4.8 L47 -4.8 C56 -4.8 64 -2.4 69 0 C64 2.4 56 4.2 47 4.2 L18 4.2 C8 4.2 4 3.2 4 0 Z" />
+              {/* tail fin */}
+              <path d="M8 -3.6 L0 -17 L7.5 -17 L17 -3.6 Z" />
+              {/* horizontal stabiliser */}
+              <path d="M6 -2 L-4 -7 L3.5 -7 L13 -2 Z" />
+              {/* swept wing */}
+              <path d="M41 3 L23 16 L32 16 L49 3.6 Z" />
+              {/* engine */}
+              <ellipse cx="35" cy="6.4" rx="5" ry="2.5" />
             </g>
+            {/* cabin windows */}
+            <rect x="21" y="-2.4" width="22" height="2.2" rx="1.1" fill="var(--sc-cloud)" opacity="0.8" />
           </g>
         </g>
 
