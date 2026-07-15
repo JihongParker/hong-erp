@@ -203,13 +203,15 @@
   text-wrap: balance;
 }
 
-/* left-rail timeline: the spine and its P1…P4 nodes run down the left, every
-   research-paper card aligned to the right of it */
+/* the whole timeline is centred: the paper cards sit in the middle of the
+   page and the progress spine runs just to their left */
 .chain-track {
   position: relative;
   display: flex;
   flex-direction: column;
-  padding-left: 52px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding-left: 56px;
 }
 
 .chain-spine {
@@ -270,9 +272,8 @@
 /* card copy always reads left-to-right, never ragged-right */
 .chain-card {
   text-align: left;
-  width: 100%;
-  max-width: 640px;
-  margin-left: 40px;
+  width: auto;
+  margin-left: 44px;
 }
 
 /* node sits on the spine at the left; dormant until it scrolls in, then lights */
