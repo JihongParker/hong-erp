@@ -117,12 +117,11 @@ export default function Overview({
             </span>
           </h2>
           <p className="ov-lede reveal in">
-            ESG platforms are good at recording what a company discloses and bad
-            at using it. <strong>HongERP treats that risk the way a trading desk
-            would.</strong> Give it a company's exposures and it works out two
-            answers together: <strong>how much to hedge</strong> and{' '}
-            <strong>how much to disclose</strong>. Disclosing a risk makes carrying
-            it cheaper, so the two decisions are really one.
+            ESG tools record what a company discloses, then stop. HongERP treats
+            that risk like a <strong>trading desk</strong>: give it the exposures
+            and it computes both answers at once, <strong>how much to hedge</strong>{' '}
+            and <strong>how much to disclose</strong>. Disclosing a risk makes it
+            cheaper to carry, so the two are really one decision.
           </p>
           <button className="ov-scrollcue reveal in" onClick={() => chainRef.current?.scrollIntoView({ behavior: 'smooth' })}>
             Follow the chain <span className="ov-cue-arrow">↓</span>

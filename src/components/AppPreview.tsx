@@ -241,7 +241,7 @@ export default function AppPreview() {
   // auto-advance every 5s unless paused; resets whenever idx changes
   useEffect(() => {
     if (paused) return
-    const t = setTimeout(() => setIdx((i) => (i + 1) % CARDS.length), 5000)
+    const t = setTimeout(() => setIdx((i) => (i + 1) % CARDS.length), 2700)
     return () => clearTimeout(t)
   }, [idx, paused])
 

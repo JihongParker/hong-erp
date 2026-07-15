@@ -5,11 +5,12 @@
 
 /* section titles */
 .ov h3 {
-  font-size: clamp(30px, 4.4vw, 48px);
+  font-size: clamp(28px, 4vw, 44px);
   line-height: 1.12;
   letter-spacing: -0.02em;
   margin-bottom: 14px;
   color: var(--text);
+  text-wrap: balance;
 }
 
 /* reveal-on-scroll */
@@ -59,18 +60,19 @@
   padding: 6vh 0 40px;
 }
 
-/* soft scrim so the copy stays legible over the illustration */
+/* soft halo behind the copy — a feathered radial, no hard parallel edge */
 .ov-hero::before {
   content: '';
   position: absolute;
   inset: -36px -48px -40px -48px;
   z-index: 0;
   pointer-events: none;
-  background: linear-gradient(
-    100deg,
-    var(--bg) 6%,
-    color-mix(in srgb, var(--bg) 60%, transparent) 32%,
-    transparent 50%
+  background: radial-gradient(
+    135% 105% at 16% 42%,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--bg) 70%, transparent) 30%,
+    color-mix(in srgb, var(--bg) 30%, transparent) 52%,
+    transparent 68%
   );
 }
 
@@ -186,14 +188,16 @@
 }
 
 .ov-chain-head {
-  max-width: 620px;
+  max-width: 860px;
   margin-bottom: 40px;
 }
 
 .ov-chain-head p {
-  font-size: 15px;
-  line-height: 1.65;
-  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  opacity: 0.82;
+  max-width: 620px;
 }
 
 /* a single vertical timeline: each paper is its own row, its node centred on
@@ -410,9 +414,10 @@
 }
 
 .ov-live-head p {
-  font-size: 15px;
-  line-height: 1.65;
-  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  opacity: 0.82;
 }
 
 /* ── 4 · data-flow map ── */
@@ -487,9 +492,10 @@
 
 .ov-flow-note {
   margin-top: 16px;
-  font-size: 13px;
-  line-height: 1.65;
-  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  opacity: 0.8;
   max-width: 760px;
 }
 
