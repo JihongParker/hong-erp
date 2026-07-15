@@ -148,10 +148,10 @@
 @keyframes sc-cloud-a { from { transform: translate(120px, 80px); } to { transform: translate(1320px, 80px); } }
 @keyframes sc-cloud-b { from { transform: translate(40px, 176px); } to { transform: translate(1300px, 176px); } }
 
-.sc-plane { animation: sc-plane 30s linear infinite; }
+.sc-plane { animation: sc-plane 32s linear infinite; }
 @keyframes sc-plane {
-  from { transform: translate(220px, 92px); }
-  to { transform: translate(1420px, 44px); }
+  from { transform: translate(240px, 210px); }
+  to { transform: translate(1420px, 150px); }
 }
 
 .sc-gulls { animation: sc-gulls 44s linear infinite; }
