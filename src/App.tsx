@@ -56,6 +56,20 @@ const ALL = GROUPS.flatMap((g) => g.items)
 // finance background. Each step lands on a module and says exactly what to drag.
 const TOUR: { module: string; title: string; body: string; target: string; lift?: string }[] = [
   {
+    module: 'materiality',
+    target: '.mat-controls',
+    lift: '.mat-grid',
+    title: 'Decide what counts',
+    body: 'Slide the materiality threshold. Every risk that clears it turns material and lights up the matrix — and the count you land on rides the top of every downstream screen as the exposure the model hedges. This is where the ERP starts.',
+  },
+  {
+    module: 'metrics',
+    target: '[data-tour="me-submit"]',
+    lift: '[data-tour="me-queue"]',
+    title: 'Enter a number, sign it off',
+    body: 'A division head files a metric here; it drops into the approval queue on the right for audit to approve. Only approved values set the disclosure intensity d* the decision layer runs on — nothing reaches the model unsigned.',
+  },
+  {
     module: 'decision',
     target: '.db-params',
     lift: '.db-tiles',

@@ -74,7 +74,7 @@ export default function MetricEntry() {
 
       <div className="me-grid">
         {/* ── submit ── */}
-        <div className="me-panel">
+        <div className="me-panel" data-tour="me-submit">
           <h3>New submission</h3>
           <div className="me-tabs">
             {state.divisions.map((d) => (
@@ -126,7 +126,7 @@ export default function MetricEntry() {
         </div>
 
         {/* ── approval queue + heartbeat ── */}
-        <div className="me-panel">
+        <div className="me-panel" data-tour="me-queue">
           <h3>
             Approval queue <span className="me-count">{pending.length}</span>
           </h3>
