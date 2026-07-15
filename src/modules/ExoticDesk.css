@@ -12,20 +12,34 @@
   background: var(--panel);
 }
 
+/* cockpit — identical to the vanilla desk: sticky input rail left, results right */
 .ex-grid {
   display: grid;
+  grid-template-columns: 296px minmax(0, 1fr);
   gap: 16px;
+  align-items: start;
+}
+
+.ex-rail {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+.ex-main {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
 }
 
 .ex-deck {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 8px 24px;
-  align-items: start;
-}
-
-.ex-deck h3 {
-  grid-column: 1 / -1;
+  gap: 10px;
+  align-content: start;
 }
 
 .ex-charts {
@@ -97,9 +111,7 @@
 
 /* barrier monitor — status colors always carry icon + label, never color alone */
 .ex-monitor {
-  grid-column: 2;
-  grid-row: 2 / span 3;
-  margin-top: 0;
+  margin-top: 4px;
   border: 1px solid var(--line);
   border-radius: 10px;
   overflow: hidden;
@@ -157,7 +169,14 @@
 }
 
 @media (max-width: 1000px) {
-  .ex-deck,
+  .ex-grid {
+    grid-template-columns: 1fr;
+  }
+  .ex-rail {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
   .ex-charts {
     grid-template-columns: 1fr;
   }

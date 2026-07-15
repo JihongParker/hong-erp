@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import surface from '../data/exotic_surface.json'
-import { useSpine } from '../state/spine'
+import { Chip, useSpine } from '../state/spine'
 import { useErp } from '../state/erp'
 import { MARKET, clamp } from '../state/market'
 import MarketChip from '../components/MarketChip'
@@ -251,9 +251,80 @@ export default function ExoticDesk() {
 
   return (
     <div className="ex">
-      <div className="market-row"><MarketChip /></div>
+      <div className="spine-row">
+        <MarketChip />
+        <Chip from="Budget">
+          allocator says cover <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> of the WTI leg — {(spine.budgetW1 * 2.0).toFixed(2)}M bbl through this desk
+        </Chip>
+        <Chip from="Decision Dashboard">
+          disclosure d* = <strong>{spine.dStar.toFixed(2)}</strong> sets the residual-risk price the hedge answers to
+        </Chip>
+      </div>
+
       <div className="ex-grid">
-        <div className="ex-tiles">
+        {/* ── control rail: inputs + book, sticky (same cockpit as the vanilla desk) ── */}
+        <div className="ex-rail">
+          <div className="ex-panel ex-deck">
+            <h3>Position &amp; barrier monitor</h3>
+            <label data-tour="spot">
+              <span className="ex-plabel">WTI spot S₁</span>
+              <input type="range" min={S_GRID[0]} max={S_GRID[S_GRID.length - 1]} step={0.5} value={spot} onChange={(e) => setSpot(Number(e.target.value))} />
+              <span className="ex-pval">${spot.toFixed(1)}</span>
+            </label>
+            <label>
+              <span className="ex-plabel">Time to maturity</span>
+              <input type="range" min={0} max={T_GRID.length - 1} step={1} value={T_GRID.length - 1 - ti} onChange={(e) => setTi(T_GRID.length - 1 - Number(e.target.value))} />
+              <span className="ex-pval">{T_GRID[ti].toFixed(2)}y</span>
+            </label>
+
+            <div className={`ex-monitor ${risk.cls}`}>
+              <div className="ex-monitor-head">
+                <span className="ex-risk-icon">{risk.icon}</span> Barrier risk: {risk.label}
+              </div>
+              <div className="ex-monitor-body">
+                KO probability <strong>{(koP * 100).toFixed(1)}%</strong>
+                <div className="ex-gauge">
+                  <div className={`ex-gauge-fill ${risk.cls}`} style={{ width: `${koP * 100}%` }} />
+                </div>
+                <div className="ex-dist">
+                  upper barrier {U}: <strong>{distU.toFixed(1)}%</strong> away · lower {L}:{' '}
+                  <strong>{distL.toFixed(1)}%</strong> away
+                </div>
+              </div>
+            </div>
+
+            <div className="ex-contingency">
+              <strong>KO contingency:</strong> if the structure knocks out, the
+              hedge dies while the exposure lives. Desk rule: residual exposure
+              reverts to the budget allocator (vanilla legs / collar) the same
+              day — the plan exists <em>before</em> the barrier is hit.
+            </div>
+          </div>
+
+          <div className="ins-panel ins-book">
+            <h3>Book this structure</h3>
+            <div className="ins-bookrow">
+              <label className="ins-binline">
+                Division
+                <select value={bookDiv} onChange={(e) => setBookDiv(e.target.value)}>
+                  {erp.divisions.map((d) => (
+                    <option key={d.id} value={d.id}>{d.name}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="ins-binline">
+                Notional (M bbl)
+                <input type="text" inputMode="decimal" value={bookNot} onChange={(e) => setBookNot(e.target.value)} />
+              </label>
+              <button className="ins-bookbtn" onClick={bookQuanto}>Book quanto</button>
+              {booked && <span className="ins-bookflash">✓ {booked}</span>}
+            </div>
+          </div>
+        </div>
+
+        {/* ── results main ── */}
+        <div className="ex-main">
+          <div className="ex-tiles">
             <div className="tile">
               <span className="tile-label">Value (KRW / unit)</span>
               <span className="tile-value">{vLive.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
@@ -274,85 +345,29 @@ export default function ExoticDesk() {
             </div>
           </div>
 
-        <div className="ins-panel ins-book">
-          <h3>Book this structure</h3>
-          <div className="ins-bookrow">
-            <label className="ins-binline">
-              Division
-              <select value={bookDiv} onChange={(e) => setBookDiv(e.target.value)}>
-                {erp.divisions.map((d) => (
-                  <option key={d.id} value={d.id}>{d.name}</option>
-                ))}
-              </select>
-            </label>
-            <label className="ins-binline">
-              Notional (M bbl)
-              <input type="text" inputMode="decimal" value={bookNot} onChange={(e) => setBookNot(e.target.value)} />
-            </label>
-            <button className="ins-bookbtn" onClick={bookQuanto}>Book quanto</button>
-            {booked && <span className="ins-bookflash">✓ {booked}</span>}
-          </div>
-        </div>
+          <div className="ex-charts">
+            <figure className="ex-panel">
+              <h3>Value across the corridor — the barrier squeeze</h3>
+              <Curve values={row.price} color="#2f6db4" spot={spot} fmt={(v) => `${(v / 1000).toFixed(0)}k`} />
+              <figcaption className="ex-cap">
+                Value rises with S₁ then collapses toward the upper barrier — the
+                non-monotonicity that makes per-asset delta estimation break, and
+                the reason the paper's covariance-aware c* ≠ 1.
+              </figcaption>
+            </figure>
 
-        <div className="ex-panel ex-deck">
-          <h3>Position &amp; barrier monitor</h3>
-          <label data-tour="spot">
-            <span className="ex-plabel">WTI spot S₁</span>
-            <input type="range" min={S_GRID[0]} max={S_GRID[S_GRID.length - 1]} step={0.5} value={spot} onChange={(e) => setSpot(Number(e.target.value))} />
-            <span className="ex-pval">${spot.toFixed(1)}</span>
-          </label>
-          <label>
-            <span className="ex-plabel">Time to maturity</span>
-            <input type="range" min={0} max={T_GRID.length - 1} step={1} value={T_GRID.length - 1 - ti} onChange={(e) => setTi(T_GRID.length - 1 - Number(e.target.value))} />
-            <span className="ex-pval">{T_GRID[ti].toFixed(2)}y</span>
-          </label>
-
-          <div className={`ex-monitor ${risk.cls}`}>
-            <div className="ex-monitor-head">
-              <span className="ex-risk-icon">{risk.icon}</span> Barrier risk: {risk.label}
-            </div>
-            <div className="ex-monitor-body">
-              KO probability <strong>{(koP * 100).toFixed(1)}%</strong>
-              <div className="ex-gauge">
-                <div className={`ex-gauge-fill ${risk.cls}`} style={{ width: `${koP * 100}%` }} />
-              </div>
-              <div className="ex-dist">
-                upper barrier {U}: <strong>{distU.toFixed(1)}%</strong> away · lower {L}:{' '}
-                <strong>{distL.toFixed(1)}%</strong> away
-              </div>
-            </div>
+            <figure className="ex-panel">
+              <h3>Knock-out probability</h3>
+              <Curve values={row.ko} color="#b3610f" spot={spot} fmt={(v) => `${(v * 100).toFixed(0)}%`} yMaxHint={1.05} />
+              <figcaption className="ex-cap">
+                Q-measure probability of hitting either barrier before maturity.
+                Shaded edges are the dead zones; dashed line is the strike K={K}.
+              </figcaption>
+            </figure>
           </div>
 
-          <div className="ex-contingency">
-            <strong>KO contingency:</strong> if the structure knocks out, the
-            hedge dies while the exposure lives. Desk rule: residual exposure
-            reverts to the budget allocator (vanilla legs / collar) the same
-            day — the plan exists <em>before</em> the barrier is hit.
-          </div>
+          <LatticeFoil spot={spot} paperKo={koP} baseT={T_GRID[0]} />
         </div>
-
-        <div className="ex-charts">
-          <figure className="ex-panel">
-            <h3>Value across the corridor — the barrier squeeze</h3>
-            <Curve values={row.price} color="#2f6db4" spot={spot} fmt={(v) => `${(v / 1000).toFixed(0)}k`} />
-            <figcaption className="ex-cap">
-              Value rises with S₁ then collapses toward the upper barrier — the
-              non-monotonicity that makes per-asset delta estimation break, and
-              the reason the paper's covariance-aware c* ≠ 1.
-            </figcaption>
-          </figure>
-
-          <figure className="ex-panel">
-            <h3>Knock-out probability</h3>
-            <Curve values={row.ko} color="#b3610f" spot={spot} fmt={(v) => `${(v * 100).toFixed(0)}%`} yMaxHint={1.05} />
-            <figcaption className="ex-cap">
-              Q-measure probability of hitting either barrier before maturity.
-              Shaded edges are the dead zones; dashed line is the strike K={K}.
-            </figcaption>
-          </figure>
-        </div>
-
-        <LatticeFoil spot={spot} paperKo={koP} baseT={T_GRID[0]} />
       </div>
     </div>
   )
