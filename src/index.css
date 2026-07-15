@@ -64,3 +64,24 @@ body {
   /* Korean copy wraps on word boundaries, not mid-syllable; no effect on English */
   word-break: keep-all;
 }
+
+/* custom scrollbars — thin, theme-aware, unobtrusive */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 99px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
