@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Overview from './modules/Overview'
 import AccountTree from './modules/AccountTree'
 import Materiality from './modules/Materiality'
@@ -168,6 +168,63 @@ export default function App() {
     setNavOpen(false)
   }
 
+  // deep-linking: the active screen lives in the URL hash (#decision), so a
+  // screen can be opened directly and links are shareable
+  useEffect(() => {
+    const fromHash = () => {
+      const id = window.location.hash.replace('#', '')
+      if (id && ALL.some((m) => m.id === id)) setActive(id)
+      else if (!id) setActive('overview')
+    }
+    fromHash()
+    window.addEventListener('hashchange', fromHash)
+    return () => window.removeEventListener('hashchange', fromHash)
+  }, [])
+
+  useEffect(() => {
+    const current = window.location.hash.replace('#', '')
+    if (active === 'overview') {
+      if (current) history.replaceState(null, '', window.location.pathname + window.location.search)
+    } else if (current !== active) {
+      history.replaceState(null, '', `#${active}`)
+    }
+  }, [active])
+
+  // tour dialog: Esc to close, focus moves in on open and is trapped, restored
+  // on close (aria-modal announced to screen readers)
+  const tourCardRef = useRef<HTMLElement | null>(null)
+  useEffect(() => {
+    if (tour === null) return
+    const prevFocus = document.activeElement as HTMLElement | null
+    const card = tourCardRef.current
+    card?.querySelector<HTMLElement>('button, [href], input, select')?.focus()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setTour(null)
+        return
+      }
+      if (e.key !== 'Tab' || !card) return
+      const f = Array.from(card.querySelectorAll<HTMLElement>('button, [href], input, select')).filter(
+        (el) => !el.hasAttribute('disabled'),
+      )
+      if (f.length === 0) return
+      const first = f[0]
+      const last = f[f.length - 1]
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      prevFocus?.focus?.()
+    }
+  }, [tour])
+
   // spotlight the tour step's control: soft glow + arrow, scrolled into view
   useEffect(() => {
     document.querySelectorAll('.tour-glow').forEach((el) => el.classList.remove('tour-glow'))
@@ -272,6 +329,7 @@ export default function App() {
         {mod.id !== 'overview' && (
           <header>
             <h1>{mod.name}</h1>
+            {mod.desc && <p className="mod-desc">{mod.desc}</p>}
           </header>
         )}
         {mod.id === 'overview' ? (
@@ -297,7 +355,7 @@ export default function App() {
 
       <TourSpotlight active={tour !== null} />
       {tour !== null && (
-        <aside className="tour-card" role="dialog" aria-label="Guided tour">
+        <aside className="tour-card" role="dialog" aria-modal="true" aria-label="Guided tour" ref={tourCardRef}>
           <div className="tour-head">
             <span className="tour-step">Step {tour + 1} / {TOUR.length}</span>
             <button className="tour-close" onClick={() => setTour(null)} aria-label="End tour">✕</button>
