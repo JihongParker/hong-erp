@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { solveEquilibrium, type ModelParams } from '../engine/model'
 import { useErp } from '../state/erp'
+import ParamRow from '../components/ParamRow'
 import './Scenario.css'
 
 // Division colors — validated palette, assigned to entities in fixed order;
@@ -58,18 +59,15 @@ export default function Scenario() {
           </div>
           <div className="sc-sliders">
             {PARAM_META.map((m) => (
-              <label key={m.key}>
-                <span className="sc-param">{m.label}</span>
-                <input
-                  type="range"
-                  min={m.min}
-                  max={m.max}
-                  step={m.step}
-                  value={divs[sel].params[m.key]}
-                  onChange={(e) => setParam(m.key, Number(e.target.value))}
-                />
-                <span className="sc-val">{divs[sel].params[m.key].toFixed(2)}</span>
-              </label>
+              <ParamRow
+                key={m.key}
+                label={m.label}
+                min={m.min}
+                max={m.max}
+                step={m.step}
+                value={divs[sel].params[m.key]}
+                onChange={(v) => setParam(m.key, v)}
+              />
             ))}
           </div>
           <p className="sc-fixed-note">

@@ -91,6 +91,58 @@ const TOUR: { module: string; title: string; body: string; target: string; lift?
   },
 ]
 
+// Spotlight overlay: instead of dimming everything and trying to lift the
+// highlighted controls above the wash with z-index (which fails whenever the
+// target sits inside a stacking context), measure the glow/lift targets and
+// cut real holes in the dim layer with an SVG mask. The targets stay at full
+// brightness by construction.
+function TourSpotlight({ active }: { active: boolean }) {
+  const [holes, setHoles] = useState<{ x: number; y: number; w: number; h: number }[]>([])
+  useEffect(() => {
+    if (!active) {
+      setHoles([])
+      return
+    }
+    let raf = 0
+    const tick = () => {
+      const els = document.querySelectorAll('.tour-glow, .tour-lift')
+      const next = Array.from(els).map((el) => {
+        const r = el.getBoundingClientRect()
+        return { x: r.left - 10, y: r.top - 10, w: r.width + 20, h: r.height + 20 }
+      })
+      setHoles((prev) =>
+        prev.length === next.length &&
+        prev.every(
+          (p, i) =>
+            Math.abs(p.x - next[i].x) < 0.5 &&
+            Math.abs(p.y - next[i].y) < 0.5 &&
+            Math.abs(p.w - next[i].w) < 0.5 &&
+            Math.abs(p.h - next[i].h) < 0.5,
+        )
+          ? prev
+          : next,
+      )
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [active])
+  if (!active) return null
+  return (
+    <svg className="tour-spot" aria-hidden="true">
+      <defs>
+        <mask id="tour-spot-mask">
+          <rect width="100%" height="100%" fill="#fff" />
+          {holes.map((h, i) => (
+            <rect key={i} x={h.x} y={h.y} width={h.w} height={h.h} rx={16} fill="#000" />
+          ))}
+        </mask>
+      </defs>
+      <rect width="100%" height="100%" fill="rgba(30, 34, 32, 0.46)" mask="url(#tour-spot-mask)" />
+    </svg>
+  )
+}
+
 function ResetDemo() {
   const { dispatch } = useErp()
   return (
@@ -214,7 +266,7 @@ export default function App() {
         )}
       </main>
 
-      {tour !== null && <div className="tour-backdrop" />}
+      <TourSpotlight active={tour !== null} />
       {tour !== null && (
         <aside className="tour-card" role="dialog" aria-label="Guided tour">
           <div className="tour-head">

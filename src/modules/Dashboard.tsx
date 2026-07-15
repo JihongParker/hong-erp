@@ -8,6 +8,7 @@ import {
 import { Chip, useSpine } from '../state/spine'
 import { timeAgo, useErp } from '../state/erp'
 import Activity from '../components/Activity'
+import ParamRow from '../components/ParamRow'
 import './Dashboard.css'
 
 // Series colors — from the validated palette; color follows the entity
@@ -149,50 +150,21 @@ export default function Dashboard() {
         </Chip>
       </div>
       <div className="db-grid">
-        <div className="db-tiles">
-          <div className="tile">
-            <span className="tile-label">Disclosure d*</span>
-            <span className="tile-value">{eq.dStar.toFixed(2)}</span>
-            <span className={eq.floorBinding ? 'tile-badge binding' : 'tile-badge'}>
-                {eq.floorBinding ? 'floor binding' : 'voluntary interior'}
-              </span>
-          </div>
-          <div className="tile">
-            <span className="tile-label">Financial hedge h_f*</span>
-            <span className="tile-value" style={{ color: C_FIN }}>
-                {(eq.hF * 100).toFixed(0)}%
-              </span>
-          </div>
-          <div className="tile">
-            <span className="tile-label">Climate hedge h_c*</span>
-            <span className="tile-value" style={{ color: C_CLI }}>
-                {(eq.hC * 100).toFixed(0)}%
-              </span>
-          </div>
-          <div className="tile">
-            <span className="tile-label">Risk price Λ(d*)</span>
-            <span className="tile-value">{eq.lambdaAtD.toFixed(2)}</span>
-          </div>
-        </div>
-
-        {/* ── parameters ── */}
+        {/* ── parameters: sticky rail, always in view while results react ── */}
         <div className="db-panel db-params">
           {GROUPS.map((g) => (
             <div key={g.title} className="db-group" data-tour={g.title === 'Regulation' ? 'floor' : undefined}>
               <h4>{g.title}</h4>
               {g.params.map((m) => (
-                <label key={m.key}>
-                  <span className="db-plabel">{m.label}</span>
-                  <input
-                    type="range"
-                    min={m.min}
-                    max={m.max}
-                    step={m.step}
-                    value={p[m.key]}
-                    onChange={(e) => set(m.key, Number(e.target.value))}
-                  />
-                  <span className="db-pval">{p[m.key].toFixed(2)}</span>
-                </label>
+                <ParamRow
+                  key={m.key}
+                  label={m.label}
+                  min={m.min}
+                  max={m.max}
+                  step={m.step}
+                  value={p[m.key]}
+                  onChange={(v) => set(m.key, v)}
+                />
               ))}
             </div>
           ))}
@@ -203,6 +175,31 @@ export default function Dashboard() {
 
         {/* ── results ── */}
         <div className="db-main">
+          <div className="db-tiles">
+            <div className="tile">
+              <span className="tile-label">Disclosure d*</span>
+              <span className="tile-value">{eq.dStar.toFixed(2)}</span>
+              <span className={eq.floorBinding ? 'tile-badge binding' : 'tile-badge'}>
+                {eq.floorBinding ? 'floor binding' : 'voluntary interior'}
+              </span>
+            </div>
+            <div className="tile">
+              <span className="tile-label">Financial hedge h_f*</span>
+              <span className="tile-value" style={{ color: C_FIN }}>
+                {(eq.hF * 100).toFixed(0)}%
+              </span>
+            </div>
+            <div className="tile">
+              <span className="tile-label">Climate hedge h_c*</span>
+              <span className="tile-value" style={{ color: C_CLI }}>
+                {(eq.hC * 100).toFixed(0)}%
+              </span>
+            </div>
+            <div className="tile">
+              <span className="tile-label">Risk price Λ(d*)</span>
+              <span className="tile-value">{eq.lambdaAtD.toFixed(2)}</span>
+            </div>
+          </div>
 
           {/* hedge at a glance */}
           <div className="db-panel">
