@@ -1,0 +1,185 @@
+.scene {
+  --sc-sun-1: #f3c07a;
+  --sc-sun-2: #e79a4a;
+  --sc-cloud: #ffffff;
+  --sc-plane: #556472;
+  --sc-gull: #4a5866;
+  --sc-land: #7d8b96;
+  --sc-port-c: #63727f;
+  --sc-tank: #8b98a3;
+  --sc-tank-top: #9ba7b1;
+  --sc-flare: #e08a3c;
+  --sc-plume: #9fb0bd;
+  --sc-lamp: #ffd98a;
+  --sc-surf-a: #8fb7d6;
+  --sc-surf-b: #79a6c9;
+  --sc-surf-c: #689abf;
+
+  position: absolute;
+  inset: -36px -48px -48px -48px;
+  z-index: -1;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    #cfe0f0 0,
+    #e8eef4 24vh,
+    #f3ebda 44vh,
+    #bfd8ea 60vh,
+    #a6c8e2 82vh,
+    #8fb7d6 100%
+  );
+  animation: scene-expand 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* on load the scene grows out of the corner to fill the frame */
+@keyframes scene-expand {
+  from {
+    clip-path: inset(12% 3% 36% 55% round 22px);
+    opacity: 0.35;
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 0);
+    opacity: 1;
+  }
+}
+
+:root[data-theme='dark'] .scene,
+.scene.is-dark {
+  background: linear-gradient(180deg, #2a3a4c 0, #33465a 24vh, #3d4453 44vh, #2c4258 60vh, #223c52 82vh, #1a3145 100%);
+  --sc-cloud: #cdd6de;
+  --sc-land: #46545f;
+  --sc-port-c: #55697a;
+  --sc-tank: #566571;
+  --sc-tank-top: #64717c;
+  --sc-surf-a: #33526f;
+  --sc-surf-b: #294559;
+  --sc-surf-c: #1f3547;
+}
+
+@media (prefers-color-scheme: dark) {
+  .scene {
+    background: linear-gradient(180deg, #2a3a4c 0, #33465a 24vh, #3d4453 44vh, #2c4258 60vh, #223c52 82vh, #1a3145 100%);
+    --sc-cloud: #cdd6de;
+    --sc-land: #46545f;
+    --sc-port-c: #55697a;
+    --sc-tank: #566571;
+    --sc-tank-top: #64717c;
+    --sc-surf-a: #33526f;
+    --sc-surf-b: #294559;
+    --sc-surf-c: #1f3547;
+  }
+}
+
+@media (max-width: 860px) {
+  .scene {
+    inset: -22px -18px -40px -18px;
+  }
+}
+
+/* the port banner sits at the top; its waterline meets the sea gradient */
+.scene-art {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 66vh;
+  min-height: 460px;
+  display: block;
+}
+
+/* deep water below the surface */
+.scene-deep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 62vh;
+  bottom: 0;
+  overflow: hidden;
+}
+
+/* soft swells of light drift downward, so descending feels like sinking */
+.scene-swell {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  height: 130px;
+  background: linear-gradient(180deg, transparent, rgb(255 255 255 / 0.5), transparent);
+  filter: blur(7px);
+}
+.scene-swell-1 { animation: sc-swell 15s linear infinite; opacity: 0.5; }
+.scene-swell-2 { height: 90px; animation: sc-swell 22s linear infinite 5s; opacity: 0.32; }
+
+@keyframes sc-swell {
+  from { transform: translateY(-30vh); }
+  to { transform: translateY(150vh); }
+}
+
+/* ── the living elements ── */
+.sc-sun { animation: sc-glow 6s ease-in-out infinite; }
+@keyframes sc-glow { 0%, 100% { opacity: 1; } 50% { opacity: 0.9; } }
+
+.sc-cloud { opacity: 0.85; }
+.sc-cloud-a { animation: sc-cloud-a 46s linear infinite; }
+.sc-cloud-b { animation: sc-cloud-b 62s linear infinite; }
+@keyframes sc-cloud-a { from { transform: translate(120px, 80px); } to { transform: translate(1320px, 80px); } }
+@keyframes sc-cloud-b { from { transform: translate(40px, 176px); } to { transform: translate(1300px, 176px); } }
+
+.sc-plane { animation: sc-plane 26s linear infinite; }
+@keyframes sc-plane {
+  from { transform: translate(-120px, 84px); }
+  to { transform: translate(1360px, 40px); }
+}
+
+.sc-gulls { animation: sc-gulls 44s linear infinite; }
+@keyframes sc-gulls { from { transform: translate(0, 0); } to { transform: translate(420px, -34px); } }
+.sc-gull { animation: sc-flap 0.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes sc-flap { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.55); } }
+
+.sc-lamp { animation: sc-blink 3s ease-in-out infinite; }
+@keyframes sc-blink { 0%, 100% { opacity: 1; } 45% { opacity: 0.5; } }
+.sc-beam { transform-origin: 0 5px; animation: sc-sweep 7s ease-in-out infinite; }
+@keyframes sc-sweep {
+  0%, 100% { transform: rotate(6deg); opacity: 0.08; }
+  50% { transform: rotate(-8deg); opacity: 0.22; }
+}
+
+.sc-flare { transform-origin: 271px 355px; animation: sc-flicker 1.3s ease-in-out infinite; }
+@keyframes sc-flicker { 0%, 100% { transform: scaleY(1); opacity: 0.9; } 50% { transform: scaleY(1.28); opacity: 1; } }
+
+.sc-plume { animation: sc-rise 5s ease-in-out infinite; }
+@keyframes sc-rise { 0%, 100% { opacity: 0.28; transform: translateY(0); } 50% { opacity: 0.48; transform: translateY(-4px); } }
+
+.sc-reflect { animation: sc-shimmer 4s ease-in-out infinite; }
+@keyframes sc-shimmer { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+.sc-ship { animation: sc-bob 6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes sc-bob { 0%, 100% { transform: translateY(0) rotate(-0.4deg); } 50% { transform: translateY(3px) rotate(0.4deg); } }
+
+.sc-arm-swing { transform-origin: 512px 442px; animation: sc-arm 5s ease-in-out infinite; }
+@keyframes sc-arm { 0%, 100% { transform: rotate(-1.4deg); } 50% { transform: rotate(1.4deg); } }
+
+/* buoys bob in place */
+.sc-buoy { transform-box: fill-box; transform-origin: bottom center; animation: sc-buoy 4.5s ease-in-out infinite; }
+.sc-buoy-late { animation-duration: 5.6s; animation-delay: 0.7s; }
+@keyframes sc-buoy {
+  0%, 100% { transform: translateY(0) rotate(-7deg); }
+  50% { transform: translateY(5px) rotate(7deg); }
+}
+
+/* colored surf washes in and draws back */
+.sc-surf-1 { animation: sc-wash-1 7s ease-in-out infinite alternate; }
+.sc-surf-2 { animation: sc-wash-2 8.5s ease-in-out infinite alternate; }
+.sc-surf-3 { animation: sc-wash-3 10s ease-in-out infinite alternate; }
+@keyframes sc-wash-1 { from { transform: translate(-28px, 8px); } to { transform: translate(22px, 0); } }
+@keyframes sc-wash-2 { from { transform: translate(20px, 6px); } to { transform: translate(-24px, 0); } }
+@keyframes sc-wash-3 { from { transform: translate(-16px, 5px); } to { transform: translate(18px, 0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene { animation: none; }
+  .scene-swell,
+  .sc-sun, .sc-cloud-a, .sc-cloud-b, .sc-plane, .sc-gulls, .sc-gull, .sc-lamp,
+  .sc-beam, .sc-flare, .sc-plume, .sc-reflect, .sc-ship, .sc-arm-swing,
+  .sc-buoy, .sc-buoy-late, .sc-surf-1, .sc-surf-2, .sc-surf-3 {
+    animation: none;
+  }
+}
