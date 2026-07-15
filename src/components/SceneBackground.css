@@ -15,6 +15,7 @@
   --sc-surf-b: #79a6c9;
   --sc-surf-c: #689abf;
 
+  --sea-deep: #6f9abf;
   position: absolute;
   inset: -36px -48px -48px -48px;
   z-index: -1;
@@ -24,8 +25,8 @@
     #cfe0f0 0,
     #e8eef4 26vh,
     #f3ebda 46vh,
-    #6f9abf 56vh,
-    #6f9abf 100%
+    var(--sea-deep) 56vh,
+    var(--sea-deep) 100%
   );
   animation: scene-expand 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -87,31 +88,54 @@
   z-index: 1;
 }
 
-/* deep water below the surface */
-.scene-deep {
+/* ── underwater life: light rays + rising bubbles ── */
+.scene-life {
   position: absolute;
   left: 0;
   right: 0;
-  top: 62vh;
+  top: 58vh;
   bottom: 0;
+  z-index: 0;
   overflow: hidden;
+  pointer-events: none;
 }
 
-/* soft swells of light drift downward, so descending feels like sinking */
-.scene-swell {
+.scene-ray {
   position: absolute;
-  left: -10%;
-  right: -10%;
-  height: 130px;
-  background: linear-gradient(180deg, transparent, rgb(255 255 255 / 0.5), transparent);
-  filter: blur(7px);
+  top: -20%;
+  height: 150%;
+  width: 130px;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.14), transparent);
+  filter: blur(6px);
+  transform: rotate(9deg);
 }
-.scene-swell-1 { animation: sc-swell 15s linear infinite; opacity: 0.5; }
-.scene-swell-2 { height: 90px; animation: sc-swell 22s linear infinite 5s; opacity: 0.32; }
+.scene-ray-1 { left: 18%; animation: sc-ray 13s ease-in-out infinite; }
+.scene-ray-2 { left: 46%; width: 90px; animation: sc-ray 17s ease-in-out infinite 3s; }
+.scene-ray-3 { left: 74%; width: 160px; animation: sc-ray 15s ease-in-out infinite 6s; }
+@keyframes sc-ray {
+  0%, 100% { opacity: 0.35; transform: translateX(-30px) rotate(9deg); }
+  50% { opacity: 0.7; transform: translateX(30px) rotate(9deg); }
+}
 
-@keyframes sc-swell {
-  from { transform: translateY(-30vh); }
-  to { transform: translateY(150vh); }
+.scene-bubble {
+  position: absolute;
+  bottom: -40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.08));
+  border: 1px solid rgb(255 255 255 / 0.2);
+  animation-name: sc-bubble;
+  animation-timing-function: ease-in;
+  animation-iteration-count: infinite;
+}
+@keyframes sc-bubble {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  12% { opacity: 0.5; }
+  70% { opacity: 0.5; }
+  100% { transform: translateY(-92vh) translateX(24px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-ray, .scene-bubble { animation: none; opacity: 0.3; }
 }
 
 /* ── the living elements ── */

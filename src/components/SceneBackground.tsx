@@ -17,11 +17,16 @@ export default function SceneBackground() {
     const el = ref.current
     if (!el) return
     let raf = 0
+    // the water below the surf shifts from blue to sea-green as you descend
+    const TOP = [111, 154, 191]
+    const DEEP = [86, 148, 116]
     const onScroll = () => {
       cancelAnimationFrame(raf)
       raf = requestAnimationFrame(() => {
-        // the deep-water swell drifts a touch faster the further you descend
-        el.style.setProperty('--dive', `${Math.min(1, window.scrollY / (window.innerHeight * 2))}`)
+        const doc = document.documentElement.scrollHeight - window.innerHeight
+        const d = Math.min(1, Math.max(0, window.scrollY / (doc || 1)))
+        const c = TOP.map((a, i) => Math.round(a + (DEEP[i] - a) * d))
+        el.style.setProperty('--sea-deep', `rgb(${c[0]},${c[1]},${c[2]})`)
       })
     }
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -169,6 +174,34 @@ export default function SceneBackground() {
 
       {/* animated surf fills the water */}
       <SeaCanvas />
+
+      {/* underwater life: light rays and bubbles rising through the depths */}
+      <div className="scene-life">
+        <span className="scene-ray scene-ray-1" />
+        <span className="scene-ray scene-ray-2" />
+        <span className="scene-ray scene-ray-3" />
+        {BUBBLES.map((b, i) => (
+          <span
+            key={i}
+            className="scene-bubble"
+            style={{
+              left: `${b.x}%`,
+              width: `${b.s}px`,
+              height: `${b.s}px`,
+              animationDuration: `${b.d}s`,
+              animationDelay: `${b.delay}s`,
+            }}
+          />
+        ))}
+      </div>
     </div>
   )
 }
+
+// deterministic bubble field so it doesn't reshuffle each render
+const BUBBLES = Array.from({ length: 22 }, (_, i) => ({
+  x: (i * 37) % 100,
+  s: 4 + ((i * 13) % 12),
+  d: 9 + ((i * 7) % 10),
+  delay: -((i * 11) % 14),
+}))

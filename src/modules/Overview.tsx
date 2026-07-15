@@ -43,6 +43,15 @@ const PAPERS = [
   },
 ]
 
+// nodes step from blue (first paper) to sea-green (last), matching the descent
+const nodeColor = (i: number, n: number) => {
+  const t = n > 1 ? i / (n - 1) : 0
+  const a = [0x3f, 0x79, 0xad]
+  const b = [0x2e, 0x8b, 0x57]
+  const c = a.map((v, k) => Math.round(v + (b[k] - v) * t))
+  return `rgb(${c[0]},${c[1]},${c[2]})`
+}
+
 const FLOW = [
   { id: 'materiality', label: 'Materiality', sub: 'risks scored' },
   { id: 'budget', label: 'Budget', sub: 'coverage split' },
@@ -138,7 +147,11 @@ export default function Overview({
           </div>
 
           {PAPERS.map((p, i) => (
-            <article key={p.n} className={`chain-item reveal ${i % 2 ? 'right' : 'left'}`}>
+            <article
+              key={p.n}
+              className={`chain-item reveal ${i % 2 ? 'right' : 'left'}`}
+              style={{ ['--node-c' as string]: nodeColor(i, PAPERS.length) }}
+            >
               <span className="chain-node">{p.n}</span>
               <button className="chain-card" onClick={() => onNavigate(p.module)}>
                 <span className="chain-title">{p.title}</span>
