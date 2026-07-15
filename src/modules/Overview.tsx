@@ -117,11 +117,11 @@ export default function Overview({
             </span>
           </h2>
           <p className="ov-lede reveal in">
-            ESG tools record what a company discloses, then stop. HongERP treats
-            that risk like a <strong>trading desk</strong>: give it the exposures
-            and it computes both answers at once, <strong>how much to hedge</strong>{' '}
-            and <strong>how much to disclose</strong>. Disclosing a risk makes it
-            cheaper to carry, so the two are really one decision.
+            ESG tools record what a company discloses, then <strong>stop</strong>.<br />
+            HongERP treats that risk like a trading desk:<br />
+            it computes <strong>how much to hedge</strong> and{' '}
+            <strong>how much to disclose</strong>.<br />
+            Disclosing a risk makes it cheaper to carry, so the two are one decision.
           </p>
           <div className="ov-hero-cta reveal in">
             <button className="ov-btn big primary" onClick={() => onNavigate('decision')}>
@@ -187,7 +187,7 @@ export default function Overview({
         <h3>The sidebar is a data flow, not a menu.</h3>
         <div className="ov-flow-row">
           {FLOW.map((f, i) => (
-            <div key={f.id} className="ov-flow-item">
+            <div key={f.id} className="ov-flow-item reveal" style={{ ['--i' as string]: i }}>
               <button className="ov-node" onClick={() => onNavigate(f.id)}>
                 <span className="ov-node-label">{f.label}</span>
                 <span className="ov-node-sub">{f.sub}</span>

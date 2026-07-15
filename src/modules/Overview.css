@@ -13,16 +13,22 @@
   text-wrap: balance;
 }
 
-/* reveal-on-scroll */
+/* reveal-on-scroll — a livelier rise with a gentle overshoot and a touch of
+   scale, so information springs in rather than just fading */
 .reveal {
   opacity: 0;
-  transform: translateY(26px);
-  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(38px) scale(0.965);
+  transition: opacity 0.55s ease, transform 0.72s cubic-bezier(0.22, 1.15, 0.36, 1);
 }
 
 .reveal.in {
   opacity: 1;
   transform: none;
+}
+
+/* staggered children (flow stages) cascade in one after another */
+.ov-flow-item.reveal {
+  transition-delay: calc(var(--i, 0) * 80ms);
 }
 
 /* section titles wipe in left-to-right as their block reveals */
@@ -144,6 +150,26 @@
   justify-content: center;
   flex-wrap: wrap;
   margin-bottom: 20px;
+}
+
+/* over the light-blue hero the solid green reads harsh, so the primary here is
+   a bright panel card with an accent edge; the bottom CTA (on green) keeps its
+   solid fill */
+.ov-hero-cta .ov-btn.primary {
+  background: var(--panel);
+  color: var(--accent);
+  border: 1.5px solid var(--accent);
+  box-shadow: 0 6px 20px -8px rgb(35 122 85 / 0.35);
+}
+
+.ov-hero-cta .ov-btn.primary .ov-btn-sub {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.ov-hero-cta .ov-btn.primary:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--panel));
+  transform: translateY(-2px);
 }
 
 .ov-scrollcue {
@@ -427,10 +453,13 @@
 .ov-flow-row {
   display: flex;
   align-items: stretch;
-  gap: 4px;
+  justify-content: center;
+  gap: 6px;
   flex-wrap: nowrap;
   overflow-x: auto;
   padding-bottom: 4px;
+  max-width: 1140px;
+  margin: 0 auto;
 }
 
 .ov-flow-item {
@@ -450,7 +479,7 @@
   gap: 5px;
   flex: 1;
   min-width: 0;
-  padding: 20px 22px;
+  padding: 20px 18px;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--panel);
