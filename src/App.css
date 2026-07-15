@@ -603,6 +603,18 @@ input[type='range']::-moz-range-thumb {
   border-radius: 12px;
 }
 
+/* during the guided tour, un-stick the parameter rails. scrollIntoView centers
+   the spotlighted rail; a sticky rail then floats at top:16px while the result
+   tiles it points to scroll away, so the two spotlight holes lose their shared
+   top edge (visible on steps 1 & 2). Static flow keeps rail and tiles locked. */
+.touring .db-params,
+.touring .bg-deck,
+.touring .ins-rail {
+  position: static;
+  max-height: none;
+  overflow: visible;
+}
+
 /* ── parameter sliders: filled track + ringed thumb, shared by every deck ── */
 input[type='range'].fancy {
   -webkit-appearance: none;
