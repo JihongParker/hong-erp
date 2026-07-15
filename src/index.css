@@ -7,6 +7,29 @@
   --accent: #237a55; /* soft ESG green */
   --accent-soft: #e6f2ec;
   --ice-water: #7aa0af; /* waterline/ripple ink on the overview sea */
+
+  /* motion — one vocabulary for every transition/animation */
+  --dur-xs: 100ms;
+  --dur-s: 160ms;
+  --dur-m: 240ms;
+  --dur-l: 480ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.3, 0.72, 0.24, 1);
+
+  /* elevation — raised (cards), float (hover/popover), overlay (modal/toast) */
+  --shadow-raised: 0 2px 4px rgb(0 0 0 / 0.05);
+  --shadow-float: 0 10px 26px -14px rgb(20 30 26 / 0.35);
+  --shadow-overlay: 0 24px 60px -24px rgb(20 30 26 / 0.45);
+
+  /* type scale — no font-size outside these seven steps */
+  --fs-caption: 11px;
+  --fs-label: 12.5px;
+  --fs-body: 14px;
+  --fs-lede: 17px;
+  --fs-h3: 21px;
+  --fs-h2: 26px;
+  --fs-stat: 30px;
+
   color-scheme: light dark;
 }
 
@@ -20,6 +43,10 @@
     --accent: #55b98a;
     --accent-soft: #223229;
     --ice-water: #4a6b78;
+    /* shadows read stronger on dark surfaces */
+    --shadow-raised: 0 2px 6px rgb(0 0 0 / 0.35);
+    --shadow-float: 0 10px 28px -14px rgb(0 0 0 / 0.6);
+    --shadow-overlay: 0 24px 64px -24px rgb(0 0 0 / 0.72);
   }
 }
 
@@ -34,4 +61,6 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
+  /* Korean copy wraps on word boundaries, not mid-syllable; no effect on English */
+  word-break: keep-all;
 }
