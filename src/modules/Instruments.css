@@ -310,6 +310,11 @@
   cursor: pointer;
 }
 
+.ins-bookbtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* ── strategy library selector ──────────────────────────────────────────── */
 .ins-strat {
   display: flex;
