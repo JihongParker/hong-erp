@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 import AppPreview from '../components/AppPreview'
-import IceField from '../components/IceField'
 import SceneBackground from '../components/SceneBackground'
 import { useT, useLang } from '../i18n'
 import './Overview.css'
@@ -108,7 +107,6 @@ export default function Overview({
   return (
     <div className="ov">
       <SceneBackground />
-      <IceField />
 
       {/* ── 1 · hero ── */}
       <section className="ov-hero">
