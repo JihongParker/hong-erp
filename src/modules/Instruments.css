@@ -178,6 +178,22 @@
 
 .ins-table-wrap {
   overflow-x: auto;
+  position: relative;
+}
+
+/* right-edge scroll hint: a soft fade cueing that the table runs wider than the
+   panel. Kept subtle so it is harmless on desktop, and pointer-transparent so it
+   never intercepts clicks on the table underneath. */
+.ins-table-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 24px;
+  pointer-events: none;
+  opacity: 0.9;
+  background: linear-gradient(to right, transparent, var(--panel));
 }
 
 .ins-table-wrap table {

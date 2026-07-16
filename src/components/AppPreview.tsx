@@ -218,6 +218,7 @@ export default function AppPreview() {
   const [dial, setDial] = useState(0.5)
   const [paused, setPaused] = useState(false)
   const rootRef = useRef<HTMLDivElement | null>(null)
+  const touchX = useRef<number | null>(null)
   const reduced = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   // internal dial — the looping "gif" motion inside the active card
@@ -277,7 +278,19 @@ export default function AppPreview() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="ap-stack">
+      <div
+        className="ap-stack"
+        onTouchStart={(e) => { touchX.current = e.touches[0].clientX }}
+        onTouchEnd={(e) => {
+          if (touchX.current === null) return
+          // ±40px horizontal swipe flips a card; go() changes idx, which resets
+          // the auto-advance timer via its effect dependency
+          const dx = e.changedTouches[0].clientX - touchX.current
+          touchX.current = null
+          if (dx > 40) go(-1)
+          else if (dx < -40) go(1)
+        }}
+      >
         <span className="ap-ghost ap-ghost-2" aria-hidden />
         <span className="ap-ghost ap-ghost-1" aria-hidden />
 
