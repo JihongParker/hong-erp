@@ -721,6 +721,50 @@
   max-width: 760px;
 }
 
+/* mobile: the five-across flow squeezes to invisibility — stack it vertically
+   with the connector arrows turned downward, full-width readable nodes */
+@media (max-width: 720px) {
+  .ov-flow-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    overflow: visible;
+    perspective: none;
+  }
+  .ov-flow-item {
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .ov-flow-item:last-child {
+    flex-grow: 0;
+  }
+  .ov-node {
+    width: 100%;
+    transform: none; /* drop the 3D tilt so stacked cards sit flat and full-width */
+    padding: 16px 18px;
+  }
+  .ov-node::before {
+    display: none;
+  }
+  .ov-node-label,
+  .ov-node-sub {
+    white-space: normal;
+  }
+  /* turn the inline "→" into a centered "↓" connector between stacked steps */
+  .ov-arrow {
+    align-self: center;
+    padding: 6px 0;
+    font-size: 0; /* hide the → glyph */
+    line-height: 1;
+  }
+  .ov-arrow::after {
+    content: "↓";
+    font-size: 22px;
+  }
+}
+
 /* ── 5 · culmination ── */
 .ov-cta {
   padding: clamp(70px, 12vh, 150px) 0 clamp(40px, 7vh, 90px);
