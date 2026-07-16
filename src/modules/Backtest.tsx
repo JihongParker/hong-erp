@@ -144,7 +144,7 @@ export default function Backtest() {
             is negative {pct(out.negShare, 0)} of the time, so the FX leg partially self-hedges oil: the real-data
             analogue of the paper's counterintuitive c* &lt; 0.</li>
         </ul>
-        <p className="bt-src">Source: {META.source}. Monthly returns precomputed {META.generated}; the walk-forward engine runs live in the browser.</p>
+        <p className="bt-src">Source: {META.source}. Monthly returns auto-refreshed monthly from FRED by GitHub Actions (last: {META.generated}); the walk-forward engine then re-runs live in the browser.</p>
       </div>
     </div>
   )
