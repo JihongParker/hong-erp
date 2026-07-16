@@ -19,6 +19,7 @@
 
 .me-select select {
   flex: 1;
+  min-width: 0;
   max-width: 480px;
   padding: 7px 10px;
   border: 1px solid var(--line);

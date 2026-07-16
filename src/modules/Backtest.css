@@ -29,7 +29,7 @@
   position: sticky;
   top: 16px;
 }
-.bt-main { display: grid; gap: 16px; min-width: 0; }
+.bt-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0; }
 
 .bt-controls .bt-muted {
   font-size: 11.5px;
@@ -68,7 +68,7 @@
 }
 .bt-panel h3 { font-size: var(--fs-h3); margin-bottom: 12px; }
 
-.bt-panel svg { width: 100%; height: auto; display: block; }
+.bt-panel svg { width: 100%; max-width: 100%; height: auto; display: block; }
 
 /* metrics table — same language as the strategy-comparison table */
 .bt-table-wrap { overflow-x: auto; position: relative; }
@@ -130,6 +130,6 @@
 .bt-src { font-size: 11px; color: var(--muted); margin-top: 14px; opacity: 0.8; }
 
 @media (max-width: 1000px) {
-  .bt-grid { grid-template-columns: 1fr; }
+  .bt-grid { grid-template-columns: minmax(0, 1fr); }
   .bt-rail { position: static; }
 }

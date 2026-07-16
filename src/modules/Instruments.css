@@ -126,13 +126,14 @@
 
 .ins-main {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   min-width: 0;
 }
 
 .ins-tiles {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -142,6 +143,7 @@
 
 .ins-plot svg {
   width: 100%;
+  max-width: 100%;
   height: auto;
   display: block;
 }
@@ -259,14 +261,14 @@
 
 @media (max-width: 1000px) {
   .ins-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .ins-rail {
     position: static;
     max-height: none;
   }
   .ins-tiles {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

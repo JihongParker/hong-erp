@@ -240,8 +240,30 @@
 }
 
 @media (max-width: 560px) {
+  /* mobile compaction: fit the frame to its content (height:auto never clips)
+     and tighten the mock body so the whole preview reads shorter on a phone. */
+  .ap {
+    gap: 9px;
+  }
   .ap-window {
-    height: 360px;
+    height: auto;
+  }
+  .ap-body {
+    padding: 10px;
+    gap: 8px;
+  }
+  .ap-tiles {
+    gap: 8px;
+  }
+  .ap-tile {
+    padding: 6px 9px;
+  }
+  .ap-tv {
+    font-size: 16px;
+  }
+  .ap-chart {
+    padding: 8px;
+    gap: 4px;
   }
   .ap-arrow.left {
     left: -6px;

@@ -342,6 +342,13 @@ nav {
     flex-direction: column;
   }
 
+  /* last-resort guard: root causes are fixed above, but clip pins the page body
+     so no future wide element can ever produce a horizontal page scroll. Wide
+     tables/charts keep their own overflow-x wrappers, so nothing is masked. */
+  body {
+    overflow-x: clip;
+  }
+
   .mobile-bar {
     display: flex;
     align-items: center;
