@@ -184,7 +184,7 @@ export default function Budget() {
             </svg>
             <figcaption className="bg-muted">
               Red curve: total-cost boundary C = B. Dashed: allocation envelope.
-              The optimum (dot) sits at the vertex — constraint-pinned, which is
+              The optimum (dot) sits at the vertex, constraint-pinned, which is
               why a 10% volatility mis-estimate moves what the allocation{' '}
               <em>delivers</em>, not what it <em>is</em> (paper §6.5).
             </figcaption>

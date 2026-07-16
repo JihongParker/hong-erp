@@ -6,6 +6,7 @@ import { usePersistentState } from '../state/persist'
 import { MARKET, clamp } from '../state/market'
 import MarketChip from '../components/MarketChip'
 import { useToast } from '../components/Toast'
+import { useT, useLang } from '../i18n'
 import { crrDoubleKO, koConvergence, gbmDoubleKOprob } from '../engine/lattice'
 import { europeanQuanto, type QuantoCalib } from '../engine/quanto'
 import './ExoticDesk.css'
@@ -142,6 +143,7 @@ const LPAD = { top: 14, right: 92, bottom: 32, left: 46 }
 const CONV_NS = [15, 25, 40, 60, 85, 115, 150, 190, 235, 285, 340]
 
 function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; baseT: number }) {
+  const [lang] = useLang()
   const [nSteps, setNSteps] = useState(80)
   const [useTotal, setUseTotal] = useState(false)
   const sigma = useTotal ? SIG_TOT : SIG_DIFF
@@ -167,11 +169,24 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
     <figure className="ex-panel ex-foil">
       <h3>What the textbook desk can&rsquo;t see <span className="ex-foil-tag">model risk</span></h3>
       <p className="ex-foil-sub">
-        Same knock-out, three numbers. The standard binomial desk tool — and even the
-        exact one-factor GBM formula it&rsquo;s chasing — says this hedge dies about a third
-        of the time. Our jump-diffusion quanto engine says nearly half. That gap is
-        <strong> survival risk the textbook cannot represent</strong>: no price jumps, no FX
-        correlation. Understating it is exactly how the 2008 barrier books blew up.
+        {lang === 'ko' ? (
+          <>
+            같은 녹아웃, 세 개의 숫자. 표준 이항 데스크 도구는 (그리고 그 도구가 좇는 정확한
+            1-요인 GBM 공식조차) 이 헤지가 대략 세 번에 한 번꼴로 사라진다고 말합니다. 우리
+            점프-확산 퀀토 엔진은 거의 절반이라고 말합니다. 그 격차가 바로{' '}
+            <strong> 교과서가 표현하지 못하는 생존 리스크</strong>입니다: 가격 점프도, 환율
+            상관성도 담기지 않습니다. 이것을 과소평가한 방식이 바로 2008년 배리어 장부가 터진
+            경로였습니다.
+          </>
+        ) : (
+          <>
+            Same knock-out, three numbers. The standard binomial desk tool (and even the
+            exact one-factor GBM formula it&rsquo;s chasing) says this hedge dies about a third
+            of the time. Our jump-diffusion quanto engine says nearly half. That gap is
+            <strong> survival risk the textbook cannot represent</strong>: no price jumps, no FX
+            correlation. Understating it is exactly how the 2008 barrier books blew up.
+          </>
+        )}
       </p>
 
       <div className="ex-foil-ctrl">
@@ -233,9 +248,19 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
       </svg>
 
       <ul className="ex-foil-why">
-        <li><strong>The textbook is too low, not too high.</strong> A knock-out turns your hedge into naked exposure the instant it fires — so a desk tool that lowballs the KO odds underprices the exact disaster the structure exists to survive. Our engine is the one telling the truth.</li>
-        <li><strong>And the math error is the small part.</strong> The jittery line (lattice) vs the grey line (exact GBM) differ by ~1pp — pure node straddling (Boyle–Lau), and it shrinks as you crank N. The {Math.abs(modelGap).toFixed(0)}pp that matters is model, not arithmetic.</li>
-        <li><strong>One factor can&rsquo;t carry a quanto.</strong> There is no FX leg in the textbook world, so the paper&rsquo;s quanto delta Δ_FX = V/S₂ and covariance multiplier c* = {C_STAR} do not exist at all. Hedge off the textbook number and the correlation exposure stays wide open.</li>
+        {lang === 'ko' ? (
+          <>
+            <li><strong>교과서 값은 너무 높은 게 아니라 너무 낮습니다.</strong> 녹아웃은 발동되는 순간 헤지를 벌거벗은 익스포저로 바꿔 버립니다. 그러니 KO 확률을 낮잡는 데스크 도구는 이 구조가 견디려고 존재하는 바로 그 재앙을 과소평가합니다. 진실을 말하는 쪽은 우리 엔진입니다.</li>
+            <li><strong>그리고 수치 오차는 사소한 부분입니다.</strong> 들쭉날쭉한 선(래티스)과 회색 선(정확한 GBM)의 차이는 ~1pp에 불과합니다: 순전히 노드 스트래들링(Boyle–Lau)이며, N을 키우면 줄어듭니다. 정작 중요한 {Math.abs(modelGap).toFixed(0)}pp는 산술이 아니라 모델에서 나옵니다.</li>
+            <li><strong>1-요인으로는 퀀토를 감당할 수 없습니다.</strong> 교과서 세계에는 FX 다리가 아예 없으므로, 논문의 퀀토 델타 Δ_FX = V/S₂와 공분산 승수 c* = {C_STAR}는 존재조차 하지 않습니다. 교과서 숫자로 헤지하면 상관성 익스포저가 그대로 열린 채 남습니다.</li>
+          </>
+        ) : (
+          <>
+            <li><strong>The textbook is too low, not too high.</strong> A knock-out turns your hedge into naked exposure the instant it fires, so a desk tool that lowballs the KO odds underprices the exact disaster the structure exists to survive. Our engine is the one telling the truth.</li>
+            <li><strong>And the math error is the small part.</strong> The jittery line (lattice) vs the grey line (exact GBM) differ by ~1pp: pure node straddling (Boyle–Lau), and it shrinks as you crank N. The {Math.abs(modelGap).toFixed(0)}pp that matters is model, not arithmetic.</li>
+            <li><strong>One factor can&rsquo;t carry a quanto.</strong> There is no FX leg in the textbook world, so the paper&rsquo;s quanto delta Δ_FX = V/S₂ and covariance multiplier c* = {C_STAR} do not exist at all. Hedge off the textbook number and the correlation exposure stays wide open.</li>
+          </>
+        )}
       </ul>
     </figure>
   )
@@ -269,6 +294,7 @@ export default function ExoticDesk() {
   const spine = useSpine()
   const toast = useToast()
   const { state: erp, dispatch, role } = useErp()
+  const t = useT()
   const [bookDiv, setBookDiv] = useState(erp.divisions[0].id)
   const [bookNot, setBookNot] = useState('0.25')
   const canBook = role === 'treasury'
@@ -324,8 +350,8 @@ export default function ExoticDesk() {
       </div>
       <p className="ins-strat-blurb">
         {mode === 'ko'
-          ? 'The paper structure: a double knock-out quanto priced from the jump-diffusion MC surface. Watch the value collapse and the delta reverse as spot nears a barrier.'
-          : 'The same jump-diffusion calibration with both barriers removed, priced in closed form. Subtract it from the Double-KO and what is left is exactly the survival risk the barriers inject.'}
+          ? t('The paper structure: a double knock-out quanto priced from the jump-diffusion MC surface. Watch the value collapse and the delta reverse as spot nears a barrier.')
+          : t('The same jump-diffusion calibration with both barriers removed, priced in closed form. Subtract it from the Double-KO and what is left is exactly the survival risk the barriers inject.')}
       </p>
 
       <div className="ex-grid">
@@ -366,13 +392,13 @@ export default function ExoticDesk() {
                   <strong>KO contingency:</strong> if the structure knocks out, the
                   hedge dies while the exposure lives. Desk rule: residual exposure
                   reverts to the budget allocator (vanilla legs / collar) the same
-                  day — the plan exists <em>before</em> the barrier is hit.
+                  day; the plan exists <em>before</em> the barrier is hit.
                 </div>
               </>
             ) : (
               <div className="ex-contingency">
                 <strong>No barrier.</strong> Value grows monotonically with spot and
-                nothing knocks out — the paper structure stripped to its quanto core.
+                nothing knocks out: the paper structure stripped to its quanto core.
                 It exists to be subtracted from the Double-KO, not booked as the hedge.
               </div>
             )}
@@ -435,7 +461,7 @@ export default function ExoticDesk() {
                   <h3>Value across the corridor — the barrier squeeze</h3>
                   <Curve values={row.price} color="#2f6db4" spot={spot} fmt={(v) => `${(v / 1000).toFixed(0)}k`} />
                   <figcaption className="ex-cap">
-                    Value rises with S₁ then collapses toward the upper barrier — the
+                    Value rises with S₁ then collapses toward the upper barrier: the
                     non-monotonicity that makes per-asset delta estimation break, and
                     the reason the paper's covariance-aware c* ≠ 1.
                   </figcaption>
@@ -483,17 +509,17 @@ export default function ExoticDesk() {
                 <EuroCompare euro={euroCurve} ko={row.price} spot={spot} />
                 <figcaption className="ex-cap">
                   The European value (blue) climbs smoothly with spot; the Double-KO (orange)
-                  peaks then collapses toward each barrier. The shaded gap — <strong>{(destroyed * 100).toFixed(0)}%</strong> of
-                  value at ${spot.toFixed(0)} — is the survival risk the barriers inject. The barrier
+                  peaks then collapses toward each barrier. The shaded gap (<strong>{(destroyed * 100).toFixed(0)}%</strong> of
+                  value at ${spot.toFixed(0)}) is the survival risk the barriers inject. The barrier
                   also crushes the delta: European Δ = +{euro.deltaWTI.toFixed(0)} here vs the Double-KO&rsquo;s {dWti.toFixed(0)},
-                  and it turns negative as spot nears the upper barrier — a reversal the European never shows.
+                  and it turns negative as spot nears the upper barrier, a reversal the European never shows.
                 </figcaption>
               </figure>
 
               <div className="ex-panel">
                 <h3>Where c* comes from</h3>
                 <p className="ex-cap" style={{ paddingTop: 0 }}>
-                  The European drift is r<sub>US</sub> − <strong>ρσ₁σ₂</strong> — the −ρσ₁σ₂ term
+                  The European drift is r<sub>US</sub> − <strong>ρσ₁σ₂</strong>: the −ρσ₁σ₂ term
                   (ρ = {rho}, σ₁ = {sigma1.toFixed(3)}, σ₂ = {sigma2.toFixed(3)}) is the quanto covariance
                   correction the naive c = 1 desk drops. The paper normalises it to the covariance
                   multiplier <strong>c* = {C_STAR}</strong>. Barrier or not, the quanto leg is already

@@ -35,10 +35,10 @@ const GROUPS: {
   {
     title: 'Decision layer',
     items: [
-      { id: 'decision', name: 'Decision Dashboard', desc: 'Optimal disclosure d* and hedge ratios h* — live from the frozen engine' },
+      { id: 'decision', name: 'Decision Dashboard', desc: 'Optimal disclosure d* and hedge ratios h*, live from the frozen engine' },
       { id: 'budget', name: 'Hedge Budget', desc: 'Fixed budget → optimal WTI/FX coverage split (constrained minimum variance)' },
-      { id: 'instruments', name: 'Hedge Instruments', desc: 'Vanilla library — swap · cap · collar · three-way · seagull (Black-76) + crack spread & FX benchmark · double-KO quanto (research)' },
-      { id: 'accounting', name: 'Hedge Accounting', desc: 'IFRS 9 CFH designation: combined vs split — OCI, ineffectiveness, KO aftermath' },
+      { id: 'instruments', name: 'Hedge Instruments', desc: 'Vanilla library: swap · cap · collar · three-way · seagull (Black-76) + crack spread & FX benchmark · double-KO quanto (research)' },
+      { id: 'accounting', name: 'Hedge Accounting', desc: 'IFRS 9 CFH designation: combined vs split (OCI, ineffectiveness, KO aftermath)' },
     ],
   },
   {
@@ -59,8 +59,8 @@ const GROUPS: {
   {
     title: 'Validation',
     items: [
-      { id: 'backtest', name: 'Out-of-sample', desc: 'Walk-forward hedge backtest on 40y of FRED data — realised variance reduction, not alpha' },
-      { id: 'audittrail', name: 'Audit trail', desc: 'Append-only event ledger — every submit, approval, booking, and designation' },
+      { id: 'backtest', name: 'Out-of-sample', desc: 'Walk-forward hedge backtest on 40y of FRED data: realised variance reduction, not alpha' },
+      { id: 'audittrail', name: 'Audit trail', desc: 'Append-only event ledger: every submit, approval, booking, and designation' },
     ],
   },
 ]
@@ -75,28 +75,28 @@ const TOUR: { module: string; title: string; body: string; target: string; lift?
     target: '.mat-controls',
     lift: '.mat-grid',
     title: 'Decide what counts',
-    body: 'Slide the materiality threshold. Every risk that clears it turns material and lights up the matrix — and the count you land on rides the top of every downstream screen as the exposure the model hedges. This is where the ERP starts.',
+    body: 'Slide the materiality threshold. Every risk that clears it turns material and lights up the matrix, and the count you land on rides the top of every downstream screen as the exposure the model hedges. This is where the ERP starts.',
   },
   {
     module: 'metrics',
     target: '[data-tour="me-submit"]',
     lift: '[data-tour="me-queue"]',
     title: 'Enter a number, sign it off',
-    body: 'A division head files a metric here; it drops into the approval queue on the right for audit to approve. Only approved values set the disclosure intensity d* the decision layer runs on — nothing reaches the model unsigned.',
+    body: 'A division head files a metric here; it drops into the approval queue on the right for audit to approve. Only approved values set the disclosure intensity d* the decision layer runs on: nothing reaches the model unsigned.',
   },
   {
     module: 'decision',
     target: '.db-params',
     lift: '.db-tiles',
     title: 'Turn up forced disclosure',
-    body: 'Drag the mandated floor slider to the right and watch the numbers above. The hedge ratios fall — when a regulator forces a company to disclose more, hedging quietly follows it down.',
+    body: 'Drag the mandated floor slider to the right and watch the numbers above. The hedge ratios fall. When a regulator forces a company to disclose more, hedging quietly follows it down.',
   },
   {
     module: 'budget',
     target: '.bg-deck',
     lift: '.bg-tiles',
     title: 'Loosen the budget',
-    body: 'Raise the budget slider. Even with far more cash to spend, the split between oil and currency barely moves off 97 / 3 — once the budget stops binding, the shape of the market fixes the allocation, not the size of the wallet.',
+    body: 'Raise the budget slider. Even with far more cash to spend, the split between oil and currency barely moves off 97 / 3: once the budget stops binding, the shape of the market fixes the allocation, not the size of the wallet.',
   },
   {
     module: 'instruments',
@@ -105,20 +105,20 @@ const TOUR: { module: string; title: string; body: string; target: string; lift?
     scrollSel: '.ins-tabs',
     scrollBlock: 'start',
     title: 'Build a free hedge',
-    body: 'This is the Vanilla desk (top) — five structures refiners actually run, in the strip below. Zero-cost collar is up: raise the cap slider and the desk instantly finds the floor that pays for it, net premium zero. The Quanto desk next door is the research side.',
+    body: 'This is the Vanilla desk (top): five structures refiners actually run, in the strip below. Zero-cost collar is up: raise the cap slider and the desk instantly finds the floor that pays for it, net premium zero. The Quanto desk next door is the research side.',
   },
   {
     module: 'instruments',
     target: '.ins-tabs',
     lift: '.ex-deck',
     title: 'Walk into the barrier',
-    body: 'Open this tab, then push the WTI spot slider up. The risk monitor climbs to Critical and the hedge starts working backwards — the exact place where textbook methods break.',
+    body: 'Open this tab, then push the WTI spot slider up. The risk monitor climbs to Critical and the hedge starts working backwards: the exact place where textbook methods break.',
   },
   {
     module: 'accounting',
     target: '[data-tour="chips"]',
     title: 'Follow the number',
-    body: 'The knock-out odds you just set traveled here by themselves — top of the screen. One shared state, every screen connected. That is the whole idea.',
+    body: 'The knock-out odds you just set traveled here by themselves, to the top of the screen. One shared state, every screen connected. That is the whole idea.',
   },
   {
     module: 'backtest',
@@ -127,7 +127,7 @@ const TOUR: { module: string; title: string; body: string; target: string; lift?
     scrollSel: '.bt-controls',
     scrollBlock: 'start',
     title: 'Prove it out of sample',
-    body: 'Everything so far was one snapshot. Here the same hedge is replayed across 40 years of real oil and currency data, month by month, deciding each move using only the past. Nudge any slider and the whole history recomputes — and the hedge still erases about 89% of the swings in the import bill. That is the point: not a bet that makes money, just a hedge that holds up.',
+    body: 'Everything so far was one snapshot. Here the same hedge is replayed across 40 years of real oil and currency data, month by month, deciding each move using only the past. Nudge any slider and the whole history recomputes, and the hedge still erases about 89% of the swings in the import bill. That is the point: not a bet that makes money, just a hedge that holds up.',
   },
 ]
 

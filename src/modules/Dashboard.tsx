@@ -238,7 +238,7 @@ export default function Dashboard() {
                 The mandated floor d̲ = {p.dFloor.toFixed(1)} binds (voluntary
                 optimum {eq.dVoluntary.toFixed(2)}): forced disclosure buys
                 penalty relief, cheapens residual risk, and <em>crowds out</em>{' '}
-                the hedge — move the floor slider and watch both bars shrink.
+                the hedge: move the floor slider and watch both bars shrink.
               </p>
             )}
           </div>

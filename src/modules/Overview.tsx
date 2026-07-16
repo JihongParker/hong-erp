@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import AppPreview from '../components/AppPreview'
 import SceneBackground from '../components/SceneBackground'
+import { useT, useLang } from '../i18n'
 import './Overview.css'
 
 // A scroll-told landing: the headline lives first, then the reader descends
@@ -68,6 +69,8 @@ export default function Overview({
   onStartTour: () => void
 }) {
   const chainRef = useRef<HTMLElement | null>(null)
+  const t = useT()
+  const [lang] = useLang()
 
   // reveal-on-scroll for anything marked .reveal
   useEffect(() => {
@@ -117,11 +120,21 @@ export default function Overview({
             </span>
           </h2>
           <p className="ov-lede reveal in">
-            ESG tools record what a company discloses, then <strong>stop</strong>.<br />
-            HongERP treats that risk like a trading desk:<br />
-            it computes <strong>how much to hedge</strong> and{' '}
-            <strong>how much to disclose</strong>.<br />
-            Disclosing a risk makes it cheaper to carry, so the two are one decision.
+            {lang === 'ko' ? (
+              <>
+                ESG 도구는 기업이 공시하는 내용을 기록하고는 거기서 <strong>멈춥니다</strong>.
+                HongERP는 그 리스크를 트레이딩 데스크처럼 다룹니다: <strong>얼마나 헤지할지</strong>와{' '}
+                <strong>얼마나 공시할지</strong>를 함께 계산합니다. 리스크를 공시하면 그것을 떠안는 비용이
+                낮아지므로, 두 결정은 결국 하나입니다.
+              </>
+            ) : (
+              <>
+                ESG tools record what a company discloses, then <strong>stop</strong>.
+                HongERP treats that risk like a trading desk: it computes{' '}
+                <strong>how much to hedge</strong> and <strong>how much to disclose</strong>.
+                Disclosing a risk makes it cheaper to carry, so the two are one decision.
+              </>
+            )}
           </p>
           <div className="ov-hero-cta reveal in">
             <button className="ov-btn big primary" onClick={() => onNavigate('decision')}>
@@ -144,8 +157,7 @@ export default function Overview({
         <div className="ov-chain-head reveal">
           <h3>One position, four papers, one chain.</h3>
           <p>
-            Four papers, one Korean oil importer's WTI × USD/KRW exposure. Each
-            picks up where the last leaves off.
+            {t("Four papers, one Korean oil importer's WTI × USD/KRW exposure. Each picks up where the last leaves off.")}
           </p>
         </div>
 
@@ -174,13 +186,8 @@ export default function Overview({
         </div>
 
         <p className="chain-note reveal">
-          + two applied notes: KIKO forensics (P5) · the benign vs. the lethal barrier (P6)
+          {t('+ two applied notes: KIKO forensics (P5) · the benign vs. the lethal barrier (P6)')}
         </p>
-
-        {/* CI-certification proof strip — build date injected at build time */}
-        <div className="ov-proof" aria-label="engine verification status">
-          <span className="ov-proof-item">Engines re-certified in CI · build {__BUILD_DATE__}</span>
-        </div>
       </section>
 
       <div className="ov-divider" aria-hidden />
@@ -212,8 +219,7 @@ export default function Overview({
           ))}
         </div>
         <p className="ov-flow-note">
-          Risks set the exposure, the budget hits the desks, the desks' knock-out
-          odds drive the books, and disclosure closes the loop.
+          {t("Risks set the exposure, the budget hits the desks, the desks' knock-out odds drive the books, and disclosure closes the loop.")}
         </p>
       </section>
 

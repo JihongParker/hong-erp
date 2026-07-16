@@ -566,7 +566,6 @@ input[type='range']::-moz-range-thumb {
 .cosa-detail,
 .tile,
 .ov-paper,
-.ov-proof-item,
 .ov-node {
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
 }

@@ -9,27 +9,54 @@ import { useEffect, useState } from 'react'
 export type Lang = 'en' | 'ko'
 
 const LANG_KEY = 'hongerp-lang'
+// broadcast so every useLang()/useT() consumer across the tree re-reads the
+// choice — there is no context provider, the window event keeps them in sync.
+const LANG_EVENT = 'hongerp-lang-change'
+
+function readLang(): Lang {
+  try {
+    const raw = localStorage.getItem(LANG_KEY)
+    if (raw === 'ko' || raw === 'en') return raw
+  } catch {
+    /* storage unavailable → default to English */
+  }
+  return 'en'
+}
 
 export function useLang(): [Lang, (l: Lang) => void] {
-  const [lang, setLang] = useState<Lang>(() => {
-    try {
-      const raw = localStorage.getItem(LANG_KEY)
-      if (raw === 'ko' || raw === 'en') return raw
-    } catch {
-      /* storage unavailable → default to English */
-    }
-    return 'en'
-  })
+  const [lang, setLangState] = useState<Lang>(readLang)
 
+  // any instance (sidebar toggle, a module's useT) stays in lockstep
   useEffect(() => {
+    const sync = () => setLangState(readLang())
+    window.addEventListener(LANG_EVENT, sync)
+    window.addEventListener('storage', sync)
+    return () => {
+      window.removeEventListener(LANG_EVENT, sync)
+      window.removeEventListener('storage', sync)
+    }
+  }, [])
+
+  const setLang = (l: Lang) => {
     try {
-      localStorage.setItem(LANG_KEY, lang)
+      localStorage.setItem(LANG_KEY, l)
     } catch {
       /* storage blocked; the toggle still works from memory */
     }
-  }, [lang])
+    setLangState(l)
+    window.dispatchEvent(new CustomEvent(LANG_EVENT))
+  }
 
   return [lang, setLang]
+}
+
+// Guide-language layer for running prose. t(en) returns the Korean rendering of
+// an English string when the guide is set to Korean and the string is in KO_COPY
+// below; otherwise it returns the English unchanged. Keys are the *final*
+// English strings verbatim, so the copy in the TSX stays the source of truth.
+export function useT(): (en: string) => string {
+  const [lang] = useLang()
+  return (en: string) => (lang === 'en' ? en : KO_COPY[en] ?? en)
 }
 
 // Korean sidebar blurbs, keyed by module id. Any id absent here falls back to
@@ -86,3 +113,52 @@ export const KO_TOUR: { title: string; body: string }[] = [
     body: '지금까지는 전부 한 장의 스냅샷이었습니다. 여기서는 같은 헤지를 실제 원유·환 데이터 40년에 걸쳐 매달 다시 돌리되, 매번의 결정에 과거 데이터만 사용합니다. 슬라이더를 조금만 건드려도 전체 이력이 다시 계산됩니다 — 그래도 헤지는 수입 대금의 출렁임을 약 89% 지워냅니다. 핵심은 이것입니다: 돈을 버는 베팅이 아니라, 그저 버텨 주는 헤지라는 것.',
   },
 ]
+
+// Running-prose dictionary for useT(). Keys are the final English strings exactly
+// as they render (whitespace collapsed to single spaces). Only plain-text blocks
+// live here; blocks that interleave live numbers or <strong> emphasis are
+// translated inline in their module via a lang === 'ko' branch, so the figures,
+// tables, chart labels and buttons stay in English as designed.
+export const KO_COPY: Record<string, string> = {
+  // ── Overview ──
+  "Four papers, one Korean oil importer's WTI × USD/KRW exposure. Each picks up where the last leaves off.":
+    '논문 네 편, 한국 원유 수입사의 WTI × USD/KRW 익스포저 하나. 각 논문은 앞 논문이 끝난 지점에서 이어집니다.',
+  "Risks set the exposure, the budget hits the desks, the desks' knock-out odds drive the books, and disclosure closes the loop.":
+    '리스크가 익스포저를 정하고, 예산이 데스크로 내려가며, 데스크의 녹아웃 확률이 장부를 움직이고, 공시가 그 고리를 닫습니다.',
+  '+ two applied notes: KIKO forensics (P5) · the benign vs. the lethal barrier (P6)':
+    '+ 응용 노트 두 편: KIKO 포렌식 (P5) · 무해한 배리어 vs. 치명적 배리어 (P6)',
+
+  // ── Hedge Instruments: vanilla strategy blurbs ──
+  'Lock the price. Zero premium, zero optionality — the corporate default.':
+    '가격을 고정합니다. 프리미엄 0, 옵셔널리티 0 — 기업의 표준 선택입니다.',
+  'Buy protection outright, keep all the downside. Costs premium in cash.':
+    '보호를 직접 매수하고 하방 이익은 모두 유지합니다. 대신 프리미엄을 현금으로 지불합니다.',
+  'Cap financed by a sold floor. No cash out; you give up participation below the floor.':
+    '매도한 플로어로 캡 비용을 충당합니다. 현금 지출은 없지만, 플로어 아래의 이익 참여를 포기합니다.',
+  'Collar + a second sold put funds a lower floor, but a crash below it tears the protection back open.':
+    '칼라에 풋을 하나 더 매도해 더 낮은 플로어를 만듭니다. 다만 그 아래로 급락하면 보호막이 다시 찢어집니다.',
+  'Collar whose upside cap ends at a ceiling. Cheaper strikes, but a spike past the ceiling re-exposes you.':
+    '상방 캡이 실링에서 끝나는 칼라입니다. 행사가는 더 싸지지만, 실링을 넘어 급등하면 다시 익스포저가 열립니다.',
+
+  // ── Hedge Instruments: the "zero cost" caveat banner ──
+  [`"Zero cost" is not "no cost" — every sold leg is short optionality, paid for in scenarios rather than cash. Push it one step further and the sold wing becomes a barrier: the three-way and seagull are one calibration away from the knock-in/knock-out structures that devastated Korean SMEs in 2008. Barrier analytics for exactly that risk are the Exotic Desk's job (research tab).`]:
+    '‘제로 코스트’는 ‘무비용’이 아닙니다 — 매도한 다리는 모두 옵셔널리티 매도 포지션이며, 그 대가는 현금이 아니라 시나리오로 치릅니다. 여기서 한 걸음 더 나아가면 매도 윙이 배리어가 됩니다. 3-way와 시걸은 2008년 한국 중소기업을 무너뜨린 녹인/녹아웃 구조와 캘리브레이션 한 끗 차이입니다. 바로 그 리스크를 겨냥한 배리어 분석이 이그저틱 데스크(리서치 탭)의 몫입니다.',
+
+  // ── Exotic Desk: structure-selector blurb ──
+  'The paper structure: a double knock-out quanto priced from the jump-diffusion MC surface. Watch the value collapse and the delta reverse as spot nears a barrier.':
+    '논문의 구조입니다: 점프-확산 MC 표면에서 가격을 매긴 더블 녹아웃 퀀토. 현물이 배리어에 다가갈수록 가치가 무너지고 델타가 뒤집히는 것을 지켜보세요.',
+  'The same jump-diffusion calibration with both barriers removed, priced in closed form. Subtract it from the Double-KO and what is left is exactly the survival risk the barriers inject.':
+    '같은 점프-확산 캘리브레이션에서 두 배리어를 모두 제거해 닫힌 형태로 가격을 매깁니다. 이 값을 더블 녹아웃에서 빼면 남는 것이 바로 배리어가 주입하는 생존 리스크입니다.',
+
+  // ── Disclosure report: header subtitle + footer ──
+  'Prepared on the ISSB/KSSB four-pillar structure · demo document assembled live from the ERP ledgers':
+    'ISSB/KSSB 4대 축 구조로 작성 · ERP 원장에서 실시간 조립된 데모 문서',
+  'Sustainability data reaches this report only through a segregated approval workflow. Submission, review, booking and designation are held in four separate hands: division heads submit metrics, Audit (J. Kim) approves or rejects them, the Treasury desk books hedges, and the CFO office designates them. No single actor can both file a figure and sign it off.':
+    '지속가능성 데이터는 오직 분리된 승인 워크플로를 거쳐야만 이 보고서에 도달합니다. 제출·검토·기표·지정은 네 개의 서로 다른 손에 나뉩니다: 사업부장이 지표를 제출하고, 감사(J. Kim)가 승인 또는 반려하며, 트레저리 데스크가 헤지를 기표하고, CFO 오피스가 이를 지정합니다. 어느 한 주체도 수치를 작성하면서 동시에 승인할 수는 없습니다.',
+  'Draft assembled from live ERP state: figures are demo data; engines are frozen paper transcriptions.':
+    '실시간 ERP 상태에서 조립된 초안입니다: 수치는 데모 데이터이며, 엔진은 고정된 논문 전사본입니다.',
+
+  // ── Backtest: control caption ──
+  'Rolling window sets how much past data estimates Σ; budget caps total coverage (<2 binds); cost is charged on rebalancing turnover. The walk-forward result stays ~14pp above naive across the whole slider range — the edge is not a tuned artifact.':
+    '롤링 윈도는 Σ 추정에 과거 데이터를 얼마나 쓸지 정하고, 예산은 총 커버리지에 상한을 둡니다(<2에서 제약이 걸림). 비용은 리밸런싱 회전율에 부과됩니다. 워크포워드 결과는 슬라이더 전 구간에서 나이브 대비 ~14pp 위를 유지합니다 — 이 우위는 튜닝으로 만든 산물이 아닙니다.',
+}
