@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Chip, useSpine } from '../state/spine'
 import { timeAgo, useErp, type Designation } from '../state/erp'
 import cfh from '../data/cfh_summary.json'
+import { useLang } from '../i18n'
 import './Accounting.css'
 
 // Precomputed from the CFH paper's own engine (cfh_data.json, Spec v3.1) —
@@ -93,6 +94,7 @@ export default function Accounting() {
   const [view, setView] = useState<'oci' | 'ineff'>('ineff')
   const spine = useSpine()
   const { state: erp, dispatch, role } = useErp()
+  const [lang] = useLang()
   const canDesignate = role === 'cfo'
 
   // ── CSV export via the file-API helper above; read-only, so every role may ──
@@ -193,9 +195,19 @@ export default function Accounting() {
       <div className="ac-panel">
         <h3>The designation trade-off</h3>
         <p className="ac-banner-inline">
-          The question IFRS 9 forces: designate the quanto as{' '}
-          <strong>one combined hedge (A)</strong> or <strong>split it into
-          two lines (B)</strong>? Same economics — very different books.
+          {lang === 'ko' ? (
+            <>
+              IFRS 9가 강제하는 질문: 퀀토를{' '}
+              <strong>하나의 통합 헤지 (A)</strong>로 지정할 것인가, 아니면{' '}
+              <strong>두 개의 라인 (B)</strong>으로 분리할 것인가? 경제적 실질은 같지만 — 장부는 크게 달라집니다.
+            </>
+          ) : (
+            <>
+              The question IFRS 9 forces: designate the quanto as{' '}
+              <strong>one combined hedge (A)</strong> or <strong>split it into
+              two lines (B)</strong>? Same economics — very different books.
+            </>
+          )}
         </p>
         <table>
           <thead>
@@ -211,7 +223,7 @@ export default function Accounting() {
         </table>
         <p className="ac-note">
           The economics barely differ; the accounting does. Splitting (B)
-          cuts P&L ineffectiveness 3.7× — but if the KO leg dies (
+          cuts P&L ineffectiveness 3.7×, but if the KO leg dies (
           {(S.koProb * 100).toFixed(0)}% probability), its replacement
           trades at FVTPL and injects {bn(S.postKoFvtplStdB)} of earnings
           noise. Designation is a risk decision, not paperwork.
@@ -256,7 +268,7 @@ export default function Accounting() {
         <ul className="ac-links">
           <li>
             <strong>Hedge Instruments →</strong> a collar's aligned time value
-            goes to OCI under IFRS 9 — the same designation machinery the
+            goes to OCI under IFRS 9: the same designation machinery the
             instrument desks actually use.
           </li>
           <li>

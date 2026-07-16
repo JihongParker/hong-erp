@@ -74,7 +74,7 @@ export default function Scenario() {
             ))}
           </div>
           <p className="sc-fixed-note">
-            These are the divisions' live parameter records — edits persist
+            These are the divisions' live parameter records: edits persist
             and flow to the division book on the Decision Dashboard.
           </p>
         </div>

@@ -148,7 +148,7 @@ export default function AccountTree() {
               </table>
             </div>
             <p className="cosa-note">
-              Demo taxonomy — mappings are not validated for practice. The point
+              Demo taxonomy. Mappings are not validated for practice. The point
               is the structure: hierarchical codes mapped to multiple frameworks
               at the datapoint level.
             </p>

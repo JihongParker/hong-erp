@@ -887,44 +887,6 @@
   pointer-events: none;
 }
 
-/* ── proof strip: a quiet CI-certification line under the research chain. The
-   build date is injected at build time via the __BUILD_DATE__ vite define. ── */
-.ov-proof {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  max-width: 720px;
-  margin: 18px auto 0;
-}
-
-.ov-proof-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 13px;
-  border: 1px solid var(--line);
-  border-radius: 99px;
-  background: var(--panel);
-  color: var(--muted);
-  font-size: 12.5px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.01em;
-}
-
-/* a small settled "passing" dot ahead of the label */
-.ov-proof-item::before {
-  content: "";
-  flex: none;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
-}
-
-
 /* ── mobile density compression (≤720px) ──────────────────────────────────────
    Pack the landing so it scans in a few thumb-swipes: collapse the tall vertical
    rhythm (the hero's 82vh band and the clamp() section paddings), halve the chain
@@ -954,7 +916,6 @@
   .ov-cta { padding: 22px 0 18px; gap: 14px; }
   .ov-chain-head { margin-bottom: 16px; }
   .chain-note { margin-top: 10px; }
-  .ov-proof { margin-top: 12px; }
   .ov-divider { height: 8px; }
 
   /* chain cards halve: drop the plain-language line, tighten the box */

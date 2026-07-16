@@ -16,6 +16,7 @@ import MarketChip from '../components/MarketChip'
 import ParamRow from '../components/ParamRow'
 import { usePulse } from '../components/usePulse'
 import { useToast } from '../components/Toast'
+import { useT } from '../i18n'
 import './Instruments.css'
 
 // Series colors — validated palette. The selected strategy is the hero line.
@@ -35,7 +36,7 @@ const STRATS: { key: Strat; name: string; tag: string; blurb: string }[] = [
   { key: 'swap', name: 'Swap / forward', tag: 'linear', blurb: 'Lock the price. Zero premium, zero optionality — the corporate default.' },
   { key: 'cap', name: 'Cap (bought call)', tag: 'option', blurb: 'Buy protection outright, keep all the downside. Costs premium in cash.' },
   { key: 'collar', name: 'Zero-cost collar', tag: 'industry standard', blurb: 'Cap financed by a sold floor. No cash out; you give up participation below the floor.' },
-  { key: 'threeway', name: 'Three-way collar', tag: 'sold wing', blurb: 'Collar + a second sold put funds a lower floor — but a crash below it tears the protection back open.' },
+  { key: 'threeway', name: 'Three-way collar', tag: 'sold wing', blurb: 'Collar + a second sold put funds a lower floor, but a crash below it tears the protection back open.' },
   { key: 'seagull', name: 'Seagull', tag: 'sold wing', blurb: 'Collar whose upside cap ends at a ceiling. Cheaper strikes, but a spike past the ceiling re-exposes you.' },
 ]
 const STRAT_NAME: Record<Strat, Trade['instrument']> = {
@@ -83,6 +84,7 @@ export default function Instruments() {
   const spine = useSpine()
   const toast = useToast()
   const { state: erp, dispatch, role } = useErp()
+  const t = useT()
   const [bookDiv, setBookDiv] = useState(erp.divisions[0].id)
   const [bookNot, setBookNot] = useState('0.50')
   const canBook = role === 'treasury'
@@ -179,9 +181,9 @@ export default function Instruments() {
 
   // full comparison table — every strategy priced off the same market
   const rows: { key: Strat | 'unhedged'; label: string; premium: string; worst: string; best: string; giveup: string }[] = [
-    { key: 'unhedged', label: 'Unhedged', premium: '$0', worst: 'unbounded', best: '→ $0', giveup: 'nothing — you carry the whole tail' },
+    { key: 'unhedged', label: 'Unhedged', premium: '$0', worst: 'unbounded', best: '→ $0', giveup: 'nothing; you carry the whole tail' },
     { key: 'swap', label: 'Swap / forward', premium: '$0', worst: `$${mkt.F.toFixed(1)}`, best: `$${mkt.F.toFixed(1)}`, giveup: 'all downside participation' },
-    { key: 'cap', label: 'Cap only (bought call)', premium: `$${capPrem.toFixed(2)}`, worst: `$${(capK + capPrem).toFixed(1)}`, best: '→ premium only', giveup: 'the premium — paid in cash' },
+    { key: 'cap', label: 'Cap only (bought call)', premium: `$${capPrem.toFixed(2)}`, worst: `$${(capK + capPrem).toFixed(1)}`, best: '→ premium only', giveup: 'the premium, paid in cash' },
     { key: 'collar', label: 'Zero-cost collar', premium: '$0', worst: `$${collar.capK.toFixed(1)}`, best: `$${collar.floorK.toFixed(1)}`, giveup: `participation below $${collar.floorK.toFixed(1)}` },
     { key: 'threeway', label: 'Three-way collar', premium: '$0', worst: `$${Math.max(capK, threeway.floorK + threeway.subFloorK).toFixed(1)} (crash)`, best: `$${threeway.floorK.toFixed(1)}`, giveup: `protection tears below $${threeway.subFloorK}` },
     { key: 'seagull', label: 'Seagull', premium: '$0', worst: 'unbounded (spike)', best: `$${seagull.floorK.toFixed(1)}`, giveup: `protection ends at $${ceilK}` },
@@ -198,11 +200,11 @@ export default function Instruments() {
       <div className="ins-tabs">
         <button className={tab === 'collar' ? 'ins-tab active' : 'ins-tab'} onClick={() => setTab('collar')}>
           <span className="ins-tab-title">Vanilla desk <span className="ins-tag">industry standard</span></span>
-          <span className="ins-tab-sub">Swap · cap · collar · three-way · seagull — the structures refiners actually run, Black-76 priced</span>
+          <span className="ins-tab-sub">Swap · cap · collar · three-way · seagull: the structures refiners actually run, Black-76 priced</span>
         </button>
         <button className={tab === 'exotic' ? 'ins-tab active' : 'ins-tab'} data-tour="exotic-tab" onClick={() => setTab('exotic')}>
           <span className="ins-tab-title">Double-KO quanto <span className="ins-tag research">research</span></span>
-          <span className="ins-tab-sub">Barrier analytics from the paper's engine — where textbook deltas reverse sign</span>
+          <span className="ins-tab-sub">Barrier analytics from the paper's engine: where textbook deltas reverse sign</span>
         </button>
       </div>
 
@@ -235,7 +237,7 @@ export default function Instruments() {
               </button>
             ))}
           </div>
-          <p className="ins-strat-blurb">{STRATS.find((s) => s.key === strategy)!.blurb}</p>
+          <p className="ins-strat-blurb">{t(STRATS.find((s) => s.key === strategy)!.blurb)}</p>
 
           <div className="ins-grid">
             <div className="ins-rail">
@@ -261,11 +263,11 @@ export default function Instruments() {
                   <ParamRow label="Kc2 sold ceiling" min={Math.round(mkt.F * 1.15)} max={Math.round(mkt.F * 1.7)} step={1} value={ceilK} onChange={setCeilK} fmt={(v) => `$${v.toFixed(0)}`} />
                 )}
                 <p className="ins-muted">
-                  {strategy === 'swap' && 'A swap just fixes the price at the forward — nothing to solve.'}
+                  {strategy === 'swap' && 'A swap just fixes the price at the forward: nothing to solve.'}
                   {strategy === 'cap' && 'Buy the call outright; the premium is paid in cash upfront.'}
                   {strategy === 'collar' && 'Pick the cap; the solver finds the floor whose written put exactly finances the purchased call.'}
-                  {strategy === 'threeway' && 'The extra sold put funds a lower floor than a plain collar — at the cost of a torn tail below it.'}
-                  {strategy === 'seagull' && 'Selling a far call cheapens the structure and lowers the floor — but caps how far your protection reaches.'}
+                  {strategy === 'threeway' && 'The extra sold put funds a lower floor than a plain collar, at the cost of a torn tail below it.'}
+                  {strategy === 'seagull' && 'Selling a far call cheapens the structure and lowers the floor, but caps how far your protection reaches.'}
                 </p>
               </div>
 
@@ -369,12 +371,7 @@ export default function Instruments() {
               </div>
 
               <p className="ins-warning">
-                "Zero cost" is not "no cost" — every sold leg is short optionality, paid
-                for in scenarios rather than cash. Push it one step further and the
-                sold wing becomes a barrier: the three-way and seagull are one
-                calibration away from the knock-in/knock-out structures that
-                devastated Korean SMEs in 2008. Barrier analytics for exactly that
-                risk are the Exotic Desk's job (research tab).
+                {t(`"Zero cost" is not "no cost" — every sold leg is short optionality, paid for in scenarios rather than cash. Push it one step further and the sold wing becomes a barrier: the three-way and seagull are one calibration away from the knock-in/knock-out structures that devastated Korean SMEs in 2008. Barrier analytics for exactly that risk are the Exotic Desk's job (research tab).`)}
               </p>
 
               {/* ── refiner-specific: 3:2:1 crack spread ── */}
@@ -383,7 +380,7 @@ export default function Instruments() {
                 <p className="ins-muted">
                   A refiner's real exposure is the <em>margin</em>, not the crude price:
                   buy 3 barrels of crude, sell 2 gasoline + 1 distillate. Crack swaps and
-                  options lock this spread directly — a different underlying from anything above.
+                  options lock this spread directly, a different underlying from anything above.
                 </p>
                 <div className="ins-crackrow">
                   <label className="ins-binline">Gasoline $/bbl<input type="number" value={gaso} onChange={(e) => setGaso(Number(e.target.value) || 0)} /></label>
@@ -407,12 +404,12 @@ export default function Instruments() {
                   <div className="ins-card">
                     <span className="ins-card-tag option">averaging</span>
                     <strong>Asian / average-price (APO)</strong>
-                    <p>Plain-vanilla averaging matches month-long exposure and is cheaper than European. <em>Note:</em> the paper's Asian is knock-out-exoticized — that barrier version lives in the research desk, not here.</p>
+                    <p>Plain-vanilla averaging matches month-long exposure and is cheaper than European. <em>Note:</em> the paper's Asian is knock-out-exoticized; that barrier version lives in the research desk, not here.</p>
                   </div>
                   <div className="ins-card warn">
                     <span className="ins-card-tag barrier">FX · barrier-risk</span>
                     <strong>TARF</strong>
-                    <p>Target-redemption forward — the FX cousin of KIKO. Cheap or credit upfront, embedded knock-outs, and the same survival-risk tail when the currency gaps.</p>
+                    <p>Target-redemption forward, the FX cousin of KIKO. Cheap or credit upfront, embedded knock-outs, and the same survival-risk tail when the currency gaps.</p>
                   </div>
                 </div>
               </div>

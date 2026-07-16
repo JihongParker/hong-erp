@@ -4,6 +4,7 @@ import { runBacktest, type Ret } from '../engine/backtest'
 import { usePersistentState } from '../state/persist'
 import { usePulse } from '../components/usePulse'
 import ParamRow from '../components/ParamRow'
+import { useT, useLang } from '../i18n'
 import './Backtest.css'
 
 // Out-of-sample walk-forward hedge backtest. The raw monthly returns come from
@@ -35,6 +36,8 @@ export default function Backtest() {
   const [window, setWindow] = usePersistentState('backtest.window', 60)
   const [budget, setBudget] = usePersistentState('backtest.budget', 1.0)
   const [tcBps, setTcBps] = usePersistentState('backtest.tcBps', 5)
+  const t = useT()
+  const [lang] = useLang()
 
   const out = useMemo(() => runBacktest(RETURNS, { window, budget, tcBps }), [window, budget, tcBps])
   const wf = out.summary.find((s) => s.policy === 'walkforward')!
@@ -47,11 +50,23 @@ export default function Backtest() {
   return (
     <div className="bt">
       <div className="bt-banner">
-        <strong>Not an alpha strategy — a hedging backtest.</strong> A Korean crude importer carries a
-        mandated exposure (buy oil in USD, pay in KRW): its monthly bill is Q · P<sub>oil</sub> · FX, a
-        two-factor product. The only question is how much residual <em>cash-flow variance</em> the optimal
-        hedge removes out of sample, after costs — never a return stream, never a Sharpe. Every number below
-        re-runs live from 486 months of real returns as you move the sliders.
+        {lang === 'ko' ? (
+          <>
+            <strong>알파 전략이 아니라 — 헤지 백테스트입니다.</strong> 한국 원유 수입사는 의무적 익스포저를
+            집니다 (원유는 USD로 사고 대금은 KRW로 지불): 월 청구액은 Q · P<sub>oil</sub> · FX, 즉 2-요인
+            곱입니다. 유일한 질문은 최적 헤지가 비용을 반영한 뒤 표본 밖에서 잔여 <em>현금흐름 분산</em>을
+            얼마나 제거하는가입니다: 수익 스트림도, 샤프도 아닙니다. 아래 모든 숫자는 슬라이더를 움직이면
+            실제 수익률 486개월치에서 실시간으로 다시 계산됩니다.
+          </>
+        ) : (
+          <>
+            <strong>Not an alpha strategy — a hedging backtest.</strong> A Korean crude importer carries a
+            mandated exposure (buy oil in USD, pay in KRW): its monthly bill is Q · P<sub>oil</sub> · FX, a
+            two-factor product. The only question is how much residual <em>cash-flow variance</em> the optimal
+            hedge removes out of sample, after costs: never a return stream, never a Sharpe. Every number below
+            re-runs live from 486 months of real returns as you move the sliders.
+          </>
+        )}
       </div>
 
       <div className="bt-grid">
@@ -63,9 +78,7 @@ export default function Backtest() {
             <ParamRow label="Hedge budget" min={0.4} max={1.6} step={0.1} value={budget} onChange={setBudget} fmt={(v) => v.toFixed(1)} />
             <ParamRow label="Cost per turnover" min={0} max={25} step={1} value={tcBps} onChange={setTcBps} fmt={(v) => `${v}bp`} />
             <p className="bt-muted">
-              Rolling window sets how much past data estimates Σ; budget caps total coverage
-              (&lt;2 binds); cost is charged on rebalancing turnover. The walk-forward result stays
-              ~14pp above naive across the whole slider range — the edge is not a tuned artifact.
+              {t('Rolling window sets how much past data estimates Σ; budget caps total coverage (<2 binds); cost is charged on rebalancing turnover. The walk-forward result stays ~14pp above naive across the whole slider range — the edge is not a tuned artifact.')}
             </p>
           </div>
 
@@ -117,10 +130,21 @@ export default function Backtest() {
               </table>
             </div>
             <p className="bt-verdict">
-              The covariance-aware hedge, estimated only on <strong>past</strong> data and rebalanced monthly,
-              removes <strong>{pct(wf.varReduction, 0)}</strong> of cash-flow variance out of sample —
-              {' '}{((wf.varReduction - naive.varReduction) * 100).toFixed(0)}pp more than naive even splitting —
-              and lands within {pct(oracle.varReduction - wf.varReduction, 1)} of the look-ahead oracle.
+              {lang === 'ko' ? (
+                <>
+                  공분산을 반영한 헤지는 <strong>과거</strong> 데이터만으로 추정해 매달 리밸런싱하며, 표본 밖에서
+                  현금흐름 분산의 <strong>{pct(wf.varReduction, 0)}</strong>를 제거합니다
+                  {' '}(나이브 균등 분할보다 {((wf.varReduction - naive.varReduction) * 100).toFixed(0)}pp 더 높음).
+                  그리고 미래를 미리 본 오라클과의 격차는 {pct(oracle.varReduction - wf.varReduction, 1)} 이내에 듭니다.
+                </>
+              ) : (
+                <>
+                  The covariance-aware hedge, estimated only on <strong>past</strong> data and rebalanced monthly,
+                  removes <strong>{pct(wf.varReduction, 0)}</strong> of cash-flow variance out of sample
+                  {' '}({((wf.varReduction - naive.varReduction) * 100).toFixed(0)}pp more than naive even splitting),
+                  and lands within {pct(oracle.varReduction - wf.varReduction, 1)} of the look-ahead oracle.
+                </>
+              )}
             </p>
           </div>
 
@@ -135,18 +159,29 @@ export default function Backtest() {
       <div className="bt-method">
         <h3>Method &amp; honest caveats</h3>
         <ul>
-          <li><strong>Strict walk-forward.</strong> Σ is estimated from a rolling window of <em>strictly past</em>
-            monthly returns; the split is applied to the next month's realised return. No look-ahead — the
-            oracle row is the only look-ahead policy, shown deliberately as the ceiling.</li>
-          <li><strong>Costs included.</strong> Charged on rebalancing turnover each month; the walk-forward cost
-            ({pct(wf.totalCost, 2)}) is small relative to the {pct(wf.varReduction - naive.varReduction, 0)} of
-            extra variance it buys.</li>
-          <li><strong>Variance, not alpha.</strong> Every number is a property of the hedged cost distribution —
-            no return stream, no Sharpe.</li>
-          <li><strong>What it confirms.</strong> The full-sample split is {out.oracleSplit.w1.toFixed(2)} / {out.oracleSplit.w2.toFixed(2)}
-            (oil / FX) — coverage concentrates on the high-variance oil leg, the paper's structural 97/3. And ρ
-            is negative {pct(out.negShare, 0)} of the time, so the FX leg partially self-hedges oil: the real-data
-            analogue of the paper's counterintuitive c* &lt; 0.</li>
+          {lang === 'ko' ? (
+            <>
+              <li><strong>엄격한 워크포워드.</strong> Σ는 <em>철저히 과거</em> 월간 수익률의 롤링 윈도에서 추정하고, 그 분할을 다음 달 실현 수익률에 적용합니다. 미래 참조 없음: 오라클 행만이 유일한 미래 참조 정책이며, 상한선을 보여 주려고 일부러 넣었습니다.</li>
+              <li><strong>비용 포함.</strong> 매달 리밸런싱 회전율에 부과됩니다. 워크포워드 비용({pct(wf.totalCost, 2)})은 그 대가로 얻는 추가 분산 {pct(wf.varReduction - naive.varReduction, 0)}에 비하면 작습니다.</li>
+              <li><strong>알파가 아니라 분산.</strong> 모든 숫자는 헤지된 비용 분포의 속성입니다: 수익 스트림도, 샤프도 아닙니다.</li>
+              <li><strong>무엇을 확인해 주는가.</strong> 전체 표본 분할은 {out.oracleSplit.w1.toFixed(2)} / {out.oracleSplit.w2.toFixed(2)}(원유 / FX)입니다: 커버리지는 고분산 원유 다리에 집중되며, 이는 논문의 구조적 97/3입니다. 그리고 ρ는 {pct(out.negShare, 0)}의 기간 동안 음수여서 FX 다리가 원유를 부분적으로 자체 헤지합니다. 논문의 반직관적 c* &lt; 0에 대응하는 실데이터 결과입니다.</li>
+            </>
+          ) : (
+            <>
+              <li><strong>Strict walk-forward.</strong> Σ is estimated from a rolling window of <em>strictly past</em>
+                monthly returns; the split is applied to the next month's realised return. No look-ahead: the
+                oracle row is the only look-ahead policy, shown deliberately as the ceiling.</li>
+              <li><strong>Costs included.</strong> Charged on rebalancing turnover each month; the walk-forward cost
+                ({pct(wf.totalCost, 2)}) is small relative to the {pct(wf.varReduction - naive.varReduction, 0)} of
+                extra variance it buys.</li>
+              <li><strong>Variance, not alpha.</strong> Every number is a property of the hedged cost distribution:
+                no return stream, no Sharpe.</li>
+              <li><strong>What it confirms.</strong> The full-sample split is {out.oracleSplit.w1.toFixed(2)} / {out.oracleSplit.w2.toFixed(2)}
+                (oil / FX): coverage concentrates on the high-variance oil leg, the paper's structural 97/3. And ρ
+                is negative {pct(out.negShare, 0)} of the time, so the FX leg partially self-hedges oil: the real-data
+                analogue of the paper's counterintuitive c* &lt; 0.</li>
+            </>
+          )}
         </ul>
         <p className="bt-src">Source: {META.source}. Monthly returns auto-refreshed monthly from FRED by GitHub Actions (last: {META.generated}); the walk-forward engine then re-runs live in the browser.</p>
       </div>
@@ -223,7 +258,7 @@ function ParabolaPanel() {
         c* = −Cov(A,B)/Var(B). On the paper's 200k-path exact engine Cov(A,B) is <strong>positive</strong>,
         so the vertex is <strong>negative (c* = −0.548)</strong>: a positively-coupled FX leg adds cost
         variance rather than offsetting it, and naive one-for-one pass-through (c = 1) sits well up the
-        expensive right arm. Honestly, though, the lever is second-order — std falls only from 51.90 to
+        expensive right arm. Honestly, though, the lever is second-order: std falls only from 51.90 to
         48.76 bn KRW (~6%), because the WTI leg dominates Var(A) and no c can touch it. Same verdict as the
         static split above: the FX leg is a small part of the hedge.
       </p>
@@ -260,8 +295,8 @@ function ParabolaPanel() {
       <p className="bt-src">
         Parabola reconstructed exactly from the paper's certified moments (Park_quanto §c*: c* = −0.548,
         std 51.90bn at c = 1, 48.76bn at c*, 200k jump-adapted exact paths, affine identity to 6×10⁻¹⁶).
-        An independent frozen-engine delta-hedge here confirms the direction — c = 1 sits on the expensive
-        arm — which is what contradicts the archived build_ultimate_pipeline draft's "c = 1 optimal" claim.
+        An independent frozen-engine delta-hedge here confirms the direction: c = 1 sits on the expensive
+        arm, so the naive "c = 1 is optimal" reading is wrong.
       </p>
     </figure>
   )
@@ -281,7 +316,7 @@ function CStarPanel({ rolling, negShare }: { rolling: { month: string; w1: numbe
     <figure className="bt-panel bt-cstar">
       <h3>Where the paper's c* &lt; 0 shows up in the data</h3>
       <p className="bt-cstar-sub">
-        Oil and FX monthly returns are negatively correlated {pct(negShare, 0)} of the time — in risk-off months
+        Oil and FX monthly returns are negatively correlated {pct(negShare, 0)} of the time: in risk-off months
         oil falls while the won weakens, so the FX exposure partly offsets oil on its own. When ρ dips negative
         the variance-minimising FX coverage w<sub>2</sub> falls toward zero: naive one-for-one pass-through would
         over-hedge. This is the covariance-aware c* &lt; 0, out of sample.

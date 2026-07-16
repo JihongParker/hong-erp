@@ -208,7 +208,7 @@ export default function Materiality() {
         either financial or impact score clears the threshold (the union reading
         of double materiality). Where HongERP goes further: <em>risks</em> judged
         material feed the Decision Dashboard as exposure parameters (Σ), entering
-        the computation of optimal disclosure d* and hedge h* — instead of ending
+        the computation of optimal disclosure d* and hedge h*, instead of ending
         life as a survey score.
       </p>
     </div>
