@@ -70,7 +70,7 @@
 .ov-flow-item.in .ov-node {
   animation:
     ice-plunge 1.25s cubic-bezier(0.3, 0.72, 0.24, 1) calc(var(--i, 0) * 90ms) backwards,
-    ice-sway 9.7s ease-in-out calc(1.25s + var(--i, 0) * 90ms) infinite;
+    ice-wobble 13s linear calc(1.25s + var(--i, 0) * 90ms) infinite;
 }
 
 /* section titles wipe in left-to-right as their block reveals */
@@ -368,17 +368,36 @@
    waterline shimmer that never fully fades), pops back on its buoyancy, and
    then floats in place forever: parent bobs (translateY), card sways (rotate),
    with incommensurate periods so the loop never reads as a loop. */
+/* Each slab owns a resting orientation (--rx/--ry/--rz, set per nth-of-type
+   below) like ice cubes frozen mid-tumble: no two float at the same angle.
+   The plunge lands on that orientation, and the wobble tumbles around it. */
 @keyframes ice-plunge {
-  0%   { transform: translateY(-46px) rotateX(-14deg); }
-  38%  { transform: translateY(12px)  rotateX(5deg); }    /* impact: below the waterline */
-  55%  { transform: translateY(-6px)  rotateX(-2.6deg); } /* buoyant pop */
-  72%  { transform: translateY(3.5px) rotateX(1.2deg); }
-  86%  { transform: translateY(-1.5px) rotateX(-0.5deg); }
-  100% { transform: translateY(0) rotateX(1.4deg); }      /* endpoint = resting tilt */
+  0%   { transform: translateY(-46px) rotateX(calc(var(--rx) - 15.4deg)) rotateY(calc(var(--ry) * 0.2)); }
+  38%  { transform: translateY(12px)  rotateX(calc(var(--rx) + 3.6deg))  rotateY(calc(var(--ry) * 1.5)); } /* impact: below the waterline */
+  55%  { transform: translateY(-6px)  rotateX(calc(var(--rx) - 4deg))    rotateY(calc(var(--ry) * 0.7)); } /* buoyant pop */
+  72%  { transform: translateY(3.5px) rotateX(calc(var(--rx) - 0.2deg))  rotateY(calc(var(--ry) * 1.15)); }
+  86%  { transform: translateY(-1.5px) rotateX(calc(var(--rx) - 1.9deg)) rotateY(calc(var(--ry) * 0.9)); }
+  100% { transform: translateY(0) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
 }
-@keyframes ice-sway { /* carries the base tilt so there is no jump at handoff */
-  0%, 100% { transform: rotateX(1.4deg) rotate(-0.12deg); }
-  50%      { transform: rotateX(1.4deg) rotate(0.12deg); }
+/* underwater tumble: pitch (one cycle) x roll (two cycles) — a Lissajous
+   wobble, so the slab's corners dip in turn instead of see-sawing */
+@keyframes ice-wobble {
+  0%    { transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
+  12.5% { transform: rotateX(calc(var(--rx) + 0.5deg))  rotateY(calc(var(--ry) + 1.1deg)) rotateZ(calc(var(--rz) + 0.08deg)); }
+  25%   { transform: rotateX(calc(var(--rx) + 0.7deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) + 0.12deg)); }
+  37.5% { transform: rotateX(calc(var(--rx) + 0.5deg))  rotateY(calc(var(--ry) - 1.1deg)) rotateZ(calc(var(--rz) + 0.08deg)); }
+  50%   { transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
+  62.5% { transform: rotateX(calc(var(--rx) - 0.5deg))  rotateY(calc(var(--ry) + 1.1deg)) rotateZ(calc(var(--rz) - 0.08deg)); }
+  75%   { transform: rotateX(calc(var(--rx) - 0.7deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) - 0.12deg)); }
+  87.5% { transform: rotateX(calc(var(--rx) - 0.5deg))  rotateY(calc(var(--ry) - 1.1deg)) rotateZ(calc(var(--rz) - 0.08deg)); }
+  100%  { transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
+}
+/* faint bubble trails rising off each slab — the underwater tell */
+@keyframes bubble-rise {
+  0%   { opacity: 0; transform: translateY(0) scale(1); }
+  12%  { opacity: 0.32; }
+  70%  { opacity: 0.14; }
+  100% { opacity: 0; transform: translateY(-74px) scale(0.55); }
 }
 @keyframes ice-bob {
   0%, 100% { transform: translateY(0); }
@@ -444,7 +463,7 @@
 .chain-item.in .chain-card {
   animation:
     ice-plunge 1.25s cubic-bezier(0.3, 0.72, 0.24, 1) backwards,
-    ice-sway 9.7s ease-in-out 1.25s infinite;
+    ice-wobble 13s linear 1.25s infinite;
 }
 
 /* every card fills the track width, so all four boxes are identical (a button
@@ -521,7 +540,7 @@
      No transform in the transition: the card is perpetually animating, so
      hover feedback is border + shadow only (a transform hover would snap). */
   position: relative;
-  transform: rotateX(1.4deg);
+  transform: rotateX(var(--rx, 1.4deg)) rotateY(var(--ry, 0deg)) rotateZ(var(--rz, 0deg));
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -672,7 +691,7 @@
   cursor: pointer;
   /* persistent slab tilt; hover feedback via border/shadow only (see .chain-card) */
   position: relative;
-  transform: rotateX(1.4deg);
+  transform: rotateX(var(--rx, 1.4deg)) rotateY(var(--ry, 0deg)) rotateZ(var(--rz, 0deg));
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -957,6 +976,42 @@
   .ov-flow-note { margin-top: 10px; }
 }
 
+/* resting orientations — every cube floats at its own angle (photo ref:
+   ice cubes underwater, each frozen mid-tumble). Defaults keep old behavior. */
+.chain-item, .ov-flow-item { --rx: 1.4deg; --ry: 0deg; --rz: 0deg; }
+.chain-item:nth-of-type(1) { --rx: 1.9deg;  --ry: -2.2deg; --rz: -0.3deg; }
+.chain-item:nth-of-type(2) { --rx: 0.9deg;  --ry: 1.8deg;  --rz: 0.25deg; }
+.chain-item:nth-of-type(3) { --rx: 2.2deg;  --ry: 1.2deg;  --rz: -0.15deg; }
+.chain-item:nth-of-type(4) { --rx: 1.1deg;  --ry: -1.6deg; --rz: 0.35deg; }
+.ov-flow-item:nth-of-type(1) { --rx: 1.8deg; --ry: 1.9deg;  --rz: 0.2deg; }
+.ov-flow-item:nth-of-type(2) { --rx: 1.0deg; --ry: -1.7deg; --rz: -0.25deg; }
+.ov-flow-item:nth-of-type(3) { --rx: 2.1deg; --ry: -1.1deg; --rz: 0.15deg; }
+.ov-flow-item:nth-of-type(4) { --rx: 0.8deg; --ry: 2.1deg;  --rz: -0.2deg; }
+.ov-flow-item:nth-of-type(5) { --rx: 1.6deg; --ry: -2.0deg; --rz: 0.3deg; }
+
+/* bubbles: three dots per slab, rising and fading on desynced loops */
+.ice-bubbles,
+.ice-bubbles::before,
+.ice-bubbles::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ice-water) 55%, transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+.ice-bubbles { left: 38%; bottom: 14px; }
+.ice-bubbles::before { left: -46px; bottom: -4px; width: 4px; height: 4px; }
+.ice-bubbles::after { left: 64px; bottom: 2px; width: 6px; height: 6px; }
+.chain-item.in .ice-bubbles,
+.ov-flow-item.in .ice-bubbles { animation: bubble-rise 6.5s linear calc(var(--i, 0) * -2.1s) infinite; }
+.chain-item.in .ice-bubbles::before,
+.ov-flow-item.in .ice-bubbles::before { animation: bubble-rise 8.8s linear calc(var(--i, 0) * -3.4s - 2.6s) infinite; }
+.chain-item.in .ice-bubbles::after,
+.ov-flow-item.in .ice-bubbles::after { animation: bubble-rise 7.6s linear calc(var(--i, 0) * -1.7s - 4.9s) infinite; }
+
 /* ── a11y: must stay LAST — overrides every ice rule above at equal specificity ── */
 @media (prefers-reduced-motion: reduce) {
   .chain-item.in,
@@ -980,5 +1035,10 @@
   .chain-card,
   .ov-node {
     transform: none;
+  }
+  .ice-bubbles,
+  .ice-bubbles::before,
+  .ice-bubbles::after {
+    display: none;
   }
 }
