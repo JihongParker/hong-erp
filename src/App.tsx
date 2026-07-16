@@ -3,6 +3,7 @@ import Overview from './modules/Overview'
 import AccountTree from './modules/AccountTree'
 import Materiality from './modules/Materiality'
 import MetricEntry from './modules/MetricEntry'
+import DisclosureReport from './modules/DisclosureReport'
 import Scenario from './modules/Scenario'
 import Dashboard from './modules/Dashboard'
 import Instruments from './modules/Instruments'
@@ -43,6 +44,7 @@ const GROUPS: {
       { id: 'cosa', name: 'Chart of Accounts', desc: 'Sustainability account tree → framework datapoint mapping' },
       { id: 'materiality', name: 'Materiality', desc: 'IRO register → double materiality matrix (interactive)' },
       { id: 'metrics', name: 'Metrics Entry', desc: 'Quantitative metrics → validation rules → approval (mockup)' },
+      { id: 'report', name: 'Disclosure report', desc: 'ISSB/KSSB four-pillar draft assembled live from approved metrics, the hedge book, and the decision layer' },
     ],
   },
   {
@@ -433,6 +435,8 @@ export default function App() {
           <Materiality />
         ) : mod.id === 'metrics' ? (
           <MetricEntry />
+        ) : mod.id === 'report' ? (
+          <DisclosureReport />
         ) : mod.id === 'backtest' ? (
           <Backtest />
         ) : mod.id === 'audittrail' ? (
