@@ -35,9 +35,9 @@ export function usePersistentState<T>(
 }
 
 // Remove every persisted cockpit parameter (the `hongerp-params-v1:` namespace).
-// NOTE: intentionally not called anywhere yet. Wiring "Reset demo" to also clear
-// these lands in a follow-up stitch commit — the Reset button lives in App.tsx,
-// owned by another agent. Exported now so that hook-up is a one-line import.
+// Wired into "Reset demo data" in App.tsx (ResetDemo onClick): a reset both
+// restores the seeded ERP ledgers and wipes these persisted params, so the demo
+// returns to a genuinely clean slate rather than reloading into a stale scenario.
 export function clearPersistedParams(): void {
   try {
     const doomed: string[] = []

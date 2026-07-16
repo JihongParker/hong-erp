@@ -16,6 +16,8 @@ import { ErpProvider, useErp, ROLES, ROLE_LABEL } from './state/erp'
 import { ToastProvider } from './components/Toast'
 import Palette, { type Command } from './components/Palette'
 import { MARKET, marketDate } from './state/market'
+import { clearPersistedParams } from './state/persist'
+import { useLang, KO_DESC, KO_TOUR, type Lang } from './i18n'
 import './App.css'
 
 // Sidebar = the product map. Groups tell a first-time visitor what kind of
@@ -202,13 +204,36 @@ function RoleSwitch() {
   )
 }
 
+// Guide-language toggle: flips the sidebar module blurbs and the guided-tour
+// copy between English and Korean (explanation layer only — banners, charts, and
+// numbers stay English). A compact two-button segment under the role selector.
+function LangSwitch({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
+  return (
+    <div className="lang-switch" role="group" aria-label="Guide language">
+      {(['en', 'ko'] as const).map((l) => (
+        <button
+          key={l}
+          className={l === lang ? 'lang-btn active' : 'lang-btn'}
+          aria-pressed={l === lang}
+          onClick={() => setLang(l)}
+        >
+          {l === 'en' ? 'EN' : '한국어'}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function ResetDemo() {
   const { dispatch } = useErp()
   return (
     <button
       className="sidebar-reset"
       title="Restore the seeded demo ledgers"
-      onClick={() => dispatch({ type: 'reset' })}
+      onClick={() => {
+        dispatch({ type: 'reset' })
+        clearPersistedParams()
+      }}
     >
       Reset demo data (all divisions)
     </button>
@@ -270,6 +295,7 @@ export default function App() {
   const [active, setActive] = useState<string>('overview')
   const [tour, setTour] = useState<number | null>(null)
   const [navOpen, setNavOpen] = useState(false)
+  const [lang, setLang] = useLang()
   const mod = ALL.find((m) => m.id === active)!
 
   // on mobile, choosing a screen closes the drawer
@@ -426,6 +452,7 @@ export default function App() {
           </div>
         </button>
         <RoleSwitch />
+        <LangSwitch lang={lang} setLang={setLang} />
         <nav>
           {GROUPS.map((g) => (
             <div key={g.title ?? 'top'} className="nav-group">
@@ -459,7 +486,9 @@ export default function App() {
         {mod.id !== 'overview' && (
           <header>
             <h1>{mod.name}</h1>
-            {mod.desc && <p className="mod-desc">{mod.desc}</p>}
+            {mod.desc && (
+              <p className="mod-desc">{lang === 'ko' ? KO_DESC[mod.id] ?? mod.desc : mod.desc}</p>
+            )}
           </header>
         )}
         <div key={mod.id} className={mod.id === 'overview' ? undefined : 'screen'}>
@@ -499,8 +528,8 @@ export default function App() {
             <span className="tour-step">Step {tour + 1} / {TOUR.length}</span>
             <button className="tour-close" onClick={() => setTour(null)} aria-label="End tour">✕</button>
           </div>
-          <h4>{TOUR[tour].title}</h4>
-          <p>{TOUR[tour].body}</p>
+          <h4>{lang === 'ko' ? KO_TOUR[tour]?.title ?? TOUR[tour].title : TOUR[tour].title}</h4>
+          <p>{lang === 'ko' ? KO_TOUR[tour]?.body ?? TOUR[tour].body : TOUR[tour].body}</p>
           <div className="tour-actions">
             {tour > 0 && (
               <button className="tour-btn ghost" onClick={() => stepTour(-1)}>← Back</button>

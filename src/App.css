@@ -85,6 +85,37 @@
   cursor: pointer;
 }
 
+/* guide-language toggle — a compact EN/한국어 segment reusing the role-switch
+   visual language; tucks just under the role selector */
+.lang-switch {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-top: -10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.lang-btn {
+  padding: 4px 12px;
+  border: none;
+  background: var(--panel);
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lang-btn + .lang-btn {
+  border-left: 1px solid var(--line);
+}
+
+.lang-btn.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
 nav {
   display: flex;
   flex-direction: column;
