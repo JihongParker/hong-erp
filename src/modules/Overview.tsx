@@ -69,6 +69,10 @@ export default function Overview({
   onStartTour: () => void
 }) {
   const chainRef = useRef<HTMLElement | null>(null)
+  // buoyancy physics for the four chain panels (see useEffect below)
+  const floatCards = useRef<(HTMLButtonElement | null)[]>([])
+  const floatShadows = useRef<(HTMLSpanElement | null)[]>([])
+  const floatBands = useRef<(HTMLSpanElement | null)[]>([])
   const t = useT()
   const [lang] = useLang()
 
@@ -102,6 +106,71 @@ export default function Overview({
       window.removeEventListener('scroll', onScroll)
       cancelAnimationFrame(raf)
     }
+  }, [])
+
+  // ── ice-slab buoyancy for the chain panels ──────────────────────────────
+  // Not a CSS loop: a real damped-spring ODE integrated per frame. Each panel
+  // is released above the waterline when it reveals, falls, over-submerges
+  // (the plunge), and is pushed back by buoyancy with drag until a gentle wave
+  // forcing keeps it drifting forever. Pitch couples to vertical velocity
+  // (nose dips while falling, rocks while settling); the waterline band on the
+  // card and the cast shadow on the water read the same displacement, which is
+  // what makes the float legible as depth instead of jitter.
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    type Slab = { y: number; v: number; on: boolean; born: number; ph: number; w: number; z: number }
+    const slabs: Slab[] = PAPERS.map((_, i) => ({
+      y: -120, v: 0, on: false, born: 0,
+      ph: i * 1.93,
+      w: 2.15 + (i % 3) * 0.22, // natural frequency: heavier/lighter slabs
+      z: 0.52 - (i % 2) * 0.07, // damping ratio: slightly different splash each
+    }))
+    let raf = 0
+    let last = performance.now()
+    const tick = (now: number) => {
+      const dt = Math.min(0.033, (now - last) / 1000)
+      last = now
+      const t = now / 1000
+      for (let i = 0; i < slabs.length; i++) {
+        const s = slabs[i]
+        const card = floatCards.current[i]
+        if (!card) continue
+        if (!s.on) {
+          if (card.closest('.chain-item')?.classList.contains('in')) {
+            s.on = true
+            s.born = t
+          } else {
+            card.style.opacity = '0'
+            continue
+          }
+        }
+        const age = t - s.born
+        const k = s.w * s.w
+        const c = 2 * s.z * s.w
+        // steady wave forcing (px/s^2): keeps the settled slab alive at ~±5px
+        const wave = 42 * Math.sin(0.5 * t + s.ph) + 18 * Math.sin(0.83 * t + s.ph * 2.1)
+        s.v += (-k * s.y - c * s.v + wave) * dt
+        s.y += s.v * dt
+        const pitch = 1.2 - s.v * 0.026 + 1.9 * Math.sin(0.42 * t + s.ph)
+        const roll = 1.5 * Math.sin(0.31 * t + s.ph * 1.7) + (i % 2 ? -0.5 : 0.5)
+        const x = 2.5 * Math.sin(0.19 * t + s.ph * 2.3)
+        const zz = 7 * Math.sin(0.27 * t + s.ph * 0.6)
+        card.style.opacity = String(Math.min(1, age * 2.4))
+        card.style.transform =
+          `translate3d(${x.toFixed(2)}px, ${s.y.toFixed(2)}px, ${zz.toFixed(2)}px) ` +
+          `rotateX(${pitch.toFixed(3)}deg) rotateY(${roll.toFixed(3)}deg)`
+        const band = floatBands.current[i]
+        if (band) band.style.height = `${Math.max(5, Math.min(34, 12 + s.y * 0.85)).toFixed(1)}%`
+        const sh = floatShadows.current[i]
+        if (sh) {
+          sh.style.opacity = Math.max(0.05, Math.min(0.32, 0.2 + s.y * 0.004)).toFixed(3)
+          sh.style.transform = `scaleX(${Math.max(0.8, Math.min(1.08, 1 + s.y * 0.0018)).toFixed(4)})`
+        }
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
   }, [])
 
   return (
@@ -174,11 +243,13 @@ export default function Overview({
               style={{ ['--node-c' as string]: nodeColor(i, PAPERS.length), ['--i' as string]: i }}
             >
               <span className="chain-node">{p.n}</span>
-              <button className="chain-card" onClick={() => onNavigate(p.module)}>
+              <span className="chain-float-shadow" aria-hidden ref={(el) => { floatShadows.current[i] = el }} />
+              <button className="chain-card" onClick={() => onNavigate(p.module)} ref={(el) => { floatCards.current[i] = el }}>
                 <span className="chain-title">{p.title}</span>
                 <span className="chain-plain">{p.plain}</span>
                 <span className="chain-result">{p.result}</span>
                 <span className="chain-link">{p.moduleName} →</span>
+                <span className="chain-waterband" aria-hidden ref={(el) => { floatBands.current[i] = el }} />
               </button>
               <span className="ice-bubbles" aria-hidden />
             </article>

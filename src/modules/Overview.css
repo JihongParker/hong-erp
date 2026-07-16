@@ -452,18 +452,51 @@
 
 .chain-item.in {
   opacity: 1;
-  animation: ice-bob 6.8s ease-in-out infinite;
-  animation-delay: calc(var(--i, 0) * -1.7s);
+  /* no CSS bob here: the chain panels are driven by the buoyancy loop in
+     Overview.tsx (real spring physics), not keyframes */
 }
 .chain-item.in::before { animation: ice-ripple 0.9s ease-out 0.48s both; }
 .chain-item.in::after  { animation: ice-water 1.4s ease-out 0.4s forwards; }
 
-/* plunge once, then sway forever — comma-chained on the same element so the
-   two transforms never fight (sway starts exactly when the plunge ends) */
-.chain-item.in .chain-card {
-  animation:
-    ice-plunge 1.25s cubic-bezier(0.3, 0.72, 0.24, 1) backwards,
-    ice-wobble 13s linear 1.25s infinite;
+/* the plunge-and-float itself is JS (buoyancy ODE in Overview.tsx); the card
+   only needs to start invisible until the loop takes over */
+.chain-item:not(.in) .chain-card {
+  opacity: 0;
+}
+
+/* cast shadow on the water under each slab — driven by the same physics: it
+   fades and shrinks while the slab is airborne, darkens when it settles */
+.chain-float-shadow {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -14px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%,
+    color-mix(in srgb, #0c2530 60%, transparent),
+    transparent 72%);
+  filter: blur(7px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* waterline band: the submerged fraction of the slab. Height follows the
+   physics displacement, so the panel visibly sinks deeper on the plunge and
+   rides shallower on a swell. */
+.chain-waterband {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 11%;
+  border-radius: 0 0 15px 15px;
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--ice-water) 48%, transparent),
+    color-mix(in srgb, var(--ice-water) 26%, transparent));
+  box-shadow: 0 -1.5px 0 color-mix(in srgb, var(--ice-water) 72%, transparent);
+  opacity: 0.75;
+  pointer-events: none;
 }
 
 /* every card fills the track width, so all four boxes are identical (a button
@@ -1001,5 +1034,12 @@
   .ice-bubbles::before,
   .ice-bubbles::after {
     display: none;
+  }
+  .chain-float-shadow,
+  .chain-waterband {
+    display: none;
+  }
+  .chain-item:not(.in) .chain-card {
+    opacity: 1;
   }
 }
