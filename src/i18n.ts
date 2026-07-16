@@ -1,3 +1,5 @@
+import { KO_DECISION } from './i18n.ko-decision'
+import { KO_REPORTING } from './i18n.ko-reporting'
 import { useEffect, useState } from 'react'
 
 // Guide-language layer. Scope is deliberately narrow: only the explanatory copy
@@ -56,7 +58,7 @@ export function useLang(): [Lang, (l: Lang) => void] {
 // English strings verbatim, so the copy in the TSX stays the source of truth.
 export function useT(): (en: string) => string {
   const [lang] = useLang()
-  return (en: string) => (lang === 'en' ? en : KO_COPY[en] ?? en)
+  return (en: string) => (lang === 'en' ? en : KO_ALL[en] ?? en)
 }
 
 // Korean sidebar blurbs, keyed by module id. Any id absent here falls back to
@@ -162,3 +164,6 @@ export const KO_COPY: Record<string, string> = {
   'Rolling window sets how much past data estimates Σ; budget caps total coverage (<2 binds); cost is charged on rebalancing turnover. The walk-forward result stays ~14pp above naive across the whole slider range — the edge is not a tuned artifact.':
     '롤링 윈도는 Σ 추정에 과거 데이터를 얼마나 쓸지 정하고, 예산은 총 커버리지에 상한을 둡니다(<2에서 제약이 걸림). 비용은 리밸런싱 회전율에 부과됩니다. 워크포워드 결과는 슬라이더 전 구간에서 나이브 대비 ~14pp 위를 유지합니다 — 이 우위는 튜닝으로 만든 산물이 아닙니다.',
 }
+
+// master lookup: base copy + the two layer dictionaries (later wins on dupes)
+const KO_ALL: Record<string, string> = { ...KO_COPY, ...KO_DECISION, ...KO_REPORTING }
