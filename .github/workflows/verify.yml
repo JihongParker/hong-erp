@@ -1,0 +1,23 @@
+name: Verify engine
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      # tsx is not a dependency — npx installs it on demand at runtime, as the
+      # backtest-refresh (R1) workflow relies on npx for its tooling too.
+      - name: Certify frozen engine numerics
+        run: npx tsx scripts/verify-all.mjs
