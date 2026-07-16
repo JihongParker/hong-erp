@@ -73,21 +73,21 @@ export default function Backtest() {
         {/* ── control rail ── */}
         <div className="bt-rail">
           <div className="bt-panel bt-controls">
-            <h3>Backtest controls</h3>
-            <ParamRow label="Estimation window" min={24} max={120} step={6} value={window} onChange={setWindow} fmt={(v) => `${v}m`} />
-            <ParamRow label="Hedge budget" min={0.4} max={1.6} step={0.1} value={budget} onChange={setBudget} fmt={(v) => v.toFixed(1)} />
-            <ParamRow label="Cost per turnover" min={0} max={25} step={1} value={tcBps} onChange={setTcBps} fmt={(v) => `${v}bp`} />
+            <h3>{t('Backtest controls')}</h3>
+            <ParamRow label={t('Estimation window')} min={24} max={120} step={6} value={window} onChange={setWindow} fmt={(v) => `${v}m`} />
+            <ParamRow label={t('Hedge budget')} min={0.4} max={1.6} step={0.1} value={budget} onChange={setBudget} fmt={(v) => v.toFixed(1)} />
+            <ParamRow label={t('Cost per turnover')} min={0} max={25} step={1} value={tcBps} onChange={setTcBps} fmt={(v) => `${v}bp`} />
             <p className="bt-muted">
               {t('Rolling window sets how much past data estimates Σ; budget caps total coverage (<2 binds); cost is charged on rebalancing turnover. The walk-forward result stays ~14pp above naive across the whole slider range — the edge is not a tuned artifact.')}
             </p>
           </div>
 
           <div className="bt-panel bt-hero">
-            <span className="bt-hero-label">Variance removed — walk-forward, out of sample</span>
+            <span className="bt-hero-label">{t('Variance removed — walk-forward, out of sample')}</span>
             <span className={heroPulse ? 'bt-hero-value pulse' : 'bt-hero-value'}>{pct(wf.varReduction, 0)}</span>
             <div className="bt-hero-row">
-              <span>vs naive <strong>{pct(naive.varReduction, 0)}</strong></span>
-              <span>gap to oracle <strong>{pct(oracle.varReduction - wf.varReduction, 1)}</strong></span>
+              <span>{t('vs naive')} <strong>{pct(naive.varReduction, 0)}</strong></span>
+              <span>{t('gap to oracle')} <strong>{pct(oracle.varReduction - wf.varReduction, 1)}</strong></span>
             </div>
             <div className="bt-hero-row">
               <span>MDD <strong>{pct(unhedged.mdd, 0)}→{pct(wf.mdd, 0)}</strong></span>
@@ -99,25 +99,29 @@ export default function Backtest() {
         {/* ── results ── */}
         <div className="bt-main">
           <div className="bt-panel">
-            <h3>Realised hedge performance — {out.span[0]} to {out.span[1]}</h3>
+            <h3>
+              {lang === 'ko'
+                ? `실현 헤지 성과 — ${out.span[0]} ~ ${out.span[1]}`
+                : `Realised hedge performance — ${out.span[0]} to ${out.span[1]}`}
+            </h3>
             <div className="bt-table-wrap">
               <table>
                 <thead>
                   <tr>
-                    <th>Policy</th>
-                    <th className="num">Ann. vol</th>
-                    <th className="num">Variance removed</th>
+                    <th>{t('Policy')}</th>
+                    <th className="num">{t('Ann. vol')}</th>
+                    <th className="num">{t('Variance removed')}</th>
                     <th className="num">CVaR 95%</th>
-                    <th className="num">Max drawdown</th>
-                    <th className="num">Cost</th>
+                    <th className="num">{t('Max drawdown')}</th>
+                    <th className="num">{t('Cost')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {out.summary.map((s) => (
                     <tr key={s.policy} className={s.policy === 'walkforward' ? 'hl' : undefined}>
                       <td>
-                        <span className="bt-dot" style={{ background: COLOR[s.policy] }} /> {LABEL[s.policy]}
-                        <span className="bt-note">{NOTE[s.policy]}</span>
+                        <span className="bt-dot" style={{ background: COLOR[s.policy] }} /> {t(LABEL[s.policy])}
+                        <span className="bt-note">{t(NOTE[s.policy])}</span>
                       </td>
                       <td className="num">{pct(s.annVol, 1)}</td>
                       <td className="num">{s.policy === 'unhedged' ? '—' : pct(s.varReduction, 1)}</td>
@@ -157,7 +161,7 @@ export default function Backtest() {
       <ParabolaPanel />
 
       <div className="bt-method">
-        <h3>Method &amp; honest caveats</h3>
+        <h3>{lang === 'ko' ? '방법론 및 솔직한 유의점' : 'Method & honest caveats'}</h3>
         <ul>
           {lang === 'ko' ? (
             <>
@@ -183,7 +187,11 @@ export default function Backtest() {
             </>
           )}
         </ul>
-        <p className="bt-src">Source: {META.source}. Monthly returns auto-refreshed monthly from FRED by GitHub Actions (last: {META.generated}); the walk-forward engine then re-runs live in the browser.</p>
+        <p className="bt-src">
+          {lang === 'ko'
+            ? `출처: ${META.source}. 월간 수익률은 GitHub Actions가 FRED에서 매월 자동 갱신하며(최근: ${META.generated}), 워크포워드 엔진은 브라우저에서 실시간으로 다시 돌립니다.`
+            : `Source: ${META.source}. Monthly returns auto-refreshed monthly from FRED by GitHub Actions (last: ${META.generated}); the walk-forward engine then re-runs live in the browser.`}
+        </p>
       </div>
     </div>
   )
@@ -192,6 +200,7 @@ export default function Backtest() {
 // cumulative hedged-cost path per policy
 const CW = 640, CH = 300, PAD = { top: 16, right: 16, bottom: 30, left: 46 }
 function CumChart({ paths }: { paths: Record<string, { month: string; cum: number }[]> }) {
+  const t = useT()
   const [hidden, setHidden] = useState<Record<string, boolean>>({})
   const keys = ['unhedged', 'naive', 'oracle', 'walkforward']
   const vis = keys.filter((k) => !hidden[k])
@@ -204,8 +213,8 @@ function CumChart({ paths }: { paths: Record<string, { month: string; cum: numbe
   const ticks = [0, Math.floor(n / 3), Math.floor((2 * n) / 3), n - 1]
   return (
     <figure className="bt-panel bt-chart">
-      <h3>Cumulative hedged cost — the flatter the better</h3>
-      <svg viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label="Cumulative hedged cost by policy">
+      <h3>{t('Cumulative hedged cost — the flatter the better')}</h3>
+      <svg viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label={t('Cumulative hedged cost by policy')}>
         <line x1={PAD.left} y1={y(0)} x2={CW - PAD.right} y2={y(0)} stroke="var(--line)" strokeWidth={1} />
         {ticks.map((i) => (
           <text key={i} x={x(i)} y={CH - PAD.bottom + 16} textAnchor="middle" className="tick">{paths.unhedged[i].month.slice(0, 4)}</text>
@@ -217,7 +226,7 @@ function CumChart({ paths }: { paths: Record<string, { month: string; cum: numbe
       <figcaption className="bt-legend">
         {keys.map((k) => (
           <button key={k} className={hidden[k] ? 'bt-lg off' : 'bt-lg'} onClick={() => setHidden((h) => ({ ...h, [k]: !h[k] }))}>
-            <span className="bt-dot" style={{ background: COLOR[k] }} /> {LABEL[k]}
+            <span className="bt-dot" style={{ background: COLOR[k] }} /> {t(LABEL[k])}
           </button>
         ))}
       </figcaption>
@@ -238,6 +247,8 @@ const P2 = (() => {
 })()
 const PW = 1320, PH = 300, PP = { top: 18, right: 120, bottom: 40, left: 60 }
 function ParabolaPanel() {
+  const t = useT()
+  const [lang] = useLang()
   const stdOf = (c: number) => Math.sqrt(P2.VarA + 2 * c * P2.Cov + c * c * P2.VarB)
   const cLo = -1.6, cHi = 1.8
   const cs = Array.from({ length: 141 }, (_, i) => cLo + ((cHi - cLo) * i) / 140)
@@ -251,18 +262,34 @@ function ParabolaPanel() {
   const armPath = arm.map((c, i) => `${i ? 'L' : 'M'}${x(c).toFixed(1)},${y(stdOf(c)).toFixed(1)}`).join('')
   return (
     <figure className="bt-panel bt-cstar">
-      <h3>P2 — the dynamic hedge-cost parabola, and why naive c = 1 is off-optimum</h3>
+      <h3>{t('P2 — the dynamic hedge-cost parabola, and why naive c = 1 is off-optimum')}</h3>
       <p className="bt-cstar-sub">
-        Coupling the FX hedge to the WTI delta as δ<sub>FX</sub> = c · δ<sub>WTI</sub> makes per-path hedge
-        cost exactly affine in c, so its variance is an exact parabola with closed-form vertex
-        c* = −Cov(A,B)/Var(B). On the paper's 200k-path exact engine Cov(A,B) is <strong>positive</strong>,
-        so the vertex is <strong>negative (c* = −0.548)</strong>: a positively-coupled FX leg adds cost
-        variance rather than offsetting it, and naive one-for-one pass-through (c = 1) sits well up the
-        expensive right arm. Honestly, though, the lever is second-order: std falls only from 51.90 to
-        48.76 bn KRW (~6%), because the WTI leg dominates Var(A) and no c can touch it. Same verdict as the
-        static split above: the FX leg is a small part of the hedge.
+        {lang === 'ko' ? (
+          <>
+            FX 헤지를 WTI 델타에 δ<sub>FX</sub> = c · δ<sub>WTI</sub>로 결합하면 경로별 헤지 비용이
+            c에 대해 정확히 아핀(affine)이 되고, 따라서 그 분산은 닫힌 형태의 꼭짓점
+            c* = −Cov(A,B)/Var(B)를 갖는 정확한 포물선이 됩니다. 논문의 200k-경로 정밀 엔진에서
+            Cov(A,B)는 <strong>양수</strong>이므로 꼭짓점은 <strong>음수(c* = −0.548)</strong>입니다:
+            양으로 결합된 FX 다리는 비용 분산을 상쇄하기는커녕 오히려 더합니다. 그리고 나이브한 1대1
+            전가(c = 1)는 비싼 오른쪽 팔 위에 한참 올라앉아 있습니다. 다만 솔직히 이 레버는 2차적입니다:
+            표준편차는 51.90에서 48.76억 KRW(~6%)로만 내려갑니다. WTI 다리가 Var(A)를 지배하고 어떤
+            c도 거기에 손댈 수 없기 때문입니다. 위의 정적 분할과 같은 결론입니다: FX 다리는 헤지의 작은
+            일부일 뿐입니다.
+          </>
+        ) : (
+          <>
+            Coupling the FX hedge to the WTI delta as δ<sub>FX</sub> = c · δ<sub>WTI</sub> makes per-path hedge
+            cost exactly affine in c, so its variance is an exact parabola with closed-form vertex
+            c* = −Cov(A,B)/Var(B). On the paper's 200k-path exact engine Cov(A,B) is <strong>positive</strong>,
+            so the vertex is <strong>negative (c* = −0.548)</strong>: a positively-coupled FX leg adds cost
+            variance rather than offsetting it, and naive one-for-one pass-through (c = 1) sits well up the
+            expensive right arm. Honestly, though, the lever is second-order: std falls only from 51.90 to
+            48.76 bn KRW (~6%), because the WTI leg dominates Var(A) and no c can touch it. Same verdict as the
+            static split above: the FX leg is a small part of the hedge.
+          </>
+        )}
       </p>
-      <svg viewBox={`0 0 ${PW} ${PH}`} role="img" aria-label="Hedge-cost standard deviation vs coupling c">
+      <svg viewBox={`0 0 ${PW} ${PH}`} role="img" aria-label={t('Hedge-cost standard deviation vs coupling c')}>
         {/* y grid */}
         {[46, 48, 50, 52, 54].map((v) => (
           <g key={v}>
@@ -289,14 +316,34 @@ function ParabolaPanel() {
         <text x={x(1) + 8} y={y(P2.std1) - 6} className="bt-slabel" fill="#b3610f">naive c = 1 · {P2.std1}bn</text>
       </svg>
       <figcaption className="bt-legend">
-        <span className="bt-lg"><span className="bt-dot" style={{ background: '#b3610f' }} /> swept window [0.5, 1.5] — the parabola's right arm</span>
-        <span className="bt-lg"><span className="bt-dot" style={{ background: '#2f6db4' }} /> closed-form vertex c* (variance minimiser)</span>
+        {lang === 'ko' ? (
+          <>
+            <span className="bt-lg"><span className="bt-dot" style={{ background: '#b3610f' }} /> 스윕 구간 [0.5, 1.5] — 포물선의 오른쪽 팔</span>
+            <span className="bt-lg"><span className="bt-dot" style={{ background: '#2f6db4' }} /> 닫힌 형태 꼭짓점 c* (분산 최소화)</span>
+          </>
+        ) : (
+          <>
+            <span className="bt-lg"><span className="bt-dot" style={{ background: '#b3610f' }} /> swept window [0.5, 1.5] — the parabola's right arm</span>
+            <span className="bt-lg"><span className="bt-dot" style={{ background: '#2f6db4' }} /> closed-form vertex c* (variance minimiser)</span>
+          </>
+        )}
       </figcaption>
       <p className="bt-src">
-        Parabola reconstructed exactly from the paper's certified moments (Park_quanto §c*: c* = −0.548,
-        std 51.90bn at c = 1, 48.76bn at c*, 200k jump-adapted exact paths, affine identity to 6×10⁻¹⁶).
-        An independent frozen-engine delta-hedge here confirms the direction: c = 1 sits on the expensive
-        arm, so the naive "c = 1 is optimal" reading is wrong.
+        {lang === 'ko' ? (
+          <>
+            논문의 인증된 모멘트에서 포물선을 정확히 재구성했습니다 (Park_quanto §c*: c* = −0.548,
+            c = 1에서 std 51.90억, c*에서 48.76억, 200k 점프-적응 정밀 경로, 아핀 항등식 6×10⁻¹⁶까지).
+            여기 독립적인 고정 엔진 델타 헤지가 그 방향을 확인해 줍니다: c = 1은 비싼 팔 위에 있으므로,
+            나이브한 "c = 1이 최적"이라는 해석은 틀렸습니다.
+          </>
+        ) : (
+          <>
+            Parabola reconstructed exactly from the paper's certified moments (Park_quanto §c*: c* = −0.548,
+            std 51.90bn at c = 1, 48.76bn at c*, 200k jump-adapted exact paths, affine identity to 6×10⁻¹⁶).
+            An independent frozen-engine delta-hedge here confirms the direction: c = 1 sits on the expensive
+            arm, so the naive "c = 1 is optimal" reading is wrong.
+          </>
+        )}
       </p>
     </figure>
   )
@@ -304,6 +351,8 @@ function ParabolaPanel() {
 
 const RW = 1320, RH = 200, RP = { top: 14, right: 46, bottom: 28, left: 46 }
 function CStarPanel({ rolling, negShare }: { rolling: { month: string; w1: number; w2: number; rho: number }[]; negShare: number }) {
+  const t = useT()
+  const [lang] = useLang()
   const n = rolling.length
   const rMax = Math.max(0.5, ...rolling.map((r) => Math.abs(r.rho)))
   const x = (i: number) => RP.left + (i / (n - 1)) * (RW - RP.left - RP.right)
@@ -314,14 +363,26 @@ function CStarPanel({ rolling, negShare }: { rolling: { month: string; w1: numbe
   const ticks = [0, Math.floor(n / 4), Math.floor(n / 2), Math.floor((3 * n) / 4), n - 1]
   return (
     <figure className="bt-panel bt-cstar">
-      <h3>Where the paper's c* &lt; 0 shows up in the data</h3>
+      <h3>{lang === 'ko' ? '논문의 c* < 0이 데이터에서 드러나는 지점' : "Where the paper's c* < 0 shows up in the data"}</h3>
       <p className="bt-cstar-sub">
-        Oil and FX monthly returns are negatively correlated {pct(negShare, 0)} of the time: in risk-off months
-        oil falls while the won weakens, so the FX exposure partly offsets oil on its own. When ρ dips negative
-        the variance-minimising FX coverage w<sub>2</sub> falls toward zero: naive one-for-one pass-through would
-        over-hedge. This is the covariance-aware c* &lt; 0, out of sample.
+        {lang === 'ko' ? (
+          <>
+            원유와 FX의 월간 수익률은 전체 기간의 {pct(negShare, 0)} 동안 음의 상관을 보입니다: 리스크오프
+            국면에서 원유가 떨어지는 동시에 원화가 약세를 보여, FX 익스포저가 스스로 원유를 부분적으로
+            상쇄합니다. ρ가 음수로 내려가면 분산을 최소화하는 FX 커버리지 w<sub>2</sub>는 0을 향해
+            떨어집니다: 나이브한 1대1 전가라면 과도하게 헤지하게 됩니다. 이것이 표본 밖에서 나타나는
+            공분산 반영 c* &lt; 0입니다.
+          </>
+        ) : (
+          <>
+            Oil and FX monthly returns are negatively correlated {pct(negShare, 0)} of the time: in risk-off months
+            oil falls while the won weakens, so the FX exposure partly offsets oil on its own. When ρ dips negative
+            the variance-minimising FX coverage w<sub>2</sub> falls toward zero: naive one-for-one pass-through would
+            over-hedge. This is the covariance-aware c* &lt; 0, out of sample.
+          </>
+        )}
       </p>
-      <svg viewBox={`0 0 ${RW} ${RH}`} role="img" aria-label="Rolling correlation and FX coverage">
+      <svg viewBox={`0 0 ${RW} ${RH}`} role="img" aria-label={t('Rolling correlation and FX coverage')}>
         <line x1={RP.left} y1={yR(0)} x2={RW - RP.right} y2={yR(0)} stroke="var(--line)" strokeWidth={1} strokeDasharray="4 4" />
         <text x={RP.left - 6} y={yR(0) + 4} textAnchor="end" className="tick">ρ=0</text>
         {rolling.map((r, i) => r.rho < 0 && i < n - 1 ? (
@@ -336,8 +397,17 @@ function CStarPanel({ rolling, negShare }: { rolling: { month: string; w1: numbe
         <text x={RW - RP.right + 4} y={yW(rolling[n - 1].w2) + 4} className="bt-slabel" fill="#2f6db4">w₂</text>
       </svg>
       <figcaption className="bt-legend">
-        <span className="bt-lg"><span className="bt-dot" style={{ background: '#b3610f' }} /> ρ(r_oil, r_fx) — rolling</span>
-        <span className="bt-lg"><span className="bt-dot" style={{ background: '#2f6db4' }} /> w₂ — optimal FX coverage</span>
+        {lang === 'ko' ? (
+          <>
+            <span className="bt-lg"><span className="bt-dot" style={{ background: '#b3610f' }} /> ρ(r_oil, r_fx) — 롤링</span>
+            <span className="bt-lg"><span className="bt-dot" style={{ background: '#2f6db4' }} /> w₂ — 최적 FX 커버리지</span>
+          </>
+        ) : (
+          <>
+            <span className="bt-lg"><span className="bt-dot" style={{ background: '#b3610f' }} /> ρ(r_oil, r_fx) — rolling</span>
+            <span className="bt-lg"><span className="bt-dot" style={{ background: '#2f6db4' }} /> w₂ — optimal FX coverage</span>
+          </>
+        )}
       </figcaption>
     </figure>
   )

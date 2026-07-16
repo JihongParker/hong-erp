@@ -3,6 +3,7 @@ import { solveEquilibrium, type ModelParams } from '../engine/model'
 import { useErp } from '../state/erp'
 import { usePersistentState } from '../state/persist'
 import ParamRow from '../components/ParamRow'
+import { useT } from '../i18n'
 import './Scenario.css'
 
 // Division colors — validated palette, assigned to entities in fixed order;
@@ -32,6 +33,7 @@ function Bar({ frac, color }: { frac: number; color: string }) {
 
 export default function Scenario() {
   const { state: erp, dispatch } = useErp()
+  const t = useT()
   const divs = erp.divisions
   // only the selected division tab persists here; the division params themselves
   // already live in the erp store (do not double-persist them)
@@ -47,7 +49,7 @@ export default function Scenario() {
     <div className="sc">
       <div className="sc-grid">
         <div className="sc-panel">
-          <h3>Division parameters</h3>
+          <h3>{t('Division parameters')}</h3>
           <div className="sc-tabs">
             {divs.map((d, i) => (
               <button
@@ -56,7 +58,7 @@ export default function Scenario() {
                 onClick={() => setSel(i)}
               >
                 <span className="dot" style={{ background: DIV_COLORS[i] }} />
-                {d.name}
+                {t(d.name)}
               </button>
             ))}
           </div>
@@ -64,7 +66,7 @@ export default function Scenario() {
             {PARAM_META.map((m) => (
               <ParamRow
                 key={m.key}
-                label={m.label}
+                label={t(m.label)}
                 min={m.min}
                 max={m.max}
                 step={m.step}
@@ -74,28 +76,29 @@ export default function Scenario() {
             ))}
           </div>
           <p className="sc-fixed-note">
-            These are the divisions' live parameter records: edits persist
-            and flow to the division book on the Decision Dashboard.
+            {t(
+              "These are the divisions' live parameter records: edits persist and flow to the division book on the Decision Dashboard.",
+            )}
           </p>
         </div>
 
         <div className="sc-panel">
-          <h3>Optimal disclosure d*</h3>
+          <h3>{t('Optimal disclosure d*')}</h3>
           <div className="sc-chart">
             {divs.map((d, i) => (
               <div key={d.name} className="sc-row">
-                <span className="sc-name">{d.name}</span>
+                <span className="sc-name">{t(d.name)}</span>
                 <Bar frac={solutions[i].dStar / (dMax * 1.15)} color={DIV_COLORS[i]} />
                 <span className="sc-num">{solutions[i].dStar.toFixed(2)}</span>
               </div>
             ))}
           </div>
 
-          <h3>Optimal financial hedge h_f*</h3>
+          <h3>{t('Optimal financial hedge h_f*')}</h3>
           <div className="sc-chart">
             {divs.map((d, i) => (
               <div key={d.name} className="sc-row">
-                <span className="sc-name">{d.name}</span>
+                <span className="sc-name">{t(d.name)}</span>
                 <Bar frac={solutions[i].hF} color={DIV_COLORS[i]} />
                 <span className="sc-num">{(solutions[i].hF * 100).toFixed(0)}%</span>
               </div>
@@ -106,25 +109,25 @@ export default function Scenario() {
             <table>
               <thead>
                 <tr>
-                  <th>Division</th>
+                  <th>{t('Division')}</th>
                   <th className="num">d*</th>
                   <th className="num">h_f*</th>
                   <th className="num">h_c*</th>
                   <th className="num">Λ(d*)</th>
-                  <th>Regime</th>
+                  <th>{t('Regime')}</th>
                 </tr>
               </thead>
               <tbody>
                 {divs.map((d, i) => (
                   <tr key={d.name} className={i === sel ? 'hl' : ''}>
                     <td>
-                      <span className="dot" style={{ background: DIV_COLORS[i] }} /> {d.name}
+                      <span className="dot" style={{ background: DIV_COLORS[i] }} /> {t(d.name)}
                     </td>
                     <td className="num">{solutions[i].dStar.toFixed(2)}</td>
                     <td className="num">{(solutions[i].hF * 100).toFixed(1)}%</td>
                     <td className="num">{(solutions[i].hC * 100).toFixed(1)}%</td>
                     <td className="num">{solutions[i].lambdaAtD.toFixed(2)}</td>
-                    <td>{solutions[i].floorBinding ? 'floor binding' : 'voluntary'}</td>
+                    <td>{solutions[i].floorBinding ? t('floor binding') : t('voluntary')}</td>
                   </tr>
                 ))}
               </tbody>
@@ -134,12 +137,9 @@ export default function Scenario() {
       </div>
 
       <p className="sc-note">
-        How to read it: divisions with larger exposure (σf) and faster penalty
-        attenuation (k) optimally disclose more, and because disclosure lowers
-        the shadow price Λ of residual risk, their hedge ratios move with it —
-        disclosure and hedging are two solutions of one problem. Try raising a
-        division's mandated floor d̲ past its voluntary d* and watch the hedge
-        fall: that is the crowding-out regime.
+        {t(
+          "How to read it: divisions with larger exposure (σf) and faster penalty attenuation (k) optimally disclose more, and because disclosure lowers the shadow price Λ of residual risk, their hedge ratios move with it — disclosure and hedging are two solutions of one problem. Try raising a division's mandated floor d̲ past its voluntary d* and watch the hedge fall: that is the crowding-out regime.",
+        )}
       </p>
     </div>
   )

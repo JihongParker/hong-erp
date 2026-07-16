@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useT } from '../i18n'
 import './Palette.css'
 
 // A command the palette can run. `hint` is the muted right-aligned tag
@@ -23,6 +24,7 @@ export default function Palette({
   onClose: () => void
   commands: Command[]
 }) {
+  const t = useT()
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -106,7 +108,7 @@ export default function Palette({
   return (
     <div className="cmdk-overlay">
       <div className="cmdk-scrim" onClick={onClose} />
-      <div className="cmdk-card" role="dialog" aria-modal="true" aria-label="Command palette">
+      <div className="cmdk-card" role="dialog" aria-modal="true" aria-label={t('Command palette')}>
         <input
           ref={inputRef}
           className="cmdk-input"
@@ -116,7 +118,7 @@ export default function Palette({
             setQuery(e.target.value)
             setActive(0)
           }}
-          placeholder="Type a command — jump to a module, switch role, start the tour…"
+          placeholder={t('Type a command — jump to a module, switch role, start the tour…')}
           role="combobox"
           aria-expanded="true"
           aria-controls="cmdk-list"
@@ -127,7 +129,7 @@ export default function Palette({
         />
         <div className="cmdk-list" id="cmdk-list" role="listbox" ref={listRef}>
           {results.length === 0 ? (
-            <div className="cmdk-empty">No matches</div>
+            <div className="cmdk-empty">{t('No matches')}</div>
           ) : (
             results.map((c, i) => (
               <div

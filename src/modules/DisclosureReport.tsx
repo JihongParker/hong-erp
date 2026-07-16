@@ -32,12 +32,13 @@ const DP_BY_CODE: Map<string, Datapoint> = (() => {
 })()
 
 function FrameworkChips({ code }: { code: string }) {
+  const t = useT()
   const dp = DP_BY_CODE.get(code)
   const keys = Object.keys(FRAMEWORK_LABELS) as Array<keyof typeof FRAMEWORK_LABELS>
   const chips = dp
     ? keys.filter((k) => dp.frameworks[k])
     : []
-  if (chips.length === 0) return <span className="dr-nomap">unmapped</span>
+  if (chips.length === 0) return <span className="dr-nomap">{t('unmapped')}</span>
   return (
     <div className="fw-chips">
       {chips.map((k) => (
@@ -109,7 +110,7 @@ export default function DisclosureReport() {
     [approved],
   )
 
-  const today = new Date().toLocaleDateString('en-US', {
+  const today = new Date().toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -121,23 +122,23 @@ export default function DisclosureReport() {
         <header className="dr-header">
           <div className="dr-title-row">
             <div>
-              <h1 className="dr-title">Climate &amp; Sustainability Disclosure — Draft</h1>
-              <p className="dr-entity">HongERP Demo Corp, integrated refiner</p>
+              <h1 className="dr-title">{t('Climate & Sustainability Disclosure — Draft')}</h1>
+              <p className="dr-entity">{t('HongERP Demo Corp, integrated refiner')}</p>
             </div>
             <button className="dr-print" onClick={() => window.print()}>
-              Print / Save as PDF
+              {t('Print / Save as PDF')}
             </button>
           </div>
           <p className="dr-subtitle">
             {t('Prepared on the ISSB/KSSB four-pillar structure · demo document assembled live from the ERP ledgers')}
           </p>
-          <p className="dr-meta">Generated {today}</p>
+          <p className="dr-meta">{lang === 'ko' ? `생성일 ${today}` : `Generated ${today}`}</p>
         </header>
 
         {/* 1. Governance */}
         <section className="dr-section">
           <h2 className="dr-h2">
-            <span className="dr-num">1.</span> Governance
+            <span className="dr-num">1.</span> {t('Governance')}
           </h2>
           <p className="dr-lead">
             {t('Sustainability data reaches this report only through a segregated approval workflow. Submission, review, booking and designation are held in four separate hands: division heads submit metrics, Audit (J. Kim) approves or rejects them, the Treasury desk books hedges, and the CFO office designates them. No single actor can both file a figure and sign it off.')}
@@ -145,19 +146,19 @@ export default function DisclosureReport() {
           <div className="dr-stat-row">
             <div className="dr-stat">
               <span className="dr-stat-val">{approved.length}</span>
-              <span className="dr-stat-lbl">Metrics approved</span>
+              <span className="dr-stat-lbl">{t('Metrics approved')}</span>
             </div>
             <div className="dr-stat">
               <span className="dr-stat-val">{rejected.length}</span>
-              <span className="dr-stat-lbl">Rejected on review</span>
+              <span className="dr-stat-lbl">{t('Rejected on review')}</span>
             </div>
             <div className="dr-stat">
               <span className="dr-stat-val">{pending.length}</span>
-              <span className="dr-stat-lbl">Awaiting review</span>
+              <span className="dr-stat-lbl">{t('Awaiting review')}</span>
             </div>
             <div className="dr-stat">
               <span className="dr-stat-val">{reviewEvents.length}</span>
-              <span className="dr-stat-lbl">Review events logged</span>
+              <span className="dr-stat-lbl">{t('Review events logged')}</span>
             </div>
           </div>
           <p className="dr-body">
@@ -181,7 +182,7 @@ export default function DisclosureReport() {
         {/* 2. Strategy */}
         <section className="dr-section">
           <h2 className="dr-h2">
-            <span className="dr-num">2.</span> Strategy
+            <span className="dr-num">2.</span> {t('Strategy')}
           </h2>
           <p className="dr-lead">
             {lang === 'ko' ? (
@@ -210,10 +211,10 @@ export default function DisclosureReport() {
           <ol className="dr-material-list">
             {topMaterial.map((i) => (
               <li key={i.id}>
-                <span className="dr-mat-name">{i.name}</span>
+                <span className="dr-mat-name">{t(i.name)}</span>
                 <span className="dr-mat-meta">
-                  {PILLAR_LABELS[i.pillar]} · financial {i.financial.toFixed(1)} ·
-                  impact {i.impact.toFixed(1)}
+                  {t(PILLAR_LABELS[i.pillar])} · {t('financial')} {i.financial.toFixed(1)} ·
+                  {' '}{t('impact')} {i.impact.toFixed(1)}
                 </span>
               </li>
             ))}
@@ -240,7 +241,7 @@ export default function DisclosureReport() {
         {/* 3. Risk management */}
         <section className="dr-section">
           <h2 className="dr-h2">
-            <span className="dr-num">3.</span> Risk management
+            <span className="dr-num">3.</span> {t('Risk management')}
           </h2>
           <p className="dr-lead">
             {lang === 'ko' ? (
@@ -257,14 +258,14 @@ export default function DisclosureReport() {
             )}
           </p>
 
-          <h3 className="dr-h3">Hedge book by instrument</h3>
+          <h3 className="dr-h3">{t('Hedge book by instrument')}</h3>
           <div className="dr-table-wrap">
             <table className="dr-table">
               <thead>
                 <tr>
-                  <th>Instrument</th>
-                  <th className="num">Trades</th>
-                  <th>Notional</th>
+                  <th>{t('Instrument')}</th>
+                  <th className="num">{t('Trades')}</th>
+                  <th>{t('Notional')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -279,32 +280,32 @@ export default function DisclosureReport() {
             </table>
           </div>
 
-          <h3 className="dr-h3">IFRS 9 designation mix</h3>
+          <h3 className="dr-h3">{t('IFRS 9 designation mix')}</h3>
           <div className="dr-chip-row">
             {byDesignation.map(({ d, n }) => (
               <span key={d} className="dr-desig">
-                <strong>{d}</strong> {DESIGNATION_NOTE[d]} · {n}
+                <strong>{d}</strong> {t(DESIGNATION_NOTE[d])} · {n}
               </span>
             ))}
           </div>
 
-          <h3 className="dr-h3">Barrier &amp; budget</h3>
+          <h3 className="dr-h3">{t('Barrier & budget')}</h3>
           <div className="dr-stat-row">
             <div className="dr-stat">
               <span className="dr-stat-val">{(spine.exoticKo * 100).toFixed(1)}%</span>
-              <span className="dr-stat-lbl">Knock-out probability</span>
+              <span className="dr-stat-lbl">{t('Knock-out probability')}</span>
             </div>
             <div className="dr-stat">
               <span className="dr-stat-val">${spine.exoticSpot.toFixed(2)}</span>
-              <span className="dr-stat-lbl">WTI reference spot</span>
+              <span className="dr-stat-lbl">{t('WTI reference spot')}</span>
             </div>
             <div className="dr-stat">
               <span className="dr-stat-val">{(spine.budgetW1 * 100).toFixed(1)}%</span>
-              <span className="dr-stat-lbl">Budget → WTI</span>
+              <span className="dr-stat-lbl">{t('Budget → WTI')}</span>
             </div>
             <div className="dr-stat">
               <span className="dr-stat-val">{(spine.budgetW2 * 100).toFixed(1)}%</span>
-              <span className="dr-stat-lbl">Budget → FX</span>
+              <span className="dr-stat-lbl">{t('Budget → FX')}</span>
             </div>
           </div>
           <p className="dr-body">
@@ -338,7 +339,7 @@ export default function DisclosureReport() {
         {/* 4. Metrics & targets */}
         <section className="dr-section">
           <h2 className="dr-h2">
-            <span className="dr-num">4.</span> Metrics &amp; targets
+            <span className="dr-num">4.</span> {t('Metrics & targets')}
           </h2>
           <p className="dr-lead">
             {lang === 'ko' ? (
@@ -360,12 +361,12 @@ export default function DisclosureReport() {
             <table className="dr-table">
               <thead>
                 <tr>
-                  <th>Division</th>
-                  <th>Code</th>
-                  <th>Datapoint</th>
+                  <th>{t('Division')}</th>
+                  <th>{t('Code')}</th>
+                  <th>{t('Datapoint')}</th>
                   <th className="num">FY</th>
-                  <th className="num">Value</th>
-                  <th>Framework mapping</th>
+                  <th className="num">{t('Value')}</th>
+                  <th>{t('Framework mapping')}</th>
                 </tr>
               </thead>
               <tbody>

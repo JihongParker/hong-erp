@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
-import { timeAgo, useErp } from '../state/erp'
+import { useErp } from '../state/erp'
+import { useT, useLang } from '../i18n'
+import { agoKo } from '../i18n.ko-reporting'
 import './AuditTrail.css'
 
 // Append-only event ledger, surfaced as its own screen. Every write across the
@@ -26,6 +28,8 @@ const CLOSED_STYLE = {
 
 export default function AuditTrail() {
   const { state } = useErp()
+  const t = useT()
+  const [lang] = useLang()
   const [verb, setVerb] = useState<string>('all')
   const [division, setDivision] = useState<string>('all')
 
@@ -55,17 +59,18 @@ export default function AuditTrail() {
         <div className="at-count-wrap">
           <span className="at-count">{rows.length}</span>
           <span className="at-count-label">
-            {rows.length === 1 ? 'event' : 'events'}
-            {(verb !== 'all' || division !== 'all') && ` of ${state.events.length}`}
+            {lang === 'ko' ? '건' : rows.length === 1 ? 'event' : 'events'}
+            {(verb !== 'all' || division !== 'all') &&
+              (lang === 'ko' ? ` / 전체 ${state.events.length}건` : ` of ${state.events.length}`)}
           </span>
         </div>
         <div className="at-filters">
-          <div className="at-chiprow" role="group" aria-label="Filter by action">
+          <div className="at-chiprow" role="group" aria-label={t('Filter by action')}>
             <button
               className={verb === 'all' ? 'at-chip active' : 'at-chip'}
               onClick={() => setVerb('all')}
             >
-              All
+              {t('All')}
             </button>
             {verbs.map((v) => (
               <button
@@ -73,16 +78,16 @@ export default function AuditTrail() {
                 className={verb === v ? 'at-chip active' : 'at-chip'}
                 onClick={() => setVerb(v)}
               >
-                {v}
+                {t(v)}
               </button>
             ))}
           </div>
-          <div className="at-chiprow" role="group" aria-label="Filter by division">
+          <div className="at-chiprow" role="group" aria-label={t('Filter by division')}>
             <button
               className={division === 'all' ? 'at-chip active' : 'at-chip'}
               onClick={() => setDivision('all')}
             >
-              All
+              {t('All')}
             </button>
             {state.divisions.map((d) => (
               <button
@@ -90,7 +95,7 @@ export default function AuditTrail() {
                 className={division === d.name ? 'at-chip active' : 'at-chip'}
                 onClick={() => setDivision(d.name)}
               >
-                {d.name}
+                {t(d.name)}
               </button>
             ))}
           </div>
@@ -101,17 +106,17 @@ export default function AuditTrail() {
         <table className="at-table">
           <thead>
             <tr>
-              <th>When</th>
-              <th>Actor</th>
-              <th>Action</th>
-              <th>Detail</th>
+              <th>{t('When')}</th>
+              <th>{t('Actor')}</th>
+              <th>{t('Action')}</th>
+              <th>{t('Detail')}</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((e) => (
               <tr key={e.id}>
                 <td className="at-when" title={new Date(e.ts).toLocaleString()}>
-                  {timeAgo(e.ts)}
+                  {agoKo(e.ts, lang)}
                 </td>
                 <td className="at-actor">{e.actor}</td>
                 <td>
@@ -119,7 +124,7 @@ export default function AuditTrail() {
                     className={`at-verb ${verbClass(e.action)}`}
                     style={e.action === 'closed' ? CLOSED_STYLE : undefined}
                   >
-                    {e.action}
+                    {t(e.action)}
                   </span>
                 </td>
                 <td className="at-detail">{e.detail}</td>
@@ -127,7 +132,7 @@ export default function AuditTrail() {
             ))}
           </tbody>
         </table>
-        {rows.length === 0 && <p className="at-empty">No events match.</p>}
+        {rows.length === 0 && <p className="at-empty">{t('No events match.')}</p>}
       </div>
     </div>
   )
