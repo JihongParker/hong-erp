@@ -85,3 +85,25 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
 }
+
+/* D1 — settle-only tile pulse. A value that has come to rest gets one brief
+   scale-down settle (never mid-drag; see usePulse). Transform only, so there is
+   no layout shift; tiles/hero values are grid items, so the transform applies. */
+@keyframes tile-settle {
+  from {
+    transform: scale(1.02);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+.tile-value.pulse,
+.bt-hero-value.pulse {
+  animation: tile-settle 300ms var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tile-value.pulse,
+  .bt-hero-value.pulse {
+    animation: none;
+  }
+}

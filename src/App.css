@@ -924,6 +924,26 @@ input[type='range'].fancy::-moz-range-thumb:hover {
   border-color: var(--accent);
 }
 
+/* keyboard discoverability — points at the Cmd/Ctrl+K palette */
+.sidebar-cmdk {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.sidebar-cmdk .kbd {
+  font: inherit;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+}
+
 /* ── screen & panel transitions (Phase 2) ─────────────────────────────────── */
 /* a calm fade+lift as you move between modules */
 .screen {

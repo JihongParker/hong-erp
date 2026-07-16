@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import {
   P1_INPUTS,
   solveBudget,
@@ -6,6 +6,8 @@ import {
   type Regime,
 } from '../engine/budget'
 import { Chip, useSpine } from '../state/spine'
+import { usePersistentState } from '../state/persist'
+import { usePulse } from '../components/usePulse'
 import ParamRow from '../components/ParamRow'
 import './Budget.css'
 
@@ -21,13 +23,18 @@ const PAD = { top: 14, right: 16, bottom: 36, left: 46 }
 const W1_MIN = 0.8
 
 export default function Budget() {
-  const [regime, setRegime] = useState<Regime>('european')
-  const [B, setB] = useState<number>(P1_INPUTS.B)
-  const [stressWTI, setStressWTI] = useState(113)
+  const [regime, setRegime] = usePersistentState<Regime>('budget.regime', 'european')
+  const [B, setB] = usePersistentState<number>('budget.B', P1_INPUTS.B)
+  const [stressWTI, setStressWTI] = usePersistentState('budget.stressWTI', 113)
 
   const p = { regime, B, stressWTI, stressKRW: 1550 }
   const sol = useMemo(() => solveBudget(p), [regime, B, stressWTI])
   const spine = useSpine()
+  // settle-only pulses for the four result tiles
+  const pulseW1 = usePulse(sol.w1)
+  const pulseW2 = usePulse(sol.w2)
+  const pulseSig = usePulse(sol.sigma)
+  const pulseCost = usePulse(sol.cost)
 
   useEffect(() => {
     if (sol.feasible) spine.publish({ budgetW1: sol.w1, budgetW2: sol.w2, budgetRegime: regime })
@@ -129,19 +136,19 @@ export default function Budget() {
         <div className="bg-tiles">
             <div className="tile">
               <span className="tile-label">WTI coverage w₁*</span>
-              <span className="tile-value" style={{ color: C_WTI }}>{(sol.w1 * 100).toFixed(2)}%</span>
+              <span className={pulseW1 ? 'tile-value pulse' : 'tile-value'} style={{ color: C_WTI }}>{(sol.w1 * 100).toFixed(2)}%</span>
             </div>
             <div className="tile">
               <span className="tile-label">FX coverage w₂*</span>
-              <span className="tile-value" style={{ color: C_FX }}>{(sol.w2 * 100).toFixed(2)}%</span>
+              <span className={pulseW2 ? 'tile-value pulse' : 'tile-value'} style={{ color: C_FX }}>{(sol.w2 * 100).toFixed(2)}%</span>
             </div>
             <div className="tile">
               <span className="tile-label">Residual σ</span>
-              <span className="tile-value">{sol.sigma.toFixed(4)}</span>
+              <span className={pulseSig ? 'tile-value pulse' : 'tile-value'}>{sol.sigma.toFixed(4)}</span>
             </div>
             <div className="tile">
               <span className="tile-label">Total cost</span>
-              <span className="tile-value">{bn(sol.cost)}</span>
+              <span className={pulseCost ? 'tile-value pulse' : 'tile-value'}>{bn(sol.cost)}</span>
               <span className={sol.budgetBinding ? 'tile-badge binding' : 'tile-badge'}>
                 {sol.budgetBinding ? 'budget binding' : 'budget slack'}
               </span>
