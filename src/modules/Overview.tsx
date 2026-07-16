@@ -168,6 +168,7 @@ export default function Overview({
                 <span className="chain-result">{p.result}</span>
                 <span className="chain-link">{p.moduleName} →</span>
               </button>
+              <span className="ice-bubbles" aria-hidden />
             </article>
           ))}
         </div>
@@ -205,6 +206,7 @@ export default function Overview({
                 <span className="ov-node-label">{f.label}</span>
                 <span className="ov-node-sub">{f.sub}</span>
               </button>
+              <span className="ice-bubbles" aria-hidden />
               {i < FLOW.length - 1 && <span className="ov-arrow">→</span>}
             </div>
           ))}
