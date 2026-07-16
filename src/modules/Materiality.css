@@ -145,6 +145,8 @@
   background: var(--panel);
   padding: 8px 12px;
   align-self: start;
+  min-width: 0;
+  overflow-x: auto;
 }
 
 .mat-table-wrap table {
@@ -223,6 +225,6 @@
 
 @media (max-width: 1000px) {
   .mat-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
