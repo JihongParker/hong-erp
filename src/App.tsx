@@ -9,6 +9,7 @@ import Instruments from './modules/Instruments'
 import Budget from './modules/Budget'
 import Accounting from './modules/Accounting'
 import Backtest from './modules/Backtest'
+import AuditTrail from './modules/AuditTrail'
 import { SpineProvider } from './state/spine'
 import { ErpProvider, useErp, ROLES, ROLE_LABEL } from './state/erp'
 import { ToastProvider } from './components/Toast'
@@ -54,6 +55,7 @@ const GROUPS: {
     title: 'Validation',
     items: [
       { id: 'backtest', name: 'Out-of-sample', desc: 'Walk-forward hedge backtest on 40y of FRED data — realised variance reduction, not alpha' },
+      { id: 'audittrail', name: 'Audit trail', desc: 'Append-only event ledger — every submit, approval, booking, and designation' },
     ],
   },
 ]
@@ -433,6 +435,8 @@ export default function App() {
           <MetricEntry />
         ) : mod.id === 'backtest' ? (
           <Backtest />
+        ) : mod.id === 'audittrail' ? (
+          <AuditTrail />
         ) : (
           <Scenario />
         )}
