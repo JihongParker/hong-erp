@@ -303,6 +303,16 @@
   perspective-origin: 50% -10%;
 }
 
+/* one quiet text line under the chain — the two applied notes, not cards */
+.chain-note {
+  max-width: 720px;
+  margin: 14px auto 0;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
 .chain-spine {
   position: absolute;
   left: 22px;

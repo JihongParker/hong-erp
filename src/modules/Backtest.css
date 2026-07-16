@@ -14,12 +14,6 @@
 }
 .bt-banner strong { color: var(--text); }
 
-.bt-tiles {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
 /* cockpit: sticky control rail left, live results right */
 .bt-grid {
   display: grid;

@@ -113,6 +113,15 @@ const TOUR: { module: string; title: string; body: string; target: string; lift?
     title: 'Follow the number',
     body: 'The knock-out odds you just set traveled here by themselves — top of the screen. One shared state, every screen connected. That is the whole idea.',
   },
+  {
+    module: 'backtest',
+    target: '.bt-controls',
+    lift: '.bt-hero, .bt-table-wrap',
+    scrollSel: '.bt-controls',
+    scrollBlock: 'start',
+    title: 'Prove it out of sample',
+    body: 'Everything so far was one snapshot. Here the same hedge is replayed across 40 years of real oil and currency data, month by month, deciding each move using only the past. Nudge any slider and the whole history recomputes — and the hedge still erases about 89% of the swings in the import bill. That is the point: not a bet that makes money, just a hedge that holds up.',
+  },
 ]
 
 // Spotlight overlay: instead of dimming everything and trying to lift the
