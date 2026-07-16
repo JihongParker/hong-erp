@@ -126,6 +126,8 @@ export default function Backtest() {
 
       <CStarPanel rolling={out.rolling} negShare={out.negShare} />
 
+      <ParabolaPanel />
+
       <div className="bt-method">
         <h3>Method &amp; honest caveats</h3>
         <ul>
@@ -180,6 +182,83 @@ function CumChart({ paths }: { paths: Record<string, { month: string; cum: numbe
           </button>
         ))}
       </figcaption>
+    </figure>
+  )
+}
+
+// P2 dynamic-hedging result: the exact hedge-cost parabola in the coupling c,
+// reconstructed from the paper's own 200k-path exact-engine certified numbers
+// (c* = -0.548, std 51.90bn at c=1, 48.76bn at c*). Var(c) = VarA + 2c·Cov +
+// c²·VarB. Solving those three certified numbers gives the moments below.
+const P2 = (() => {
+  const cstar = -0.548, s1 = 51.90, sc = 48.76, k = -cstar
+  const VarB = (s1 * s1 - sc * sc) / (2 * k + 1 + k * k)
+  const Cov = k * VarB
+  const VarA = sc * sc + (Cov * Cov) / VarB
+  return { cstar, VarA, VarB, Cov, std1: s1, stdStar: sc }
+})()
+const PW = 1320, PH = 300, PP = { top: 18, right: 120, bottom: 40, left: 60 }
+function ParabolaPanel() {
+  const stdOf = (c: number) => Math.sqrt(P2.VarA + 2 * c * P2.Cov + c * c * P2.VarB)
+  const cLo = -1.6, cHi = 1.8
+  const cs = Array.from({ length: 141 }, (_, i) => cLo + ((cHi - cLo) * i) / 140)
+  const ys = cs.map(stdOf)
+  const yMin = 45, yMax = Math.max(...ys) * 1.01
+  const x = (c: number) => PP.left + ((c - cLo) / (cHi - cLo)) * (PW - PP.left - PP.right)
+  const y = (v: number) => PH - PP.bottom - ((v - yMin) / (yMax - yMin)) * (PH - PP.top - PP.bottom)
+  const path = cs.map((c, i) => `${i ? 'L' : 'M'}${x(c).toFixed(1)},${y(ys[i]).toFixed(1)}`).join('')
+  // right arm [0.5,1.5] = the paper's swept window
+  const arm = cs.filter((c) => c >= 0.5 && c <= 1.5)
+  const armPath = arm.map((c, i) => `${i ? 'L' : 'M'}${x(c).toFixed(1)},${y(stdOf(c)).toFixed(1)}`).join('')
+  return (
+    <figure className="bt-panel bt-cstar">
+      <h3>P2 — the dynamic hedge-cost parabola, and why naive c = 1 is off-optimum</h3>
+      <p className="bt-cstar-sub">
+        Coupling the FX hedge to the WTI delta as δ<sub>FX</sub> = c · δ<sub>WTI</sub> makes per-path hedge
+        cost exactly affine in c, so its variance is an exact parabola with closed-form vertex
+        c* = −Cov(A,B)/Var(B). On the paper's 200k-path exact engine Cov(A,B) is <strong>positive</strong>,
+        so the vertex is <strong>negative (c* = −0.548)</strong>: a positively-coupled FX leg adds cost
+        variance rather than offsetting it, and naive one-for-one pass-through (c = 1) sits well up the
+        expensive right arm. Honestly, though, the lever is second-order — std falls only from 51.90 to
+        48.76 bn KRW (~6%), because the WTI leg dominates Var(A) and no c can touch it. Same verdict as the
+        static split above: the FX leg is a small part of the hedge.
+      </p>
+      <svg viewBox={`0 0 ${PW} ${PH}`} role="img" aria-label="Hedge-cost standard deviation vs coupling c">
+        {/* y grid */}
+        {[46, 48, 50, 52, 54].map((v) => (
+          <g key={v}>
+            <line x1={PP.left} y1={y(v)} x2={PW - PP.right} y2={y(v)} stroke="var(--line)" strokeWidth={1} />
+            <text x={PP.left - 8} y={y(v) + 4} textAnchor="end" className="tick">{v}</text>
+          </g>
+        ))}
+        {/* c ticks */}
+        {[-1.5, -1, -0.548, 0, 0.5, 1, 1.5].map((c) => (
+          <text key={c} x={x(c)} y={PH - PP.bottom + 16} textAnchor="middle" className="tick">{c === -0.548 ? 'c*' : c}</text>
+        ))}
+        <text x={(PP.left + PW - PP.right) / 2} y={PH - 6} textAnchor="middle" className="axis-title">coupling multiplier c  (δ_FX = c · δ_WTI)</text>
+        {/* full parabola */}
+        <path d={path} fill="none" stroke="var(--muted)" strokeWidth={1.6} opacity={0.6} />
+        {/* swept right arm highlighted */}
+        <path d={armPath} fill="none" stroke="#b3610f" strokeWidth={2.6} />
+        {/* vertex c* */}
+        <line x1={x(P2.cstar)} y1={y(P2.stdStar)} x2={x(P2.cstar)} y2={PH - PP.bottom} stroke="#2f6db4" strokeWidth={1} strokeDasharray="3 3" />
+        <circle cx={x(P2.cstar)} cy={y(P2.stdStar)} r={5} fill="#2f6db4" stroke="var(--panel)" strokeWidth={2} />
+        <text x={x(P2.cstar)} y={y(P2.stdStar) - 10} textAnchor="middle" className="bt-slabel" fill="#2f6db4">c* = −0.548 · {P2.stdStar}bn</text>
+        {/* naive c=1 */}
+        <line x1={x(1)} y1={y(P2.std1)} x2={x(1)} y2={PH - PP.bottom} stroke="#b3610f" strokeWidth={1} strokeDasharray="3 3" />
+        <circle cx={x(1)} cy={y(P2.std1)} r={5} fill="#b3610f" stroke="var(--panel)" strokeWidth={2} />
+        <text x={x(1) + 8} y={y(P2.std1) - 6} className="bt-slabel" fill="#b3610f">naive c = 1 · {P2.std1}bn</text>
+      </svg>
+      <figcaption className="bt-legend">
+        <span className="bt-lg"><span className="bt-dot" style={{ background: '#b3610f' }} /> swept window [0.5, 1.5] — the parabola's right arm</span>
+        <span className="bt-lg"><span className="bt-dot" style={{ background: '#2f6db4' }} /> closed-form vertex c* (variance minimiser)</span>
+      </figcaption>
+      <p className="bt-src">
+        Parabola reconstructed exactly from the paper's certified moments (Park_quanto §c*: c* = −0.548,
+        std 51.90bn at c = 1, 48.76bn at c*, 200k jump-adapted exact paths, affine identity to 6×10⁻¹⁶).
+        An independent frozen-engine delta-hedge here confirms the direction — c = 1 sits on the expensive
+        arm — which is what contradicts the archived build_ultimate_pipeline draft's "c = 1 optimal" claim.
+      </p>
     </figure>
   )
 }
