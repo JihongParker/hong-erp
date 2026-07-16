@@ -1,4 +1,6 @@
 .ov {
+  position: relative;
+
   margin-top: 0;
   position: relative;
 }
@@ -118,9 +120,11 @@
 .ov-hero-copy .ov-title,
 .ov-hero-copy .ov-lede,
 .ov-hero-copy .ov-scrollcue {
-  text-shadow:
-    0 0 16px color-mix(in srgb, var(--bg) 78%, transparent),
-    0 1px 2px color-mix(in srgb, var(--bg) 60%, transparent);
+  text-shadow: 0 1px 10px color-mix(in srgb, var(--bg) 55%, transparent);
+}
+
+.ov-hero-copy .ov-lede {
+  color: color-mix(in srgb, var(--text) 82%, transparent);
 }
 
 .ov-hero-copy {
@@ -375,7 +379,7 @@
   0%   { transform: translateY(-46px) rotateX(calc(var(--rx) - 15.4deg)) rotateY(calc(var(--ry) * 0.2)); }
   38%  { transform: translateY(12px)  rotateX(calc(var(--rx) + 3.6deg))  rotateY(calc(var(--ry) * 1.5)); } /* impact: below the waterline */
   55%  { transform: translateY(-6px)  rotateX(calc(var(--rx) - 4deg))    rotateY(calc(var(--ry) * 0.7)); } /* buoyant pop */
-  72%  { transform: translateY(3.5px) rotateX(calc(var(--rx) - 0.2deg))  rotateY(calc(var(--ry) * 1.15)); }
+  72%  { transform: translateY(3.5px) rotateX(calc(var(--rx) - 0.08deg))  rotateY(calc(var(--ry) * 1.15)); }
   86%  { transform: translateY(-1.5px) rotateX(calc(var(--rx) - 1.9deg)) rotateY(calc(var(--ry) * 0.9)); }
   100% { transform: translateY(0) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
 }
@@ -383,13 +387,13 @@
    wobble, so the slab's corners dip in turn instead of see-sawing */
 @keyframes ice-wobble {
   0%    { transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
-  12.5% { transform: rotateX(calc(var(--rx) + 2.0deg))  rotateY(calc(var(--ry) + 2.0deg)) rotateZ(calc(var(--rz) + 0.14deg)); }
-  25%   { transform: rotateX(calc(var(--rx) + 1.5deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) + 0.2deg)); }
-  37.5% { transform: rotateX(calc(var(--rx) + 2.0deg))  rotateY(calc(var(--ry) - 2.0deg)) rotateZ(calc(var(--rz) + 0.14deg)); }
+  12.5% { transform: rotateX(calc(var(--rx) + 0.7deg))  rotateY(calc(var(--ry) + 0.7deg)) rotateZ(calc(var(--rz) + 0.05deg)); }
+  25%   { transform: rotateX(calc(var(--rx) + 0.5deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) + 0.08deg)); }
+  37.5% { transform: rotateX(calc(var(--rx) + 0.7deg))  rotateY(calc(var(--ry) - 0.7deg)) rotateZ(calc(var(--rz) + 0.05deg)); }
   50%   { transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
-  62.5% { transform: rotateX(calc(var(--rx) - 2.0deg))  rotateY(calc(var(--ry) + 2.0deg)) rotateZ(calc(var(--rz) - 0.14deg)); }
-  75%   { transform: rotateX(calc(var(--rx) - 1.5deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) - 0.2deg)); }
-  87.5% { transform: rotateX(calc(var(--rx) - 2.0deg))  rotateY(calc(var(--ry) - 2.0deg)) rotateZ(calc(var(--rz) - 0.14deg)); }
+  62.5% { transform: rotateX(calc(var(--rx) - 0.7deg))  rotateY(calc(var(--ry) + 0.7deg)) rotateZ(calc(var(--rz) - 0.05deg)); }
+  75%   { transform: rotateX(calc(var(--rx) - 0.5deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) - 0.08deg)); }
+  87.5% { transform: rotateX(calc(var(--rx) - 0.7deg))  rotateY(calc(var(--ry) - 0.7deg)) rotateZ(calc(var(--rz) - 0.05deg)); }
   100%  { transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
 }
 /* faint bubble trails rising off each slab — the underwater tell */
@@ -555,37 +559,19 @@
 }
 
 /* the slab's underside — a thin extruded edge below the card */
-/* lit top face of the block — a real 3D plane hinged off the top edge, so the
-   card reads as a volume whose upper facet catches the light */
-.chain-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 3px;
-  right: 3px;
-  height: 16px;
-  transform-origin: top;
-  transform: rotateX(-72deg);
-  border-radius: 12px 12px 4px 4px;
-  background: linear-gradient(to bottom,
-    color-mix(in srgb, #ffffff 85%, var(--ice-water)),
-    color-mix(in srgb, #ffffff 45%, var(--ice-water)));
-  opacity: 0.9;
-  pointer-events: none;
-}
-/* submerged bottom edge — the darker underside facet */
+/* soft submerged edge under the glass panel */
 .chain-card::after {
   content: "";
   position: absolute;
   left: 8px;
   right: 8px;
-  bottom: -6px;
-  height: 6px;
+  bottom: -5px;
+  height: 5px;
   border-radius: 0 0 12px 12px;
   background: linear-gradient(to bottom,
-    color-mix(in srgb, var(--ice-water) 55%, #2a4250),
-    color-mix(in srgb, var(--ice-water) 35%, #1d323e));
-  opacity: 0.8;
+    color-mix(in srgb, var(--ice-water) 45%, #2a4250),
+    color-mix(in srgb, var(--ice-water) 28%, #1d323e));
+  opacity: 0.6;
   pointer-events: none;
 }
 
@@ -971,16 +957,16 @@
 
 /* resting orientations — every cube floats at its own angle (photo ref:
    ice cubes underwater, each frozen mid-tumble). Defaults keep old behavior. */
-.chain-item, .ov-flow-item { --rx: 4deg; --ry: 0deg; --rz: 0deg; }
-.chain-item:nth-of-type(1) { --rx: 5.5deg; --ry: -3.4deg; --rz: -0.5deg; }
-.chain-item:nth-of-type(2) { --rx: 3.2deg; --ry: 2.8deg;  --rz: 0.45deg; }
-.chain-item:nth-of-type(3) { --rx: 6.2deg; --ry: 2.0deg;  --rz: -0.3deg; }
-.chain-item:nth-of-type(4) { --rx: 3.6deg; --ry: -2.6deg; --rz: 0.55deg; }
-.ov-flow-item:nth-of-type(1) { --rx: 5.0deg; --ry: 3.0deg;  --rz: 0.35deg; }
-.ov-flow-item:nth-of-type(2) { --rx: 3.4deg; --ry: -2.7deg; --rz: -0.4deg; }
-.ov-flow-item:nth-of-type(3) { --rx: 5.8deg; --ry: -1.8deg; --rz: 0.25deg; }
-.ov-flow-item:nth-of-type(4) { --rx: 3.0deg; --ry: 3.2deg;  --rz: -0.35deg; }
-.ov-flow-item:nth-of-type(5) { --rx: 4.6deg; --ry: -3.1deg; --rz: 0.5deg; }
+.chain-item, .ov-flow-item { --rx: 1.2deg; --ry: 0deg; --rz: 0deg; }
+.chain-item:nth-of-type(1) { --rx: 1.6deg; --ry: -0.9deg; --rz: -0.15deg; }
+.chain-item:nth-of-type(2) { --rx: 1.0deg; --ry: 0.8deg;  --rz: 0.12deg; }
+.chain-item:nth-of-type(3) { --rx: 1.8deg; --ry: 0.6deg;  --rz: -0.1deg; }
+.chain-item:nth-of-type(4) { --rx: 1.1deg; --ry: -0.7deg; --rz: 0.15deg; }
+.ov-flow-item:nth-of-type(1) { --rx: 1.5deg; --ry: 0.8deg;  --rz: 0.1deg; }
+.ov-flow-item:nth-of-type(2) { --rx: 1.0deg; --ry: -0.8deg; --rz: -0.12deg; }
+.ov-flow-item:nth-of-type(3) { --rx: 1.7deg; --ry: -0.5deg; --rz: 0.08deg; }
+.ov-flow-item:nth-of-type(4) { --rx: 0.9deg; --ry: 0.9deg;  --rz: -0.1deg; }
+.ov-flow-item:nth-of-type(5) { --rx: 1.4deg; --ry: -0.9deg; --rz: 0.14deg; }
 
 /* bubbles: three dots per slab, rising and fading on desynced loops */
 .ice-bubbles,
@@ -1021,6 +1007,12 @@
     inset 1px 0 0 rgb(255 255 255 / 0.3),
     inset 0 -8px 16px color-mix(in srgb, var(--ice-water) 26%, transparent),
     0 22px 26px -13px color-mix(in srgb, #10222c 50%, transparent);
+}
+
+/* everything except the WebGL layer rides above it */
+.ov > :not(.ov-icefield) {
+  position: relative;
+  z-index: 1;
 }
 
 /* ── a11y: must stay LAST — overrides every ice rule above at equal specificity ── */

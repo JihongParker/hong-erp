@@ -1,0 +1,21 @@
+/* WebGL underwater layer: absolutely fills the Overview, canvas stays sticky
+   in the viewport while the camera dives with scroll. Never intercepts input. */
+.ov-icefield {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: clip;
+}
+
+.ov-icefield-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.ov-icefield canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
