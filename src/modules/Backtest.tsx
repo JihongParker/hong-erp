@@ -16,7 +16,7 @@ const RETURNS = bt.returns as Ret[]
 const META = bt.meta as { source: string; generated: string }
 
 const LABEL: Record<string, string> = {
-  unhedged: 'Unhedged', naive: 'Naive 1:1 split', oracle: 'Full-sample MV (oracle)', walkforward: 'Walk-forward MV',
+  unhedged: 'Unhedged', naive: 'Naive even split', oracle: 'Full-sample MV (oracle)', walkforward: 'Walk-forward MV',
 }
 const NOTE: Record<string, string> = {
   unhedged: 'carry the whole two-factor exposure',

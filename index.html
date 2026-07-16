@@ -14,7 +14,7 @@
     <meta property="og:title" content="HongERP — the ESG decision layer" />
     <meta
       property="og:description"
-      content="One position, four papers, one operating system. Disclosure as a control variable: Λ(d) = φ + λe^(−kd). Optimal hedge and optimal disclosure solved together — every number anchored to the papers' own engines."
+      content="One position, four papers, one operating system. Disclosure as a control variable: Λ(d) = φ + λe^(−kd). Optimal hedge and optimal disclosure solved together — a vanilla desk (swap, cap, zero-cost collar, three-way, seagull) beside a double-KO quanto research desk, and a 40-year FRED walk-forward backtest that removes 89% of out-of-sample cash-flow variance (not alpha). Every number anchored to the papers' own engines."
     />
     <meta property="og:image" content="https://jihongparker.github.io/hong-erp/og.png" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -40,13 +40,21 @@
           exposure, grounded in a four-paper research program by Jihong Park.
         </p>
         <h2>Modules (all live)</h2>
+        <p><em>Decision layer:</em></p>
         <ul>
           <li><strong>Decision Dashboard</strong> — d*, h_f*, h_c* live from a frozen transcription of the ESG-disclosure paper's §3: hedges solve 2Λ(d)Σu = p with KKT corner handling; the voluntary d* solves 2ad = kλe<sup>−kd</sup>R; a mandate is a floor d ≥ d̲ (binding floors crowd out hedging). Closed form certified against an independent numerical minimizer on 200 random draws, worst objective gap 3×10⁻⁶.</li>
           <li><strong>Hedge Budget</strong> — the budget-allocation paper's convex program verbatim: min σ_res subject to premium + stress ledger ≤ ₩45bn. Reproduces the paper's vertex optimum (97.05% WTI / 2.95% FX coverage, σ 0.0916, budget-exact).</li>
-          <li><strong>Hedge Instruments</strong> — a zero-cost collar desk (Black-76, put–call parity residual 10⁻¹⁴; pick the cap, the solver finds the self-financing floor) beside the research instrument: a double knock-out quanto priced on surfaces precomputed from the paper's own jump-diffusion engine (KO probability anchored 43.5% vs the paper's 43.7%), with a Barrier Risk Monitor and knock-out contingency plan.</li>
+          <li><strong>Hedge Instruments</strong> — two tabs. The <em>Vanilla desk</em> is a strategy library refiners actually run — swap, cap, zero-cost collar, three-way collar, and seagull — all priced on Black-76 (put–call parity residual 10⁻¹⁴, the zero-cost structures self-financing to 10⁻¹⁵), plus a crack-spread and FX benchmark. The <em>Quanto desk</em> is the research side: a double knock-out quanto priced on surfaces precomputed from the paper's own jump-diffusion engine (KO probability anchored 43.5% vs the paper's 43.7%), with a Barrier Risk Monitor, a European-quanto ablation, and a textbook lattice (CRR) foil that shows where closed-form deltas break.</li>
           <li><strong>Hedge Accounting</strong> — IFRS 9 cash-flow-hedge designation, combined vs split, on the paper engine's 218-step ledgers: mean ineffectiveness ₩23.4bn (combined) vs ₩6.4bn (split), with the split structure's post-knock-out FVTPL noise of ₩71.9bn as the counterweight.</li>
-          <li><strong>Chart of Accounts / Materiality / Metrics Entry</strong> — the reporting layer: a sustainability account tree mapped to GRI/KSSB/KCGS/MSCI datapoints, an interactive double-materiality matrix, and a validation-and-approval mockup.</li>
+        </ul>
+        <p><em>Reporting layer:</em></p>
+        <ul>
+          <li><strong>Chart of Accounts / Materiality / Metrics Entry</strong> — a sustainability account tree mapped to GRI/KSSB/KCGS/MSCI datapoints, an interactive double-materiality matrix, and a validation-and-approval mockup.</li>
+        </ul>
+        <p><em>What-if &amp; validation:</em></p>
+        <ul>
           <li><strong>Scenarios</strong> — division-level parameters through the same frozen engine.</li>
+          <li><strong>Out-of-sample</strong> — a walk-forward hedge backtest on 40 years of FRED data (WTI × USD/KRW, 486 monthly returns). The covariance-aware optimum, estimated only on strictly past data and rebalanced monthly after costs, removes ≈89% of out-of-sample cash-flow variance versus ≈75% for a naive even split — this is a <em>hedging</em> result (variance reduction), never alpha or a Sharpe ratio. Includes the paper's dynamic hedge-cost parabola in the coupling c, whose closed-form vertex is the paper-certified c* = −0.548, honestly flagged as a second-order lever (std falls only ~6%, from 51.90 to 48.76 bn KRW, because the oil leg dominates).</li>
         </ul>
         <h2>The position spine</h2>
         <p>

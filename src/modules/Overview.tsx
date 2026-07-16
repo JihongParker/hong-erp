@@ -171,6 +171,10 @@ export default function Overview({
             </article>
           ))}
         </div>
+
+        <p className="chain-note reveal">
+          + two applied notes: KIKO forensics (P5) · the benign vs. the lethal barrier (P6)
+        </p>
       </section>
 
       {/* ── 3 · live screens ── */}
