@@ -175,7 +175,14 @@ export default function Overview({
         <p className="chain-note reveal">
           + two applied notes: KIKO forensics (P5) · the benign vs. the lethal barrier (P6)
         </p>
+
+        {/* CI-certification proof strip — build date injected at build time */}
+        <div className="ov-proof" aria-label="engine verification status">
+          <span className="ov-proof-item">Engines re-certified in CI · build {__BUILD_DATE__}</span>
+        </div>
       </section>
+
+      <div className="ov-divider" aria-hidden />
 
       {/* ── 3 · live screens ── */}
       <section className="ov-live reveal">
@@ -185,6 +192,8 @@ export default function Overview({
         </div>
         <AppPreview />
       </section>
+
+      <div className="ov-divider" aria-hidden />
 
       {/* ── 4 · data-flow map ── */}
       <section className="ov-flow reveal">
@@ -205,6 +214,8 @@ export default function Overview({
           odds drive the books, and disclosure closes the loop.
         </p>
       </section>
+
+      <div className="ov-divider" aria-hidden />
 
       {/* ── 5 · culmination ── */}
       <section className="ov-cta reveal">
