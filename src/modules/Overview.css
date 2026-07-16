@@ -1,6 +1,4 @@
 .ov {
-  position: relative;
-
   margin-top: 0;
   position: relative;
 }
@@ -120,11 +118,9 @@
 .ov-hero-copy .ov-title,
 .ov-hero-copy .ov-lede,
 .ov-hero-copy .ov-scrollcue {
-  text-shadow: 0 1px 10px color-mix(in srgb, var(--bg) 55%, transparent);
-}
-
-.ov-hero-copy .ov-lede {
-  color: color-mix(in srgb, var(--text) 82%, transparent);
+  text-shadow:
+    0 0 16px color-mix(in srgb, var(--bg) 78%, transparent),
+    0 1px 2px color-mix(in srgb, var(--bg) 60%, transparent);
 }
 
 .ov-hero-copy {
@@ -379,7 +375,7 @@
   0%   { transform: translateY(-46px) rotateX(calc(var(--rx) - 15.4deg)) rotateY(calc(var(--ry) * 0.2)); }
   38%  { transform: translateY(12px)  rotateX(calc(var(--rx) + 3.6deg))  rotateY(calc(var(--ry) * 1.5)); } /* impact: below the waterline */
   55%  { transform: translateY(-6px)  rotateX(calc(var(--rx) - 4deg))    rotateY(calc(var(--ry) * 0.7)); } /* buoyant pop */
-  72%  { transform: translateY(3.5px) rotateX(calc(var(--rx) - 0.08deg))  rotateY(calc(var(--ry) * 1.15)); }
+  72%  { transform: translateY(3.5px) rotateX(calc(var(--rx) - 0.2deg))  rotateY(calc(var(--ry) * 1.15)); }
   86%  { transform: translateY(-1.5px) rotateX(calc(var(--rx) - 1.9deg)) rotateY(calc(var(--ry) * 0.9)); }
   100% { transform: translateY(0) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
 }
@@ -387,13 +383,13 @@
    wobble, so the slab's corners dip in turn instead of see-sawing */
 @keyframes ice-wobble {
   0%    { transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
-  12.5% { transform: rotateX(calc(var(--rx) + 0.7deg))  rotateY(calc(var(--ry) + 0.7deg)) rotateZ(calc(var(--rz) + 0.05deg)); }
-  25%   { transform: rotateX(calc(var(--rx) + 0.5deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) + 0.08deg)); }
-  37.5% { transform: rotateX(calc(var(--rx) + 0.7deg))  rotateY(calc(var(--ry) - 0.7deg)) rotateZ(calc(var(--rz) + 0.05deg)); }
+  12.5% { transform: rotateX(calc(var(--rx) + 0.5deg))  rotateY(calc(var(--ry) + 1.1deg)) rotateZ(calc(var(--rz) + 0.08deg)); }
+  25%   { transform: rotateX(calc(var(--rx) + 0.7deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) + 0.12deg)); }
+  37.5% { transform: rotateX(calc(var(--rx) + 0.5deg))  rotateY(calc(var(--ry) - 1.1deg)) rotateZ(calc(var(--rz) + 0.08deg)); }
   50%   { transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
-  62.5% { transform: rotateX(calc(var(--rx) - 0.7deg))  rotateY(calc(var(--ry) + 0.7deg)) rotateZ(calc(var(--rz) - 0.05deg)); }
-  75%   { transform: rotateX(calc(var(--rx) - 0.5deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) - 0.08deg)); }
-  87.5% { transform: rotateX(calc(var(--rx) - 0.7deg))  rotateY(calc(var(--ry) - 0.7deg)) rotateZ(calc(var(--rz) - 0.05deg)); }
+  62.5% { transform: rotateX(calc(var(--rx) - 0.5deg))  rotateY(calc(var(--ry) + 1.1deg)) rotateZ(calc(var(--rz) - 0.08deg)); }
+  75%   { transform: rotateX(calc(var(--rx) - 0.7deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) - 0.12deg)); }
+  87.5% { transform: rotateX(calc(var(--rx) - 0.5deg))  rotateY(calc(var(--ry) - 1.1deg)) rotateZ(calc(var(--rz) - 0.08deg)); }
   100%  { transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
 }
 /* faint bubble trails rising off each slab — the underwater tell */
@@ -528,25 +524,15 @@
   display: grid;
   gap: 8px;
   padding: 20px 22px;
-  border: 1px solid color-mix(in srgb, #ffffff 55%, var(--ice-water));
+  border: 1px solid var(--line);
   border-radius: 16px;
-  /* ice, not paper: a translucent block the water shows through. The blurred
-     backdrop is the refraction; the inner glows are light caught in the block. */
-  background:
-    linear-gradient(155deg,
-      color-mix(in srgb, var(--ice-water) 18%, transparent),
-      transparent 45%,
-      color-mix(in srgb, var(--ice-water) 10%, transparent)),
-    color-mix(in srgb, var(--panel) 72%, transparent);
-  -webkit-backdrop-filter: blur(9px) saturate(1.15);
-  backdrop-filter: blur(9px) saturate(1.15);
-  transform-style: preserve-3d;
+  background: var(--panel);
+  /* thin 3D slab: top sheen, a 2px solid bottom edge = the panel's depth, and a
+     soft shadow cast down onto the water */
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.75),
-    inset 1px 0 0 rgb(255 255 255 / 0.35),
-    inset -1px 0 0 rgb(255 255 255 / 0.18),
-    inset 0 -10px 22px color-mix(in srgb, var(--ice-water) 28%, transparent),
-    0 30px 34px -16px color-mix(in srgb, #10222c 52%, transparent);
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    0 2px 0 rgb(120 140 150 / 0.3),
+    0 16px 26px -12px rgb(30 50 60 / 0.28);
   font: inherit;
   text-align: inherit;
   cursor: pointer;
@@ -559,30 +545,26 @@
 }
 
 /* the slab's underside — a thin extruded edge below the card */
-/* soft submerged edge under the glass panel */
-.chain-card::after {
+.chain-card::before {
   content: "";
   position: absolute;
-  left: 8px;
-  right: 8px;
+  left: 10px;
+  right: 10px;
   bottom: -5px;
   height: 5px;
   border-radius: 0 0 12px 12px;
   background: linear-gradient(to bottom,
-    color-mix(in srgb, var(--ice-water) 45%, #2a4250),
-    color-mix(in srgb, var(--ice-water) 28%, #1d323e));
-  opacity: 0.6;
+    color-mix(in srgb, var(--panel) 68%, #35505e),
+    color-mix(in srgb, var(--panel) 55%, #2a4250));
   pointer-events: none;
 }
 
 .chain-card:hover {
   border-color: var(--accent);
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.85),
-    inset 1px 0 0 rgb(255 255 255 / 0.45),
-    inset -1px 0 0 rgb(255 255 255 / 0.22),
-    inset 0 -10px 22px color-mix(in srgb, var(--ice-water) 34%, transparent),
-    0 34px 40px -16px color-mix(in srgb, #10222c 62%, transparent);
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    0 2px 0 rgb(120 140 150 / 0.3),
+    0 18px 32px -12px rgb(30 50 60 / 0.4);
 }
 
 .chain-title {
@@ -957,16 +939,16 @@
 
 /* resting orientations — every cube floats at its own angle (photo ref:
    ice cubes underwater, each frozen mid-tumble). Defaults keep old behavior. */
-.chain-item, .ov-flow-item { --rx: 1.2deg; --ry: 0deg; --rz: 0deg; }
-.chain-item:nth-of-type(1) { --rx: 1.6deg; --ry: -0.9deg; --rz: -0.15deg; }
-.chain-item:nth-of-type(2) { --rx: 1.0deg; --ry: 0.8deg;  --rz: 0.12deg; }
-.chain-item:nth-of-type(3) { --rx: 1.8deg; --ry: 0.6deg;  --rz: -0.1deg; }
-.chain-item:nth-of-type(4) { --rx: 1.1deg; --ry: -0.7deg; --rz: 0.15deg; }
-.ov-flow-item:nth-of-type(1) { --rx: 1.5deg; --ry: 0.8deg;  --rz: 0.1deg; }
-.ov-flow-item:nth-of-type(2) { --rx: 1.0deg; --ry: -0.8deg; --rz: -0.12deg; }
-.ov-flow-item:nth-of-type(3) { --rx: 1.7deg; --ry: -0.5deg; --rz: 0.08deg; }
-.ov-flow-item:nth-of-type(4) { --rx: 0.9deg; --ry: 0.9deg;  --rz: -0.1deg; }
-.ov-flow-item:nth-of-type(5) { --rx: 1.4deg; --ry: -0.9deg; --rz: 0.14deg; }
+.chain-item, .ov-flow-item { --rx: 1.4deg; --ry: 0deg; --rz: 0deg; }
+.chain-item:nth-of-type(1) { --rx: 1.9deg;  --ry: -2.2deg; --rz: -0.3deg; }
+.chain-item:nth-of-type(2) { --rx: 0.9deg;  --ry: 1.8deg;  --rz: 0.25deg; }
+.chain-item:nth-of-type(3) { --rx: 2.2deg;  --ry: 1.2deg;  --rz: -0.15deg; }
+.chain-item:nth-of-type(4) { --rx: 1.1deg;  --ry: -1.6deg; --rz: 0.35deg; }
+.ov-flow-item:nth-of-type(1) { --rx: 1.8deg; --ry: 1.9deg;  --rz: 0.2deg; }
+.ov-flow-item:nth-of-type(2) { --rx: 1.0deg; --ry: -1.7deg; --rz: -0.25deg; }
+.ov-flow-item:nth-of-type(3) { --rx: 2.1deg; --ry: -1.1deg; --rz: 0.15deg; }
+.ov-flow-item:nth-of-type(4) { --rx: 0.8deg; --ry: 2.1deg;  --rz: -0.2deg; }
+.ov-flow-item:nth-of-type(5) { --rx: 1.6deg; --ry: -2.0deg; --rz: 0.3deg; }
 
 /* bubbles: three dots per slab, rising and fading on desynced loops */
 .ice-bubbles,
@@ -990,30 +972,6 @@
 .ov-flow-item.in .ice-bubbles::before { animation: bubble-rise 8.8s linear calc(var(--i, 0) * -3.4s - 2.6s) infinite; }
 .chain-item.in .ice-bubbles::after,
 .ov-flow-item.in .ice-bubbles::after { animation: bubble-rise 7.6s linear calc(var(--i, 0) * -1.7s - 4.9s) infinite; }
-
-/* flow nodes share the ice material */
-.ov-node {
-  border-color: color-mix(in srgb, #ffffff 55%, var(--ice-water));
-  background:
-    linear-gradient(155deg,
-      color-mix(in srgb, var(--ice-water) 18%, transparent),
-      transparent 45%,
-      color-mix(in srgb, var(--ice-water) 10%, transparent)),
-    color-mix(in srgb, var(--panel) 72%, transparent);
-  -webkit-backdrop-filter: blur(9px) saturate(1.15);
-  backdrop-filter: blur(9px) saturate(1.15);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.75),
-    inset 1px 0 0 rgb(255 255 255 / 0.3),
-    inset 0 -8px 16px color-mix(in srgb, var(--ice-water) 26%, transparent),
-    0 22px 26px -13px color-mix(in srgb, #10222c 50%, transparent);
-}
-
-/* everything except the WebGL layer rides above it */
-.ov > :not(.ov-icefield) {
-  position: relative;
-  z-index: 1;
-}
 
 /* ── a11y: must stay LAST — overrides every ice rule above at equal specificity ── */
 @media (prefers-reduced-motion: reduce) {
