@@ -11,6 +11,7 @@ import { usePersistentState } from '../state/persist'
 import { usePulse } from '../components/usePulse'
 import Activity from '../components/Activity'
 import ParamRow from '../components/ParamRow'
+import { useT, useLang } from '../i18n'
 import './Dashboard.css'
 
 // Series colors — from the validated palette; color follows the entity
@@ -74,6 +75,8 @@ const CH = 300
 const PAD = { top: 14, right: 96, bottom: 34, left: 46 }
 
 export default function Dashboard() {
+  const t = useT()
+  const [lang] = useLang()
   const [p, setP] = usePersistentState<ModelParams>('dashboard.params', DEFAULTS)
   const [hoverD, setHoverD] = useState<number | null>(null)
   const svgRef = useRef<SVGSVGElement | null>(null)
@@ -144,16 +147,24 @@ export default function Dashboard() {
     { name: 'Hedge premium', v: eq.costs.hedge },
     { name: 'Disclosure cost', v: eq.costs.disclosure },
     { name: 'Residual risk', v: eq.costs.residual },
-  ]
+  ] as const
 
   return (
     <div className="db">
       <div className="spine-row">
         <Chip from="Materiality">
-          <strong>{spine.materialCount}</strong> material risks (≥{spine.materialityThreshold.toFixed(1)}) feed the exposure parameters
+          {lang === 'ko' ? (
+            <><strong>{spine.materialCount}</strong>개 중대 리스크 (≥{spine.materialityThreshold.toFixed(1)})가 익스포저 파라미터로 들어옵니다</>
+          ) : (
+            <><strong>{spine.materialCount}</strong> material risks (≥{spine.materialityThreshold.toFixed(1)}) feed the exposure parameters</>
+          )}
         </Chip>
         <Chip from="Budget">
-          allocator split <strong>{(spine.budgetW1 * 100).toFixed(1)}% / {(spine.budgetW2 * 100).toFixed(1)}%</strong> WTI/FX
+          {lang === 'ko' ? (
+            <>배분기 배분 <strong>{(spine.budgetW1 * 100).toFixed(1)}% / {(spine.budgetW2 * 100).toFixed(1)}%</strong> WTI/FX</>
+          ) : (
+            <>allocator split <strong>{(spine.budgetW1 * 100).toFixed(1)}% / {(spine.budgetW2 * 100).toFixed(1)}%</strong> WTI/FX</>
+          )}
         </Chip>
       </div>
       <div className="db-grid">
@@ -161,11 +172,11 @@ export default function Dashboard() {
         <div className="db-panel db-params">
           {GROUPS.map((g) => (
             <div key={g.title} className="db-group" data-tour={g.title === 'Regulation' ? 'floor' : undefined}>
-              <h4>{g.title}</h4>
+              <h4>{t(g.title)}</h4>
               {g.params.map((m) => (
                 <ParamRow
                   key={m.key}
-                  label={m.label}
+                  label={t(m.label)}
                   min={m.min}
                   max={m.max}
                   step={m.step}
@@ -176,7 +187,7 @@ export default function Dashboard() {
             </div>
           ))}
           <button className="db-reset" onClick={() => setP(DEFAULTS)}>
-            Reset sliders
+            {t('Reset sliders')}
           </button>
         </div>
 
@@ -184,33 +195,33 @@ export default function Dashboard() {
         <div className="db-main">
           <div className="db-tiles">
             <div className="tile">
-              <span className="tile-label">Disclosure d*</span>
+              <span className="tile-label">{t('Disclosure d*')}</span>
               <span className={pulseD ? 'tile-value pulse' : 'tile-value'}>{eq.dStar.toFixed(2)}</span>
               <span className={eq.floorBinding ? 'tile-badge binding' : 'tile-badge'}>
-                {eq.floorBinding ? 'floor binding' : 'voluntary interior'}
+                {eq.floorBinding ? t('floor binding') : t('voluntary interior')}
               </span>
             </div>
             <div className="tile">
-              <span className="tile-label">Financial hedge h_f*</span>
+              <span className="tile-label">{t('Financial hedge h_f*')}</span>
               <span className={pulseHf ? 'tile-value pulse' : 'tile-value'} style={{ color: C_FIN }}>
                 {(eq.hF * 100).toFixed(0)}%
               </span>
             </div>
             <div className="tile">
-              <span className="tile-label">Climate hedge h_c*</span>
+              <span className="tile-label">{t('Climate hedge h_c*')}</span>
               <span className={pulseHc ? 'tile-value pulse' : 'tile-value'} style={{ color: C_CLI }}>
                 {(eq.hC * 100).toFixed(0)}%
               </span>
             </div>
             <div className="tile">
-              <span className="tile-label">Risk price Λ(d*)</span>
+              <span className="tile-label">{t('Risk price Λ(d*)')}</span>
               <span className={pulseLam ? 'tile-value pulse' : 'tile-value'}>{eq.lambdaAtD.toFixed(2)}</span>
             </div>
           </div>
 
           {/* hedge at a glance */}
           <div className="db-panel">
-            <h3>The hedge, at a glance</h3>
+            <h3>{t('The hedge, at a glance')}</h3>
             {(
               [
                 { name: 'Financial leg', h: eq.hF, c: C_FIN },
@@ -218,7 +229,7 @@ export default function Dashboard() {
               ] as const
             ).map((leg) => (
               <div key={leg.name} className="hedge-row">
-                <span className="hedge-name">{leg.name}</span>
+                <span className="hedge-name">{t(leg.name)}</span>
                 <div className="hedge-track">
                   <div
                     className="hedge-fill"
@@ -226,7 +237,7 @@ export default function Dashboard() {
                   />
                   {leg.h < 0.82 && (
                     <span className="hedge-open" style={{ left: `${leg.h * 100}%` }}>
-                      open {(100 - leg.h * 100).toFixed(0)}%
+                      {lang === 'ko' ? '열림' : 'open'} {(100 - leg.h * 100).toFixed(0)}%
                     </span>
                   )}
                 </div>
@@ -235,22 +246,33 @@ export default function Dashboard() {
             ))}
             {eq.floorBinding && (
               <p className="db-callout">
-                The mandated floor d̲ = {p.dFloor.toFixed(1)} binds (voluntary
-                optimum {eq.dVoluntary.toFixed(2)}): forced disclosure buys
-                penalty relief, cheapens residual risk, and <em>crowds out</em>{' '}
-                the hedge: move the floor slider and watch both bars shrink.
+                {lang === 'ko' ? (
+                  <>
+                    의무 하한 d̲ = {p.dFloor.toFixed(1)}가 구속합니다 (자율 최적{' '}
+                    {eq.dVoluntary.toFixed(2)}): 강제 공시는 벌칙을 덜고, 잔여 리스크를
+                    싸게 만들며, 헤지를 <em>밀어냅니다</em>. 하한 슬라이더를 움직여 두
+                    막대가 함께 줄어드는 것을 지켜보세요.
+                  </>
+                ) : (
+                  <>
+                    The mandated floor d̲ = {p.dFloor.toFixed(1)} binds (voluntary
+                    optimum {eq.dVoluntary.toFixed(2)}): forced disclosure buys
+                    penalty relief, cheapens residual risk, and <em>crowds out</em>{' '}
+                    the hedge: move the floor slider and watch both bars shrink.
+                  </>
+                )}
               </p>
             )}
           </div>
 
           {/* h(d) curve */}
           <figure className="db-panel db-plot">
-            <h3>Hedge ratios as disclosure varies — h(d)</h3>
+            <h3>{t('Hedge ratios as disclosure varies — h(d)')}</h3>
             <svg
               ref={svgRef}
               viewBox={`0 0 ${CW} ${CH}`}
               role="img"
-              aria-label="Hedge ratios as a function of disclosure intensity"
+              aria-label={t('Hedge ratios as a function of disclosure intensity')}
               onMouseMove={onMove}
               onMouseLeave={() => setHoverD(null)}
             >
@@ -293,10 +315,10 @@ export default function Dashboard() {
               <path d={path('hF')} fill="none" stroke={C_FIN} strokeWidth={2} />
               <path d={path('hC')} fill="none" stroke={C_CLI} strokeWidth={2} />
               <text x={CW - PAD.right + 6} y={y(curve[curve.length - 1].hF) + 4} className="series-label" fill={C_FIN}>
-                financial
+                {t('financial')}
               </text>
               <text x={CW - PAD.right + 6} y={y(curve[curve.length - 1].hC) + 4} className="series-label" fill={C_CLI}>
-                climate
+                {t('climate')}
               </text>
 
               {/* equilibrium dots (2px surface ring) */}
@@ -320,41 +342,40 @@ export default function Dashboard() {
             )}
             <figcaption className="db-legend">
               <span className="lg-note">
-                Both curves fall as disclosure rises: disclosure cheapens residual
-                risk and substitutes for hedging. Dots mark the equilibrium.
+                {t('Both curves fall as disclosure rises: disclosure cheapens residual risk and substitutes for hedging. Dots mark the equilibrium.')}
               </span>
             </figcaption>
           </figure>
 
           {/* cost decomposition */}
           <div className="db-panel">
-            <h3>Cost at the optimum</h3>
+            <h3>{t('Cost at the optimum')}</h3>
             <div className="cost-bar">
               {costSegs.map((s, i) => (
                 <div
                   key={s.name}
                   className="cost-seg"
                   style={{ width: `${(s.v / costTotal) * 100}%`, background: C_COST[i] }}
-                  title={`${s.name}: ${s.v.toFixed(2)}`}
+                  title={`${t(s.name)}: ${s.v.toFixed(2)}`}
                 />
               ))}
             </div>
             <div className="db-legend">
               {costSegs.map((s, i) => (
                 <span key={s.name} className="lg-item">
-                  <span className="dot" style={{ background: C_COST[i] }} /> {s.name}{' '}
+                  <span className="dot" style={{ background: C_COST[i] }} /> {t(s.name)}{' '}
                   <strong>{s.v.toFixed(2)}</strong>
                 </span>
               ))}
               <span className="lg-item">
-                Total <strong>{costTotal.toFixed(2)}</strong>
+                {t('Total')} <strong>{costTotal.toFixed(2)}</strong>
               </span>
             </div>
           </div>
 
           <div className="db-ops">
             <div className="db-panel">
-              <h3>Division book</h3>
+              <h3>{t('Division book')}</h3>
               <div className="db-divs">
                 {divBook.map((d) => (
                   <div key={d.id} className="db-div">
@@ -367,7 +388,11 @@ export default function Dashboard() {
                       <span>h_f* <strong>{(d.hF * 100).toFixed(0)}%</strong></span>
                     </div>
                     <div className="db-div-meta">
-                      {d.approved} approved{d.pending > 0 && <> · <em>{d.pending} pending</em></>} · {d.trades} {d.trades === 1 ? 'trade' : 'trades'}
+                      {lang === 'ko' ? (
+                        <>{d.approved} 승인{d.pending > 0 && <> · <em>{d.pending} 대기</em></>} · 거래 {d.trades}건</>
+                      ) : (
+                        <>{d.approved} approved{d.pending > 0 && <> · <em>{d.pending} pending</em></>} · {d.trades} {d.trades === 1 ? 'trade' : 'trades'}</>
+                      )}
                       {d.lastTs > 0 && <> · {timeAgo(d.lastTs)}</>}
                     </div>
                   </div>
@@ -375,17 +400,28 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="db-panel">
-              <h3>Recent activity</h3>
+              <h3>{t('Recent activity')}</h3>
               <Activity limit={6} />
             </div>
           </div>
 
           <p className="db-note">
-            The model: Λ(d) = φ + λe<sup>−kd</sup> prices residual risk; hedges
-            solve 2Λ(d)Σu = p with corner (KKT) handling; voluntary d* solves
-            2ad = kλe<sup>−kd</sup>R; a mandate is a floor d ≥ d̲. Incumbent ESG
-            platforms stop at reporting the inputs — this screen is the decision
-            layer they leave empty.
+            {lang === 'ko' ? (
+              <>
+                모델: Λ(d) = φ + λe<sup>−kd</sup>가 잔여 리스크를 가격화합니다; 헤지는
+                코너(KKT) 처리와 함께 2Λ(d)Σu = p를 풉니다; 자율 d*는 2ad = kλe
+                <sup>−kd</sup>R을 풉니다; 의무는 하한 d ≥ d̲입니다. 기존 ESG 플랫폼은
+                입력값 보고에서 멈춥니다 — 이 화면이 그들이 비워 둔 의사결정 층입니다.
+              </>
+            ) : (
+              <>
+                The model: Λ(d) = φ + λe<sup>−kd</sup> prices residual risk; hedges
+                solve 2Λ(d)Σu = p with corner (KKT) handling; voluntary d* solves
+                2ad = kλe<sup>−kd</sup>R; a mandate is a floor d ≥ d̲. Incumbent ESG
+                platforms stop at reporting the inputs — this screen is the decision
+                layer they leave empty.
+              </>
+            )}
           </p>
         </div>
       </div>
