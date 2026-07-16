@@ -17,7 +17,7 @@ import { ToastProvider } from './components/Toast'
 import Palette, { type Command } from './components/Palette'
 import { MARKET, marketDate } from './state/market'
 import { clearPersistedParams } from './state/persist'
-import { useLang, KO_DESC, KO_TOUR, type Lang } from './i18n'
+import { useLang, useT, KO_DESC, KO_TOUR, type Lang } from './i18n'
 import './App.css'
 
 // Sidebar = the product map. Groups tell a first-time visitor what kind of
@@ -187,14 +187,15 @@ function TourSpotlight({ active }: { active: boolean }) {
 // enabled across the modules — the org chart, made switchable for the demo.
 function RoleSwitch() {
   const { role, setRole } = useErp()
+  const t = useT()
   return (
     <label className="role-switch">
-      <span className="role-switch-label">Acting as</span>
+      <span className="role-switch-label">{t('Acting as')}</span>
       <select
         className="role-switch-select"
         value={role}
         onChange={(e) => setRole(e.target.value as typeof role)}
-        title="Switch acting role — gates who can submit, approve, book and designate"
+        title={t('Switch acting role — gates who can submit, approve, book and designate')}
       >
         {ROLES.map((r) => (
           <option key={r} value={r}>{ROLE_LABEL[r]}</option>
@@ -208,8 +209,9 @@ function RoleSwitch() {
 // copy between English and Korean (explanation layer only — banners, charts, and
 // numbers stay English). A compact two-button segment under the role selector.
 function LangSwitch({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
+  const t = useT()
   return (
-    <div className="lang-switch" role="group" aria-label="Guide language">
+    <div className="lang-switch" role="group" aria-label={t('Guide language')}>
       {(['en', 'ko'] as const).map((l) => (
         <button
           key={l}
@@ -226,16 +228,17 @@ function LangSwitch({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void 
 
 function ResetDemo() {
   const { dispatch } = useErp()
+  const t = useT()
   return (
     <button
       className="sidebar-reset"
-      title="Restore the seeded demo ledgers"
+      title={t('Restore the seeded demo ledgers')}
       onClick={() => {
         dispatch({ type: 'reset' })
         clearPersistedParams()
       }}
     >
-      Reset demo data (all divisions)
+      {t('Reset demo data (all divisions)')}
     </button>
   )
 }
@@ -243,10 +246,11 @@ function ResetDemo() {
 // live count of metrics awaiting audit — only on the Metrics Entry nav item
 function PendingBadge({ id }: { id: string }) {
   const { state } = useErp()
+  const [lang] = useLang()
   if (id !== 'metrics') return null
   const n = state.metrics.filter((m) => m.status === 'pending').length
   if (n === 0) return null
-  return <span className="nav-badge" title={`${n} awaiting review`}>{n}</span>
+  return <span className="nav-badge" title={lang === 'ko' ? `검토 대기 ${n}건` : `${n} awaiting review`}>{n}</span>
 }
 
 // Command palette wiring. Rendered inside the providers (like ResetDemo) so it
@@ -255,6 +259,8 @@ function PendingBadge({ id }: { id: string }) {
 function CommandK({ go, startTour }: { go: (id: string) => void; startTour: () => void }) {
   const { dispatch, setRole } = useErp()
   const [open, setOpen] = useState(false)
+  const t = useT()
+  const [lang] = useLang()
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -272,18 +278,18 @@ function CommandK({ go, startTour }: { go: (id: string) => void; startTour: () =
     ...GROUPS.flatMap((g) =>
       g.items.map((m) => ({
         id: `go-${m.id}`,
-        label: `Go to ${m.name}`,
-        hint: g.title ?? undefined,
+        label: lang === 'ko' ? `${m.name}(으)로 이동` : `Go to ${m.name}`,
+        hint: g.title ? t(g.title) : undefined,
         run: () => go(m.id),
       })),
     ),
-    { id: 'tour', label: 'Start guided tour', hint: 'Walkthrough', run: startTour },
-    { id: 'reset', label: 'Reset demo data', hint: 'All divisions', run: () => dispatch({ type: 'reset' }) },
+    { id: 'tour', label: t('Start guided tour'), hint: t('Walkthrough'), run: startTour },
+    { id: 'reset', label: t('Reset demo data'), hint: t('All divisions'), run: () => dispatch({ type: 'reset' }) },
     // role switches — same setter the sidebar selector uses
     ...ROLES.map((r) => ({
       id: `role-${r}`,
-      label: `Act as ${ROLE_LABEL[r]}`,
-      hint: 'Role',
+      label: lang === 'ko' ? `${ROLE_LABEL[r]}(으)로 전환` : `Act as ${ROLE_LABEL[r]}`,
+      hint: t('Role'),
       run: () => setRole(r),
     })),
   ]
@@ -296,6 +302,7 @@ export default function App() {
   const [tour, setTour] = useState<number | null>(null)
   const [navOpen, setNavOpen] = useState(false)
   const [lang, setLang] = useLang()
+  const t = useT()
   const mod = ALL.find((m) => m.id === active)!
 
   // on mobile, choosing a screen closes the drawer
@@ -416,7 +423,7 @@ export default function App() {
     <ErpProvider>
     <SpineProvider>
     <ToastProvider>
-    <a href="#main-content" className="skip-link">Skip to content</a>
+    <a href="#main-content" className="skip-link">{t('Skip to content')}</a>
     <div className={tour !== null ? 'app touring' : 'app'}>
 
       {/* mobile top bar — brand + hamburger; hidden on desktop */}
@@ -427,7 +434,7 @@ export default function App() {
         </button>
         <button
           className="nav-toggle"
-          aria-label={navOpen ? 'Close menu' : 'Open menu'}
+          aria-label={navOpen ? t('Close menu') : t('Open menu')}
           aria-expanded={navOpen}
           onClick={() => setNavOpen((v) => !v)}
         >
@@ -448,7 +455,7 @@ export default function App() {
           <span className="brand-mark">홍</span>
           <div>
             <div className="brand-name">HongERP</div>
-            <div className="brand-sub">ESG decision layer</div>
+            <div className="brand-sub">{t('ESG decision layer')}</div>
           </div>
         </button>
         <RoleSwitch />
@@ -456,7 +463,7 @@ export default function App() {
         <nav>
           {GROUPS.map((g) => (
             <div key={g.title ?? 'top'} className="nav-group">
-              {g.title && <div className="nav-group-title">{g.title}</div>}
+              {g.title && <div className="nav-group-title">{t(g.title)}</div>}
               {g.items.map((m) => (
                 <button
                   key={m.id}
@@ -471,13 +478,13 @@ export default function App() {
           ))}
         </nav>
         <footer className="sidebar-foot">
-          <div className="sidebar-market" title={`FRED snapshot · refreshed weekdays by GitHub Actions · fetched ${MARKET.fetchedAt}`}>
+          <div className="sidebar-market" title={lang === 'ko' ? `FRED 스냅샷 · GitHub Actions가 평일마다 갱신 · ${MARKET.fetchedAt} 취득` : `FRED snapshot · refreshed weekdays by GitHub Actions · fetched ${MARKET.fetchedAt}`}>
             <span className="market-dot" /> WTI <strong>${MARKET.wti.value.toFixed(2)}</strong> · ₩
             <strong>{MARKET.usdkrw.value.toLocaleString()}</strong>
             <span className="market-date">FRED {marketDate}</span>
           </div>
           <ResetDemo />
-          <div className="sidebar-cmdk"><kbd className="kbd">⌘K</kbd> commands</div>
+          <div className="sidebar-cmdk"><kbd className="kbd">⌘K</kbd> {t('commands')}</div>
           v1 · <a href="https://github.com/JihongParker/hong-erp" target="_blank" rel="noreferrer">GitHub</a>
         </footer>
       </aside>
@@ -523,19 +530,19 @@ export default function App() {
       <CommandK go={go} startTour={startTour} />
       <TourSpotlight active={tour !== null} />
       {tour !== null && (
-        <aside className="tour-card" role="dialog" aria-modal="true" aria-label="Guided tour" ref={tourCardRef}>
+        <aside className="tour-card" role="dialog" aria-modal="true" aria-label={t('Guided tour')} ref={tourCardRef}>
           <div className="tour-head">
-            <span className="tour-step">Step {tour + 1} / {TOUR.length}</span>
-            <button className="tour-close" onClick={() => setTour(null)} aria-label="End tour">✕</button>
+            <span className="tour-step">{lang === 'ko' ? `${tour + 1} / ${TOUR.length} 단계` : `Step ${tour + 1} / ${TOUR.length}`}</span>
+            <button className="tour-close" onClick={() => setTour(null)} aria-label={t('End tour')}>✕</button>
           </div>
           <h4>{lang === 'ko' ? KO_TOUR[tour]?.title ?? TOUR[tour].title : TOUR[tour].title}</h4>
           <p>{lang === 'ko' ? KO_TOUR[tour]?.body ?? TOUR[tour].body : TOUR[tour].body}</p>
           <div className="tour-actions">
             {tour > 0 && (
-              <button className="tour-btn ghost" onClick={() => stepTour(-1)}>← Back</button>
+              <button className="tour-btn ghost" onClick={() => stepTour(-1)}>{t('← Back')}</button>
             )}
             <button className="tour-btn" onClick={() => stepTour(1)}>
-              {tour === TOUR.length - 1 ? 'Finish' : 'Next →'}
+              {tour === TOUR.length - 1 ? t('Finish') : t('Next →')}
             </button>
           </div>
         </aside>

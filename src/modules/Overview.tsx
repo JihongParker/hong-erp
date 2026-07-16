@@ -111,13 +111,26 @@ export default function Overview({
       {/* ── 1 · hero ── */}
       <section className="ov-hero">
         <div className="ov-hero-copy">
-          <div className="ov-kicker reveal in">HongERP · ESG decision layer</div>
+          <div className="ov-kicker reveal in">HongERP · {t('ESG decision layer')}</div>
           <h2 className="ov-title reveal in">
-            The decision layer that ESG platforms{' '}
-            <span className="ov-accent-wrap">
-              <span className="ov-accent">leave empty</span>
-              <span className="ov-underflow" aria-hidden />
-            </span>
+            {lang === 'ko' ? (
+              <>
+                ESG 플랫폼이{' '}
+                <span className="ov-accent-wrap">
+                  <span className="ov-accent">비워 둔</span>
+                  <span className="ov-underflow" aria-hidden />
+                </span>{' '}
+                의사결정 층
+              </>
+            ) : (
+              <>
+                The decision layer that ESG platforms{' '}
+                <span className="ov-accent-wrap">
+                  <span className="ov-accent">leave empty</span>
+                  <span className="ov-underflow" aria-hidden />
+                </span>
+              </>
+            )}
           </h2>
           <p className="ov-lede reveal in">
             {lang === 'ko' ? (
@@ -138,16 +151,16 @@ export default function Overview({
           </p>
           <div className="ov-hero-cta reveal in">
             <button className="ov-btn big primary" onClick={() => onNavigate('decision')}>
-              Open the app
-              <span className="ov-btn-sub">go to the Decision Dashboard</span>
+              {t('Open the app')}
+              <span className="ov-btn-sub">{t('go to the Decision Dashboard')}</span>
             </button>
             <button className="ov-btn big" onClick={onStartTour}>
-              Take a tour
-              <span className="ov-btn-sub">guided · no finance needed</span>
+              {t('Take a tour')}
+              <span className="ov-btn-sub">{t('guided · no finance needed')}</span>
             </button>
           </div>
           <button className="ov-scrollcue reveal in" onClick={() => chainRef.current?.scrollIntoView({ behavior: 'smooth' })}>
-            or follow the chain <span className="ov-cue-arrow">↓</span>
+            {t('or follow the chain')} <span className="ov-cue-arrow">↓</span>
           </button>
         </div>
       </section>
@@ -155,7 +168,7 @@ export default function Overview({
       {/* ── 2 · the research chain ── */}
       <section className="ov-chain" ref={chainRef}>
         <div className="ov-chain-head reveal">
-          <h3>One position, four papers, one chain.</h3>
+          <h3>{t('One position, four papers, one chain.')}</h3>
           <p>
             {t("Four papers, one Korean oil importer's WTI × USD/KRW exposure. Each picks up where the last leaves off.")}
           </p>
@@ -175,9 +188,9 @@ export default function Overview({
             >
               <span className="chain-node">{p.n}</span>
               <button className="chain-card" onClick={() => onNavigate(p.module)}>
-                <span className="chain-title">{p.title}</span>
-                <span className="chain-plain">{p.plain}</span>
-                <span className="chain-result">{p.result}</span>
+                <span className="chain-title">{t(p.title)}</span>
+                <span className="chain-plain">{t(p.plain)}</span>
+                <span className="chain-result">{t(p.result)}</span>
                 <span className="chain-link">{p.moduleName} →</span>
               </button>
               <span className="ice-bubbles" aria-hidden />
@@ -195,8 +208,8 @@ export default function Overview({
       {/* ── 3 · live screens ── */}
       <section className="ov-live reveal">
         <div className="ov-live-head">
-          <h3>And it all moves.</h3>
-          <p>Drag a dial, the equilibrium recomputes. Flip through, or let them play.</p>
+          <h3>{t('And it all moves.')}</h3>
+          <p>{t('Drag a dial, the equilibrium recomputes. Flip through, or let them play.')}</p>
         </div>
         <AppPreview />
       </section>
@@ -205,13 +218,13 @@ export default function Overview({
 
       {/* ── 4 · data-flow map ── */}
       <section className="ov-flow reveal">
-        <h3>The sidebar is a data flow, not a menu.</h3>
+        <h3>{t('The sidebar is a data flow, not a menu.')}</h3>
         <div className="ov-flow-row">
           {FLOW.map((f, i) => (
             <div key={f.id} className="ov-flow-item reveal" style={{ ['--i' as string]: i }}>
               <button className="ov-node" onClick={() => onNavigate(f.id)}>
-                <span className="ov-node-label">{f.label}</span>
-                <span className="ov-node-sub">{f.sub}</span>
+                <span className="ov-node-label">{t(f.label)}</span>
+                <span className="ov-node-sub">{t(f.sub)}</span>
               </button>
               <span className="ice-bubbles" aria-hidden />
               {i < FLOW.length - 1 && <span className="ov-arrow">→</span>}
@@ -227,19 +240,19 @@ export default function Overview({
 
       {/* ── 5 · culmination ── */}
       <section className="ov-cta reveal">
-        <h3 className="ov-cta-h">See where the decision gets made.</h3>
+        <h3 className="ov-cta-h">{t('See where the decision gets made.')}</h3>
         <div className="ov-cta-btns">
           <button className="ov-btn big primary" onClick={onStartTour}>
-            Take a look
-            <span className="ov-btn-sub">guided · no finance needed</span>
+            {t('Take a look')}
+            <span className="ov-btn-sub">{t('guided · no finance needed')}</span>
           </button>
           <button className="ov-btn big" onClick={() => onNavigate('decision')}>
-            Start
-            <span className="ov-btn-sub">open the Decision Dashboard</span>
+            {t('Start')}
+            <span className="ov-btn-sub">{t('open the Decision Dashboard')}</span>
           </button>
         </div>
         <a className="ov-gh" href="https://github.com/JihongParker/hong-erp" target="_blank" rel="noreferrer">
-          Source on GitHub →
+          {t('Source on GitHub →')}
         </a>
       </section>
     </div>

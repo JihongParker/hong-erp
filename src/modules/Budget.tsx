@@ -9,6 +9,7 @@ import { Chip, useSpine } from '../state/spine'
 import { usePersistentState } from '../state/persist'
 import { usePulse } from '../components/usePulse'
 import ParamRow from '../components/ParamRow'
+import { useT, useLang } from '../i18n'
 import './Budget.css'
 
 const C_WTI = '#2f6db4'
@@ -23,6 +24,8 @@ const PAD = { top: 14, right: 16, bottom: 36, left: 46 }
 const W1_MIN = 0.8
 
 export default function Budget() {
+  const t = useT()
+  const [lang] = useLang()
   const [regime, setRegime] = usePersistentState<Regime>('budget.regime', 'european')
   const [B, setB] = usePersistentState<number>('budget.B', P1_INPUTS.B)
   const [stressWTI, setStressWTI] = usePersistentState('budget.stressWTI', 113)
@@ -75,16 +78,24 @@ export default function Budget() {
     <div className="bg">
       <div className="spine-row">
         <Chip from="Materiality">
-          <strong>{spine.materialCount}</strong> material risks upstream — this split covers the market-risk pair
+          {lang === 'ko' ? (
+            <>상류에 <strong>{spine.materialCount}</strong>개 중대 리스크 — 이 배분은 시장리스크 쌍을 커버합니다</>
+          ) : (
+            <><strong>{spine.materialCount}</strong> material risks upstream — this split covers the market-risk pair</>
+          )}
         </Chip>
         <Chip from="Exotic Desk">
-          live barrier odds <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong> at spot ${spine.exoticSpot.toFixed(1)}
+          {lang === 'ko' ? (
+            <>실시간 배리어 확률 <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong> · 현물 ${spine.exoticSpot.toFixed(1)}</>
+          ) : (
+            <>live barrier odds <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong> at spot ${spine.exoticSpot.toFixed(1)}</>
+          )}
         </Chip>
       </div>
       <div className="bg-grid">
         {/* ── control rail ── */}
         <div className="bg-panel bg-deck">
-          <h3>Program inputs</h3>
+          <h3>{t('Program inputs')}</h3>
           <div className="bg-tabs">
             {(
               [
@@ -93,13 +104,13 @@ export default function Budget() {
               ] as const
             ).map(([r, label]) => (
               <button key={r} className={regime === r ? 'bg-tab active' : 'bg-tab'} onClick={() => setRegime(r)}>
-                {label}
+                {t(label)}
               </button>
             ))}
           </div>
           <div className="bg-sliders" data-tour="budget-b">
             <ParamRow
-              label="B budget"
+              label={t('B budget')}
               min={43e9}
               max={60e9}
               step={0.5e9}
@@ -108,7 +119,7 @@ export default function Budget() {
               fmt={bn}
             />
             <ParamRow
-              label="S̄ stress WTI"
+              label={t('S̄ stress WTI')}
               min={90}
               max={130}
               step={1}
@@ -118,16 +129,37 @@ export default function Budget() {
             />
           </div>
           <p className="bg-muted">
-            Fixed (paper Table 1): 2.0M bbl/mo, $157.88M/mo, spot 78.94 /
-            1540.64, stress FX 1550, σ₁ {regime === 'european' ? '0.395 (raw)' : '0.324 (diffusive)'},
-            σ₂ 0.093, ρ 0.088.
+            {lang === 'ko' ? (
+              <>
+                고정값 (논문 Table 1): 2.0M bbl/월, $157.88M/월, 현물 78.94 / 1540.64,
+                스트레스 FX 1550, σ₁ {regime === 'european' ? '0.395 (원값)' : '0.324 (확산)'},
+                σ₂ 0.093, ρ 0.088.
+              </>
+            ) : (
+              <>
+                Fixed (paper Table 1): 2.0M bbl/mo, $157.88M/mo, spot 78.94 /
+                1540.64, stress FX 1550, σ₁ {regime === 'european' ? '0.395 (raw)' : '0.324 (diffusive)'},
+                σ₂ 0.093, ρ 0.088.
+              </>
+            )}
           </p>
 
           <div className="bg-ko">
-            <strong>Instrument rule (§7–8):</strong> stress KO odds{' '}
-            {(P1_INPUTS.p_KO_stress * 100).toFixed(0)}% ≫{' '}
-            {(P1_INPUTS.p_KO_breakeven * 100).toFixed(1)}% break-even — under
-            stress, keep the WTI book <em>vanilla</em>. Live odds: Exotic Desk.
+            {lang === 'ko' ? (
+              <>
+                <strong>상품 규칙 (§7–8):</strong> 스트레스 KO 확률{' '}
+                {(P1_INPUTS.p_KO_stress * 100).toFixed(0)}% ≫ 손익분기{' '}
+                {(P1_INPUTS.p_KO_breakeven * 100).toFixed(1)}% — 스트레스 상황에서는
+                WTI 장부를 <em>바닐라</em>로 유지합니다. 실시간 확률: 이그저틱 데스크.
+              </>
+            ) : (
+              <>
+                <strong>Instrument rule (§7–8):</strong> stress KO odds{' '}
+                {(P1_INPUTS.p_KO_stress * 100).toFixed(0)}% ≫{' '}
+                {(P1_INPUTS.p_KO_breakeven * 100).toFixed(1)}% break-even — under
+                stress, keep the WTI book <em>vanilla</em>. Live odds: Exotic Desk.
+              </>
+            )}
           </div>
         </div>
 
@@ -135,30 +167,30 @@ export default function Budget() {
         <div className="bg-main">
         <div className="bg-tiles">
             <div className="tile">
-              <span className="tile-label">WTI coverage w₁*</span>
+              <span className="tile-label">{t('WTI coverage w₁*')}</span>
               <span className={pulseW1 ? 'tile-value pulse' : 'tile-value'} style={{ color: C_WTI }}>{(sol.w1 * 100).toFixed(2)}%</span>
             </div>
             <div className="tile">
-              <span className="tile-label">FX coverage w₂*</span>
+              <span className="tile-label">{t('FX coverage w₂*')}</span>
               <span className={pulseW2 ? 'tile-value pulse' : 'tile-value'} style={{ color: C_FX }}>{(sol.w2 * 100).toFixed(2)}%</span>
             </div>
             <div className="tile">
-              <span className="tile-label">Residual σ</span>
+              <span className="tile-label">{t('Residual σ')}</span>
               <span className={pulseSig ? 'tile-value pulse' : 'tile-value'}>{sol.sigma.toFixed(4)}</span>
             </div>
             <div className="tile">
-              <span className="tile-label">Total cost</span>
+              <span className="tile-label">{t('Total cost')}</span>
               <span className={pulseCost ? 'tile-value pulse' : 'tile-value'}>{bn(sol.cost)}</span>
               <span className={sol.budgetBinding ? 'tile-badge binding' : 'tile-badge'}>
-                {sol.budgetBinding ? 'budget binding' : 'budget slack'}
+                {sol.budgetBinding ? t('budget binding') : t('budget slack')}
               </span>
             </div>
           </div>
 
         <div className="bg-mid">
         <figure className="bg-panel bg-plot">
-            <h3>Feasible corner &amp; the optimum</h3>
-            <svg viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label="Feasible region and optimum">
+            <h3>{t('Feasible corner & the optimum')}</h3>
+            <svg viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label={t('Feasible region and optimum')}>
               {[0.85, 0.9, 0.95, 1.0].map((v) => (
                 <g key={v}>
                   <line x1={x(v)} y1={PAD.top} x2={x(v)} y2={CH - PAD.bottom} stroke="var(--line)" strokeWidth={1} />
@@ -183,15 +215,26 @@ export default function Budget() {
               )}
             </svg>
             <figcaption className="bg-muted">
-              Red curve: total-cost boundary C = B. Dashed: allocation envelope.
-              The optimum (dot) sits at the vertex, constraint-pinned, which is
-              why a 10% volatility mis-estimate moves what the allocation{' '}
-              <em>delivers</em>, not what it <em>is</em> (paper §6.5).
+              {lang === 'ko' ? (
+                <>
+                  빨간 곡선: 총비용 경계 C = B. 점선: 배분 포락선. 최적점(점)은 꼭짓점에
+                  제약으로 고정됩니다. 그래서 10% 변동성 오차는 배분이{' '}
+                  <em>실현하는</em> 것을 바꿀 뿐, 배분 <em>자체</em>는 바꾸지 않습니다
+                  (논문 §6.5).
+                </>
+              ) : (
+                <>
+                  Red curve: total-cost boundary C = B. Dashed: allocation envelope.
+                  The optimum (dot) sits at the vertex, constraint-pinned, which is
+                  why a 10% volatility mis-estimate moves what the allocation{' '}
+                  <em>delivers</em>, not what it <em>is</em> (paper §6.5).
+                </>
+              )}
             </figcaption>
         </figure>
 
         <div className="bg-panel">
-            <h3>The split</h3>
+            <h3>{t('The split')}</h3>
             {(
               [
                 { name: 'WTI leg', w: sol.w1, c: C_WTI },
@@ -199,7 +242,7 @@ export default function Budget() {
               ] as const
             ).map((leg) => (
               <div key={leg.name} className="bg-row">
-                <span className="bg-name">{leg.name}</span>
+                <span className="bg-name">{t(leg.name)}</span>
                 <div className="bg-track">
                   <div className="bg-fill" style={{ width: `${leg.w * 100}%`, background: leg.c }} />
                 </div>
@@ -207,10 +250,21 @@ export default function Budget() {
               </div>
             ))}
             <p className="bg-muted">
-              The asymmetry is structural, not budgetary: σ₁²/σ₂² ≈{' '}
-              {((regime === 'european' ? P1_INPUTS.sigma1EU : P1_INPUTS.sigma1AM) ** 2 / P1_INPUTS.sigma2 ** 2).toFixed(0)}
-              × and ρ ≈ 0.09 mean the minimum-variance split leaves the FX leg
-              almost entirely open even with the budget deleted (paper §6.2).
+              {lang === 'ko' ? (
+                <>
+                  이 비대칭은 예산이 아니라 구조에서 옵니다: σ₁²/σ₂² ≈{' '}
+                  {((regime === 'european' ? P1_INPUTS.sigma1EU : P1_INPUTS.sigma1AM) ** 2 / P1_INPUTS.sigma2 ** 2).toFixed(0)}
+                  ×이고 ρ ≈ 0.09이므로, 최소분산 배분은 예산을 없애도 FX 다리를 거의
+                  전부 열어 둡니다 (논문 §6.2).
+                </>
+              ) : (
+                <>
+                  The asymmetry is structural, not budgetary: σ₁²/σ₂² ≈{' '}
+                  {((regime === 'european' ? P1_INPUTS.sigma1EU : P1_INPUTS.sigma1AM) ** 2 / P1_INPUTS.sigma2 ** 2).toFixed(0)}
+                  × and ρ ≈ 0.09 mean the minimum-variance split leaves the FX leg
+                  almost entirely open even with the budget deleted (paper §6.2).
+                </>
+              )}
             </p>
           </div>
         </div>

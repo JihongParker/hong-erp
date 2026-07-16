@@ -16,7 +16,7 @@ import MarketChip from '../components/MarketChip'
 import ParamRow from '../components/ParamRow'
 import { usePulse } from '../components/usePulse'
 import { useToast } from '../components/Toast'
-import { useT } from '../i18n'
+import { useT, useLang } from '../i18n'
 import './Instruments.css'
 
 // Series colors — validated palette. The selected strategy is the hero line.
@@ -85,6 +85,7 @@ export default function Instruments() {
   const toast = useToast()
   const { state: erp, dispatch, role } = useErp()
   const t = useT()
+  const [lang] = useLang()
   const [bookDiv, setBookDiv] = useState(erp.divisions[0].id)
   const [bookNot, setBookNot] = useState('0.50')
   const canBook = role === 'treasury'
@@ -126,7 +127,11 @@ export default function Instruments() {
         designation: 'CFH-B',
       },
     })
-    toast(`Booked — ${n.toFixed(2)}M bbl ${STRAT_NAME[strategy]} for ${erp.divisions.find((d) => d.id === bookDiv)?.name}. See the blotter in Hedge Accounting.`)
+    toast(
+      lang === 'ko'
+        ? `기표 완료 — ${erp.divisions.find((d) => d.id === bookDiv)?.name}의 ${n.toFixed(2)}M bbl ${t(STRAT_NAME[strategy])}. 헤지 회계의 블로터에서 확인하세요.`
+        : `Booked — ${n.toFixed(2)}M bbl ${STRAT_NAME[strategy]} for ${erp.divisions.find((d) => d.id === bookDiv)?.name}. See the blotter in Hedge Accounting.`,
+    )
   }
 
   const sMin = 0.4 * mkt.F
@@ -180,13 +185,14 @@ export default function Instruments() {
   })()
 
   // full comparison table — every strategy priced off the same market
+  const ko = lang === 'ko'
   const rows: { key: Strat | 'unhedged'; label: string; premium: string; worst: string; best: string; giveup: string }[] = [
-    { key: 'unhedged', label: 'Unhedged', premium: '$0', worst: 'unbounded', best: '→ $0', giveup: 'nothing; you carry the whole tail' },
-    { key: 'swap', label: 'Swap / forward', premium: '$0', worst: `$${mkt.F.toFixed(1)}`, best: `$${mkt.F.toFixed(1)}`, giveup: 'all downside participation' },
-    { key: 'cap', label: 'Cap only (bought call)', premium: `$${capPrem.toFixed(2)}`, worst: `$${(capK + capPrem).toFixed(1)}`, best: '→ premium only', giveup: 'the premium, paid in cash' },
-    { key: 'collar', label: 'Zero-cost collar', premium: '$0', worst: `$${collar.capK.toFixed(1)}`, best: `$${collar.floorK.toFixed(1)}`, giveup: `participation below $${collar.floorK.toFixed(1)}` },
-    { key: 'threeway', label: 'Three-way collar', premium: '$0', worst: `$${Math.max(capK, threeway.floorK + threeway.subFloorK).toFixed(1)} (crash)`, best: `$${threeway.floorK.toFixed(1)}`, giveup: `protection tears below $${threeway.subFloorK}` },
-    { key: 'seagull', label: 'Seagull', premium: '$0', worst: 'unbounded (spike)', best: `$${seagull.floorK.toFixed(1)}`, giveup: `protection ends at $${ceilK}` },
+    { key: 'unhedged', label: t('Unhedged'), premium: '$0', worst: ko ? '무제한' : 'unbounded', best: '→ $0', giveup: ko ? '없음; 꼬리 전체를 떠안습니다' : 'nothing; you carry the whole tail' },
+    { key: 'swap', label: t('Swap / forward'), premium: '$0', worst: `$${mkt.F.toFixed(1)}`, best: `$${mkt.F.toFixed(1)}`, giveup: ko ? '모든 하방 참여' : 'all downside participation' },
+    { key: 'cap', label: t('Cap only (bought call)'), premium: `$${capPrem.toFixed(2)}`, worst: `$${(capK + capPrem).toFixed(1)}`, best: ko ? '→ 프리미엄만' : '→ premium only', giveup: ko ? '현금으로 낸 프리미엄' : 'the premium, paid in cash' },
+    { key: 'collar', label: t('Zero-cost collar'), premium: '$0', worst: `$${collar.capK.toFixed(1)}`, best: `$${collar.floorK.toFixed(1)}`, giveup: ko ? `$${collar.floorK.toFixed(1)} 아래의 참여` : `participation below $${collar.floorK.toFixed(1)}` },
+    { key: 'threeway', label: t('Three-way collar'), premium: '$0', worst: `$${Math.max(capK, threeway.floorK + threeway.subFloorK).toFixed(1)} ${ko ? '(급락)' : '(crash)'}`, best: `$${threeway.floorK.toFixed(1)}`, giveup: ko ? `$${threeway.subFloorK} 아래로 보호 찢어짐` : `protection tears below $${threeway.subFloorK}` },
+    { key: 'seagull', label: t('Seagull'), premium: '$0', worst: ko ? '무제한 (급등)' : 'unbounded (spike)', best: `$${seagull.floorK.toFixed(1)}`, giveup: ko ? `$${ceilK}에서 보호 종료` : `protection ends at $${ceilK}` },
   ]
 
   // 3:2:1 crack spread — refiners hedge the MARGIN, not just crude. Illustrative
@@ -199,12 +205,12 @@ export default function Instruments() {
     <div className="ins">
       <div className="ins-tabs">
         <button className={tab === 'collar' ? 'ins-tab active' : 'ins-tab'} onClick={() => setTab('collar')}>
-          <span className="ins-tab-title">Vanilla desk <span className="ins-tag">industry standard</span></span>
-          <span className="ins-tab-sub">Swap · cap · collar · three-way · seagull: the structures refiners actually run, Black-76 priced</span>
+          <span className="ins-tab-title">{lang === 'ko' ? '바닐라 데스크' : 'Vanilla desk'} <span className="ins-tag">{t('industry standard')}</span></span>
+          <span className="ins-tab-sub">{t('Swap · cap · collar · three-way · seagull: the structures refiners actually run, Black-76 priced')}</span>
         </button>
         <button className={tab === 'exotic' ? 'ins-tab active' : 'ins-tab'} data-tour="exotic-tab" onClick={() => setTab('exotic')}>
-          <span className="ins-tab-title">Double-KO quanto <span className="ins-tag research">research</span></span>
-          <span className="ins-tab-sub">Barrier analytics from the paper's engine: where textbook deltas reverse sign</span>
+          <span className="ins-tab-title">Double-KO {lang === 'ko' ? '퀀토' : 'quanto'} <span className="ins-tag research">{t('research')}</span></span>
+          <span className="ins-tab-sub">{t("Barrier analytics from the paper's engine: where textbook deltas reverse sign")}</span>
         </button>
       </div>
 
@@ -215,15 +221,23 @@ export default function Instruments() {
           <div className="spine-row">
             <MarketChip />
             <Chip from="Budget">
-              allocator says cover <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> of the WTI leg — {(spine.budgetW1 * 2.0).toFixed(2)}M bbl through this desk
+              {lang === 'ko' ? (
+                <>배분기 지시: WTI 다리의 <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> 커버 — 이 데스크를 통해 {(spine.budgetW1 * 2.0).toFixed(2)}M bbl</>
+              ) : (
+                <>allocator says cover <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> of the WTI leg — {(spine.budgetW1 * 2.0).toFixed(2)}M bbl through this desk</>
+              )}
             </Chip>
             <Chip from="Decision Dashboard">
-              disclosure d* = <strong>{spine.dStar.toFixed(2)}</strong> sets the residual-risk price the hedge answers to
+              {lang === 'ko' ? (
+                <>공시 d* = <strong>{spine.dStar.toFixed(2)}</strong>가 헤지가 답해야 할 잔여 리스크 가격을 정합니다</>
+              ) : (
+                <>disclosure d* = <strong>{spine.dStar.toFixed(2)}</strong> sets the residual-risk price the hedge answers to</>
+              )}
             </Chip>
           </div>
 
           {/* ── strategy library selector ── */}
-          <div className="ins-strat" data-tour="strat" role="tablist" aria-label="Hedge strategy">
+          <div className="ins-strat" data-tour="strat" role="tablist" aria-label={lang === 'ko' ? '헤지 전략' : 'Hedge strategy'}>
             {STRATS.map((s) => (
               <button
                 key={s.key}
@@ -232,8 +246,8 @@ export default function Instruments() {
                 className={strategy === s.key ? 'ins-strat-btn active' : 'ins-strat-btn'}
                 onClick={() => setStrategy(s.key)}
               >
-                <span className="ins-strat-name">{s.name}</span>
-                <span className={s.tag === 'sold wing' ? 'ins-strat-tag warn' : 'ins-strat-tag'}>{s.tag}</span>
+                <span className="ins-strat-name">{t(s.name)}</span>
+                <span className={s.tag === 'sold wing' ? 'ins-strat-tag warn' : 'ins-strat-tag'}>{t(s.tag)}</span>
               </button>
             ))}
           </div>
@@ -242,7 +256,7 @@ export default function Instruments() {
           <div className="ins-grid">
             <div className="ins-rail">
               <div className="ins-panel ins-deck" data-tour="cap">
-                <h3>Market & structure</h3>
+                <h3>{t('Market & structure')}</h3>
                 {(
                   [
                     { key: 'F', label: 'F forward', min: 50, max: 130, step: 1, fmt: (v: number) => `$${v.toFixed(0)}` },
@@ -251,31 +265,31 @@ export default function Instruments() {
                     { key: 'r', label: 'r rate', min: 0, max: 0.08, step: 0.0025, fmt: (v: number) => `${(v * 100).toFixed(1)}%` },
                   ] as const
                 ).map((m) => (
-                  <ParamRow key={m.key} label={m.label} min={m.min} max={m.max} step={m.step} value={mkt[m.key]} onChange={(v) => setM(m.key, v)} fmt={m.fmt} />
+                  <ParamRow key={m.key} label={t(m.label)} min={m.min} max={m.max} step={m.step} value={mkt[m.key]} onChange={(v) => setM(m.key, v)} fmt={m.fmt} />
                 ))}
                 {strategy !== 'swap' && (
-                  <ParamRow label="Kc cap strike" min={Math.round(mkt.F)} max={Math.round(mkt.F * 1.5)} step={1} value={capK} onChange={setCapK} fmt={(v) => `$${v.toFixed(0)}`} />
+                  <ParamRow label={t('Kc cap strike')} min={Math.round(mkt.F)} max={Math.round(mkt.F * 1.5)} step={1} value={capK} onChange={setCapK} fmt={(v) => `$${v.toFixed(0)}`} />
                 )}
                 {strategy === 'threeway' && (
-                  <ParamRow label="Kp2 sold sub-floor" min={Math.round(mkt.F * 0.5)} max={Math.round(mkt.F * 0.92)} step={1} value={subFloorK} onChange={setSubFloorK} fmt={(v) => `$${v.toFixed(0)}`} />
+                  <ParamRow label={t('Kp2 sold sub-floor')} min={Math.round(mkt.F * 0.5)} max={Math.round(mkt.F * 0.92)} step={1} value={subFloorK} onChange={setSubFloorK} fmt={(v) => `$${v.toFixed(0)}`} />
                 )}
                 {strategy === 'seagull' && (
-                  <ParamRow label="Kc2 sold ceiling" min={Math.round(mkt.F * 1.15)} max={Math.round(mkt.F * 1.7)} step={1} value={ceilK} onChange={setCeilK} fmt={(v) => `$${v.toFixed(0)}`} />
+                  <ParamRow label={t('Kc2 sold ceiling')} min={Math.round(mkt.F * 1.15)} max={Math.round(mkt.F * 1.7)} step={1} value={ceilK} onChange={setCeilK} fmt={(v) => `$${v.toFixed(0)}`} />
                 )}
                 <p className="ins-muted">
-                  {strategy === 'swap' && 'A swap just fixes the price at the forward: nothing to solve.'}
-                  {strategy === 'cap' && 'Buy the call outright; the premium is paid in cash upfront.'}
-                  {strategy === 'collar' && 'Pick the cap; the solver finds the floor whose written put exactly finances the purchased call.'}
-                  {strategy === 'threeway' && 'The extra sold put funds a lower floor than a plain collar, at the cost of a torn tail below it.'}
-                  {strategy === 'seagull' && 'Selling a far call cheapens the structure and lowers the floor, but caps how far your protection reaches.'}
+                  {strategy === 'swap' && t('A swap just fixes the price at the forward: nothing to solve.')}
+                  {strategy === 'cap' && t('Buy the call outright; the premium is paid in cash upfront.')}
+                  {strategy === 'collar' && t('Pick the cap; the solver finds the floor whose written put exactly finances the purchased call.')}
+                  {strategy === 'threeway' && t('The extra sold put funds a lower floor than a plain collar, at the cost of a torn tail below it.')}
+                  {strategy === 'seagull' && t('Selling a far call cheapens the structure and lowers the floor, but caps how far your protection reaches.')}
                 </p>
               </div>
 
               <div className="ins-panel ins-book">
-                <h3>Book this structure</h3>
+                <h3>{t('Book this structure')}</h3>
                 <div className="ins-bookrow">
                   <label className="ins-binline">
-                    Division
+                    {t('Division')}
                     <select value={bookDiv} onChange={(e) => setBookDiv(e.target.value)}>
                       {erp.divisions.map((d) => (
                         <option key={d.id} value={d.id}>{d.name}</option>
@@ -283,16 +297,16 @@ export default function Instruments() {
                     </select>
                   </label>
                   <label className="ins-binline">
-                    Notional (M bbl)
+                    {t('Notional (M bbl)')}
                     <input type="text" inputMode="decimal" value={bookNot} onChange={(e) => setBookNot(e.target.value)} />
                   </label>
                   <button
                     className="ins-bookbtn"
                     disabled={!canBook}
-                    title={!canBook ? 'Switch to the Treasury desk role to book' : undefined}
+                    title={!canBook ? t('Switch to the Treasury desk role to book') : undefined}
                     onClick={bookStructure}
                   >
-                    Book {STRAT_NAME[strategy].toLowerCase()}
+                    {lang === 'ko' ? `${t(STRAT_NAME[strategy])} 기표` : `Book ${STRAT_NAME[strategy].toLowerCase()}`}
                   </button>
                 </div>
               </div>
@@ -306,8 +320,8 @@ export default function Instruments() {
               </div>
 
               <figure className="ins-panel ins-plot">
-                <h3>Effective purchase cost at expiry — {STRAT_NAME[strategy]}</h3>
-                <svg ref={svgRef} viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label={`Effective purchase cost, ${STRAT_NAME[strategy]}`} onMouseMove={onMove} onMouseLeave={() => setHoverS(null)}>
+                <h3>{lang === 'ko' ? '만기 시 실효 매입 비용' : 'Effective purchase cost at expiry'} — {t(STRAT_NAME[strategy])}</h3>
+                <svg ref={svgRef} viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label={lang === 'ko' ? `실효 매입 비용, ${t(STRAT_NAME[strategy])}` : `Effective purchase cost, ${STRAT_NAME[strategy]}`} onMouseMove={onMove} onMouseLeave={() => setHoverS(null)}>
                   {/* grid */}
                   {[0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8].map((f) => (
                     <g key={f}>
@@ -332,27 +346,27 @@ export default function Instruments() {
                 </svg>
                 {hoverPt && (
                   <div className="ins-tooltip" style={{ left: `${(x(hoverPt.s) / CW) * 100}%` }}>
-                    S_T ${hoverPt.s.toFixed(1)} · {strategy} ${hoverPt.hero.toFixed(1)} · unhedged ${hoverPt.unhedged.toFixed(1)}
+                    S_T ${hoverPt.s.toFixed(1)} · {strategy} ${hoverPt.hero.toFixed(1)} · {lang === 'ko' ? '무헤지' : 'unhedged'} ${hoverPt.unhedged.toFixed(1)}
                   </div>
                 )}
                 <figcaption className="ins-legend">
-                  <span className="lg-item"><span className="dot" style={{ background: C_HERO }} /> {STRAT_NAME[strategy]}</span>
-                  <span className="lg-item"><span className="dot" style={{ background: C_FWD }} /> Forward</span>
-                  <span className="lg-item"><span className="dot dashed" /> Unhedged</span>
+                  <span className="lg-item"><span className="dot" style={{ background: C_HERO }} /> {t(STRAT_NAME[strategy])}</span>
+                  <span className="lg-item"><span className="dot" style={{ background: C_FWD }} /> {lang === 'ko' ? '선도' : 'Forward'}</span>
+                  <span className="lg-item"><span className="dot dashed" /> {t('Unhedged')}</span>
                 </figcaption>
               </figure>
 
               <div className="ins-panel">
-                <h3>Strategy comparison — one market, every structure</h3>
+                <h3>{t('Strategy comparison — one market, every structure')}</h3>
                 <div className="ins-table-wrap">
                   <table>
                     <thead>
                       <tr>
-                        <th>Strategy</th>
-                        <th className="num">Upfront premium</th>
-                        <th className="num">Worst-case cost</th>
-                        <th className="num">Best-case cost</th>
-                        <th>What you give up</th>
+                        <th>{t('Strategy')}</th>
+                        <th className="num">{t('Upfront premium')}</th>
+                        <th className="num">{t('Worst-case cost')}</th>
+                        <th className="num">{t('Best-case cost')}</th>
+                        <th>{t('What you give up')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -376,17 +390,27 @@ export default function Instruments() {
 
               {/* ── refiner-specific: 3:2:1 crack spread ── */}
               <div className="ins-panel ins-crack">
-                <h3>Refiner's own hedge — the 3:2:1 crack spread</h3>
+                <h3>{t("Refiner's own hedge — the 3:2:1 crack spread")}</h3>
                 <p className="ins-muted">
-                  A refiner's real exposure is the <em>margin</em>, not the crude price:
-                  buy 3 barrels of crude, sell 2 gasoline + 1 distillate. Crack swaps and
-                  options lock this spread directly, a different underlying from anything above.
+                  {lang === 'ko' ? (
+                    <>
+                      정유사의 진짜 익스포저는 원유 가격이 아니라 <em>마진</em>입니다:
+                      원유 3배럴을 사고 휘발유 2 + 중간유분 1을 팝니다. 크랙 스왑과 옵션은
+                      이 스프레드를 직접 고정하며, 위의 어떤 것과도 다른 기초자산입니다.
+                    </>
+                  ) : (
+                    <>
+                      A refiner's real exposure is the <em>margin</em>, not the crude price:
+                      buy 3 barrels of crude, sell 2 gasoline + 1 distillate. Crack swaps and
+                      options lock this spread directly, a different underlying from anything above.
+                    </>
+                  )}
                 </p>
                 <div className="ins-crackrow">
-                  <label className="ins-binline">Gasoline $/bbl<input type="number" value={gaso} onChange={(e) => setGaso(Number(e.target.value) || 0)} /></label>
-                  <label className="ins-binline">Distillate $/bbl<input type="number" value={dist} onChange={(e) => setDist(Number(e.target.value) || 0)} /></label>
+                  <label className="ins-binline">{t('Gasoline $/bbl')}<input type="number" value={gaso} onChange={(e) => setGaso(Number(e.target.value) || 0)} /></label>
+                  <label className="ins-binline">{t('Distillate $/bbl')}<input type="number" value={dist} onChange={(e) => setDist(Number(e.target.value) || 0)} /></label>
                   <div className="ins-crackout">
-                    <span className="tile-label">3:2:1 crack (crude ${mkt.F.toFixed(0)})</span>
+                    <span className="tile-label">{lang === 'ko' ? `3:2:1 크랙 (원유 $${mkt.F.toFixed(0)})` : `3:2:1 crack (crude $${mkt.F.toFixed(0)})`}</span>
                     <span className="tile-value" style={{ color: crack321 >= 0 ? C_HERO : '#b3610f' }}>${crack321.toFixed(2)}/bbl</span>
                   </div>
                 </div>
@@ -394,22 +418,28 @@ export default function Instruments() {
 
               {/* ── practitioner benchmark: structures this single-name vanilla engine can't price ── */}
               <div className="ins-panel">
-                <h3>Practitioner benchmark — beyond the single-name desk</h3>
+                <h3>{t('Practitioner benchmark — beyond the single-name desk')}</h3>
                 <div className="ins-cards">
                   <div className="ins-card">
-                    <span className="ins-card-tag linear">FX · linear</span>
-                    <strong>FX forward / NDF</strong>
-                    <p>The Korean importer's biggest lever is USD/KRW, not crude. Forwards and non-deliverable forwards lock the rate; the workhorse of import hedging.</p>
+                    <span className="ins-card-tag linear">{t('FX · linear')}</span>
+                    <strong>{t('FX forward / NDF')}</strong>
+                    <p>{t("The Korean importer's biggest lever is USD/KRW, not crude. Forwards and non-deliverable forwards lock the rate; the workhorse of import hedging.")}</p>
                   </div>
                   <div className="ins-card">
-                    <span className="ins-card-tag option">averaging</span>
-                    <strong>Asian / average-price (APO)</strong>
-                    <p>Plain-vanilla averaging matches month-long exposure and is cheaper than European. <em>Note:</em> the paper's Asian is knock-out-exoticized; that barrier version lives in the research desk, not here.</p>
+                    <span className="ins-card-tag option">{t('averaging')}</span>
+                    <strong>{t('Asian / average-price (APO)')}</strong>
+                    <p>
+                      {lang === 'ko' ? (
+                        <>단순 평균형은 한 달 길이의 익스포저에 맞고 유러피언보다 쌉니다. <em>참고:</em> 논문의 아시안은 녹아웃으로 이그저틱화되어 있으며, 그 배리어 버전은 여기가 아니라 리서치 데스크에 있습니다.</>
+                      ) : (
+                        <>Plain-vanilla averaging matches month-long exposure and is cheaper than European. <em>Note:</em> the paper's Asian is knock-out-exoticized; that barrier version lives in the research desk, not here.</>
+                      )}
+                    </p>
                   </div>
                   <div className="ins-card warn">
-                    <span className="ins-card-tag barrier">FX · barrier-risk</span>
+                    <span className="ins-card-tag barrier">{t('FX · barrier-risk')}</span>
                     <strong>TARF</strong>
-                    <p>Target-redemption forward, the FX cousin of KIKO. Cheap or credit upfront, embedded knock-outs, and the same survival-risk tail when the currency gaps.</p>
+                    <p>{t('Target-redemption forward, the FX cousin of KIKO. Cheap or credit upfront, embedded knock-outs, and the same survival-risk tail when the currency gaps.')}</p>
                   </div>
                 </div>
               </div>
