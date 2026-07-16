@@ -1,0 +1,193 @@
+.at {
+  margin-top: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+/* top bar: count badge on the left, two chip rows on the right */
+.at-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.at-count-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* same badge language as the blotter's .ac-count */
+.at-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 99px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.at-count-label {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.at-filters {
+  display: grid;
+  gap: 6px;
+  justify-items: end;
+}
+
+.at-chiprow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.at-chip {
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color var(--dur-s) var(--ease-out), color var(--dur-s) var(--ease-out);
+}
+
+.at-chip:hover {
+  border-color: var(--muted);
+}
+
+.at-chip.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* table shares the blotter's typographic language */
+.at-table-wrap {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  overflow-x: auto;
+}
+
+.at-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.at-table th,
+.at-table td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.at-table th {
+  font-size: 10px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  border-bottom-width: 1.5px;
+}
+
+.at-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.at-table tbody tr:hover td {
+  background: color-mix(in srgb, var(--line) 22%, transparent);
+}
+
+.at-when {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.at-actor {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.at-detail {
+  color: var(--muted);
+  white-space: normal;
+}
+
+/* colored verb chip — same rounded-border + tinted-fill idiom as .ac-desig */
+.at-verb {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 99px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 650;
+}
+
+.at-verb-submitted {
+  border-color: #2f6db4;
+  color: #2f6db4;
+  background: color-mix(in srgb, #2f6db4 8%, var(--panel));
+}
+.at-verb-approved {
+  border-color: #2e7d52;
+  color: #2e7d52;
+  background: color-mix(in srgb, #2e7d52 8%, var(--panel));
+}
+.at-verb-rejected {
+  border-color: #b4232a;
+  color: #b4232a;
+  background: color-mix(in srgb, #b4232a 8%, var(--panel));
+}
+.at-verb-booked {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+}
+.at-verb-designated {
+  border-color: #b3610f;
+  color: #b3610f;
+  background: color-mix(in srgb, #b3610f 10%, var(--panel));
+}
+.at-verb-other {
+  border-color: var(--line);
+  color: var(--muted);
+  background: var(--panel);
+}
+
+.at-empty {
+  margin: 0;
+  padding: 28px 14px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 1000px) {
+  .at-bar {
+    flex-direction: column;
+  }
+  .at-filters {
+    justify-items: start;
+    width: 100%;
+  }
+  .at-chiprow {
+    justify-content: flex-start;
+  }
+}
