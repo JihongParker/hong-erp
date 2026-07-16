@@ -231,6 +231,11 @@
   transition: border-color var(--dur-s) var(--ease-out), color var(--dur-s) var(--ease-out), background var(--dur-s) var(--ease-out);
 }
 
+.ac-desig:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* designation reads as a colored chip: combined / split / fair-value-through-P&L */
 .ac-desig-cfha {
   border-color: #2e7d52;

@@ -80,7 +80,8 @@ function Chart({
 export default function Accounting() {
   const [view, setView] = useState<'oci' | 'ineff'>('ineff')
   const spine = useSpine()
-  const { state: erp, dispatch } = useErp()
+  const { state: erp, dispatch, role } = useErp()
+  const canDesignate = role === 'cfo'
 
   return (
     <div className="ac">
@@ -138,15 +139,18 @@ export default function Accounting() {
                   <td className="num">{t.notional}</td>
                   <td>{timeAgo(t.ts)}</td>
                   <td>
-                    <select
-                      className={`ac-desig ac-desig-${t.designation.toLowerCase().replace('-', '')}`}
-                      value={t.designation}
-                      onChange={(e) => dispatch({ type: 'designate', id: t.id, designation: e.target.value as Designation })}
-                    >
-                      <option value="CFH-A" title="Cash-flow hedge, combined designation">CFH-A</option>
-                      <option value="CFH-B" title="Cash-flow hedge, split designation">CFH-B</option>
-                      <option value="FVTPL">FVTPL</option>
-                    </select>
+                    <span title={!canDesignate ? 'Switch to the CFO role to designate' : undefined}>
+                      <select
+                        className={`ac-desig ac-desig-${t.designation.toLowerCase().replace('-', '')}`}
+                        value={t.designation}
+                        disabled={!canDesignate}
+                        onChange={(e) => dispatch({ type: 'designate', id: t.id, designation: e.target.value as Designation })}
+                      >
+                        <option value="CFH-A" title="Cash-flow hedge, combined designation">CFH-A</option>
+                        <option value="CFH-B" title="Cash-flow hedge, split designation">CFH-B</option>
+                        <option value="FVTPL">FVTPL</option>
+                      </select>
+                    </span>
                   </td>
                 </tr>
               ))}

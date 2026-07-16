@@ -61,9 +61,10 @@ export default function Instruments() {
 
   const spine = useSpine()
   const toast = useToast()
-  const { state: erp, dispatch } = useErp()
+  const { state: erp, dispatch, role } = useErp()
   const [bookDiv, setBookDiv] = useState(erp.divisions[0].id)
   const [bookNot, setBookNot] = useState('0.50')
+  const canBook = role === 'treasury'
 
   // effective purchase cost of a strategy at terminal price s
   const costOf = (strat: Strat, s: number): number => {
@@ -88,6 +89,7 @@ export default function Instruments() {
     }
   }
   const bookStructure = () => {
+    if (!canBook) return
     const n = Number(bookNot)
     if (!n || n <= 0) return
     dispatch({
@@ -258,7 +260,14 @@ export default function Instruments() {
                     Notional (M bbl)
                     <input type="text" inputMode="decimal" value={bookNot} onChange={(e) => setBookNot(e.target.value)} />
                   </label>
-                  <button className="ins-bookbtn" onClick={bookStructure}>Book {STRAT_NAME[strategy].toLowerCase()}</button>
+                  <button
+                    className="ins-bookbtn"
+                    disabled={!canBook}
+                    title={!canBook ? 'Switch to the Treasury desk role to book' : undefined}
+                    onClick={bookStructure}
+                  >
+                    Book {STRAT_NAME[strategy].toLowerCase()}
+                  </button>
                 </div>
               </div>
             </div>

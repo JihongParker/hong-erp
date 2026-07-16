@@ -24,7 +24,7 @@ const STATUS_LABEL = { pending: 'Pending review', approved: 'Approved', rejected
 
 export default function MetricEntry() {
   const spine = useSpine()
-  const { state, dispatch } = useErp()
+  const { state, dispatch, role } = useErp()
   const [division, setDivision] = useState(state.divisions[0].id)
   const [dpCode, setDpCode] = useState(ALL_DPS[0].dp.code)
   const [year, setYear] = useState(2026)
@@ -33,8 +33,9 @@ export default function MetricEntry() {
   const toast = useToast()
   // queue items collapse+fade out before they leave the ledger, not snap away
   const [leaving, setLeaving] = useState<Record<string, boolean>>({})
+  const canReview = role === 'audit'
   const review = (id: string, status: 'approved' | 'rejected') => {
-    if (leaving[id]) return
+    if (leaving[id] || !canReview) return
     setLeaving((l) => ({ ...l, [id]: true }))
     setTimeout(() => {
       dispatch({ type: 'reviewMetric', id, status, actor: 'J. Kim (audit)' })
@@ -138,8 +139,16 @@ export default function MetricEntry() {
           {!numeric && value.trim() !== '' && <p className="me-err">✕ Value must be a non-negative number</p>}
           <button
             className="me-btn"
-            disabled={!canSubmit}
-            title={!canSubmit ? (!numeric ? 'Enter a non-negative number' : 'Attach evidence to submit') : undefined}
+            disabled={!canSubmit || role !== 'division'}
+            title={
+              role !== 'division'
+                ? 'Switch to the Division head role to submit'
+                : !canSubmit
+                  ? !numeric
+                    ? 'Enter a non-negative number'
+                    : 'Attach evidence to submit'
+                  : undefined
+            }
             onClick={submit}
           >
             Submit for review
@@ -171,10 +180,20 @@ export default function MetricEntry() {
                     </span>
                   </div>
                   <div className="me-qact">
-                    <button className="me-btn sm" onClick={() => review(m.id, 'approved')}>
+                    <button
+                      className="me-btn sm"
+                      disabled={!canReview}
+                      title={!canReview ? 'Switch to the Audit role to approve' : undefined}
+                      onClick={() => review(m.id, 'approved')}
+                    >
                       Approve
                     </button>
-                    <button className="me-btn sm ghost" onClick={() => review(m.id, 'rejected')}>
+                    <button
+                      className="me-btn sm ghost"
+                      disabled={!canReview}
+                      title={!canReview ? 'Switch to the Audit role to reject' : undefined}
+                      onClick={() => review(m.id, 'rejected')}
+                    >
                       Reject
                     </button>
                   </div>

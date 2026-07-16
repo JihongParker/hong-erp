@@ -266,11 +266,13 @@ export default function ExoticDesk() {
 
   const spine = useSpine()
   const toast = useToast()
-  const { state: erp, dispatch } = useErp()
+  const { state: erp, dispatch, role } = useErp()
   const [bookDiv, setBookDiv] = useState(erp.divisions[0].id)
   const [bookNot, setBookNot] = useState('0.25')
+  const canBook = role === 'treasury'
 
   const bookQuanto = () => {
+    if (!canBook) return
     const n = Number(bookNot)
     if (!n || n <= 0) return
     dispatch({
@@ -389,7 +391,14 @@ export default function ExoticDesk() {
                 Notional (M bbl)
                 <input type="text" inputMode="decimal" value={bookNot} onChange={(e) => setBookNot(e.target.value)} />
               </label>
-              <button className="ins-bookbtn" onClick={bookQuanto}>Book {mode === 'euro' ? 'European' : 'quanto'}</button>
+              <button
+                className="ins-bookbtn"
+                disabled={!canBook}
+                title={!canBook ? 'Switch to the Treasury desk role to book' : undefined}
+                onClick={bookQuanto}
+              >
+                Book {mode === 'euro' ? 'European' : 'quanto'}
+              </button>
             </div>
           </div>
         </div>

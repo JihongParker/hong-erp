@@ -1,5 +1,19 @@
-import { createContext, useContext, useEffect, useReducer, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useReducer, useState, type ReactNode } from 'react'
 import type { ModelParams } from '../engine/model'
+
+// Acting role — who is at the desk right now. Persisted separately from the
+// demo ledgers so "Reset demo data" restores the seeded history without
+// changing which role the visitor is impersonating. Every write action is
+// gated on this: division heads submit, audit approves, treasury books, the
+// CFO designates — the org chart, made clickable.
+export type Role = 'division' | 'treasury' | 'audit' | 'cfo'
+export const ROLE_LABEL: Record<Role, string> = {
+  division: 'Division head',
+  treasury: 'Treasury desk',
+  audit: 'Audit',
+  cfo: 'CFO',
+}
+export const ROLES: Role[] = ['division', 'treasury', 'audit', 'cfo']
 
 // The ERP data layer: divisions, a metric-submission ledger, a trade blotter,
 // and an append-only audit trail. Client-side only, persisted to localStorage,
@@ -201,6 +215,17 @@ function divName(s: ErpState, id: string): string {
 }
 
 const KEY = 'hongerp-v1'
+const ROLE_KEY = 'hongerp-role'
+
+function initRole(): Role {
+  try {
+    const r = localStorage.getItem(ROLE_KEY)
+    if (r && (ROLES as string[]).includes(r)) return r as Role
+  } catch {
+    /* fall through to default */
+  }
+  return 'treasury'
+}
 
 function init(): ErpState {
   try {
@@ -215,10 +240,16 @@ function init(): ErpState {
   return seed()
 }
 
-const ErpContext = createContext<{ state: ErpState; dispatch: (a: Action) => void } | null>(null)
+const ErpContext = createContext<{
+  state: ErpState
+  dispatch: (a: Action) => void
+  role: Role
+  setRole: (r: Role) => void
+} | null>(null)
 
 export function ErpProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, init)
+  const [role, setRole] = useState<Role>(initRole)
   useEffect(() => {
     try {
       localStorage.setItem(KEY, JSON.stringify(state))
@@ -226,7 +257,15 @@ export function ErpProvider({ children }: { children: ReactNode }) {
       /* storage may be unavailable; demo still works in-memory */
     }
   }, [state])
-  return <ErpContext.Provider value={{ state, dispatch }}>{children}</ErpContext.Provider>
+  // role lives under its own key so resetting the demo ledgers leaves it alone
+  useEffect(() => {
+    try {
+      localStorage.setItem(ROLE_KEY, role)
+    } catch {
+      /* storage may be unavailable; demo still works in-memory */
+    }
+  }, [role])
+  return <ErpContext.Provider value={{ state, dispatch, role, setRole }}>{children}</ErpContext.Provider>
 }
 
 export function useErp() {

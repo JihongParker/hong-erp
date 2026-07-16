@@ -10,7 +10,7 @@ import Budget from './modules/Budget'
 import Accounting from './modules/Accounting'
 import Backtest from './modules/Backtest'
 import { SpineProvider } from './state/spine'
-import { ErpProvider, useErp } from './state/erp'
+import { ErpProvider, useErp, ROLES, ROLE_LABEL } from './state/erp'
 import { ToastProvider } from './components/Toast'
 import { MARKET, marketDate } from './state/market'
 import './App.css'
@@ -173,6 +173,27 @@ function TourSpotlight({ active }: { active: boolean }) {
       </defs>
       <rect width="100%" height="100%" fill="rgba(30, 34, 32, 0.46)" mask="url(#tour-spot-mask)" />
     </svg>
+  )
+}
+
+// Acting-role selector: who is at the desk. Drives which write actions are
+// enabled across the modules — the org chart, made switchable for the demo.
+function RoleSwitch() {
+  const { role, setRole } = useErp()
+  return (
+    <label className="role-switch">
+      <span className="role-switch-label">Acting as</span>
+      <select
+        className="role-switch-select"
+        value={role}
+        onChange={(e) => setRole(e.target.value as typeof role)}
+        title="Switch acting role — gates who can submit, approve, book and designate"
+      >
+        {ROLES.map((r) => (
+          <option key={r} value={r}>{ROLE_LABEL[r]}</option>
+        ))}
+      </select>
+    </label>
   )
 }
 
@@ -357,6 +378,7 @@ export default function App() {
             <div className="brand-sub">ESG decision layer</div>
           </div>
         </button>
+        <RoleSwitch />
         <nav>
           {GROUPS.map((g) => (
             <div key={g.title ?? 'top'} className="nav-group">
