@@ -8,6 +8,7 @@ import {
   type IroType,
 } from '../data/iro'
 import { useSpine } from '../state/spine'
+import { useT, useLang } from '../i18n'
 import './Materiality.css'
 
 // fixed viewBox, responsive via CSS
@@ -47,6 +48,8 @@ export default function Materiality() {
   const [threshold, setThreshold] = useState(3.5)
   const [hover, setHover] = useState<IroItem | null>(null)
   const spine = useSpine()
+  const t = useT()
+  const [lang] = useLang()
 
   const material = useMemo(
     () => IRO_ITEMS.filter((i) => i.financial >= threshold || i.impact >= threshold),
@@ -63,7 +66,7 @@ export default function Materiality() {
     <div className="mat">
       <div className="mat-controls">
         <label>
-          Materiality threshold <strong>{threshold.toFixed(1)}</strong>
+          {t('Materiality threshold')} <strong>{threshold.toFixed(1)}</strong>
           <input
             type="range"
             min={1.5}
@@ -74,13 +77,14 @@ export default function Materiality() {
           />
         </label>
         <span className="mat-count">
-          Material issues <strong>{material.length}</strong> / {IRO_ITEMS.length}
+          {lang === 'ko' ? '중대 이슈' : 'Material issues'}{' '}
+          <strong>{material.length}</strong> / {IRO_ITEMS.length}
         </span>
       </div>
 
       <div className="mat-grid">
         <figure className="mat-plot">
-          <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Double materiality matrix">
+          <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t('Double materiality matrix')}>
             {/* material zone — financial≥t (right column) ∪ impact≥t (top band);
                 SVG y grows downward, so impact≥t is ABOVE y(threshold) */}
             <path
@@ -102,8 +106,8 @@ export default function Materiality() {
             <line x1={PAD.left} y1={y(threshold)} x2={W - PAD.right} y2={y(threshold)} stroke="var(--accent)" strokeWidth={1.5} strokeDasharray="4 4" />
 
             {/* axis titles (text wears text tokens) */}
-            <text x={(PAD.left + W - PAD.right) / 2} y={H - 8} textAnchor="middle" className="axis-title">Financial materiality →</text>
-            <text x={14} y={(PAD.top + H - PAD.bottom) / 2} textAnchor="middle" className="axis-title" transform={`rotate(-90 14 ${(PAD.top + H - PAD.bottom) / 2})`}>Impact materiality →</text>
+            <text x={(PAD.left + W - PAD.right) / 2} y={H - 8} textAnchor="middle" className="axis-title">{t('Financial materiality →')}</text>
+            <text x={14} y={(PAD.top + H - PAD.bottom) / 2} textAnchor="middle" className="axis-title" transform={`rotate(-90 14 ${(PAD.top + H - PAD.bottom) / 2})`}>{t('Impact materiality →')}</text>
 
             {/* marks; selective direct labels on material issues only */}
             {IRO_ITEMS.map((item) => (
@@ -133,10 +137,10 @@ export default function Materiality() {
                 top: `${(y(hover.impact) / H) * 100}%`,
               }}
             >
-              <strong>{hover.id}</strong> {hover.name}
+              <strong>{hover.id}</strong> {t(hover.name)}
               <div className="tt-row">
                 <span className="dot" style={{ background: PILLAR_COLORS[hover.pillar] }} />
-                {hover.pillar} · {IRO_TYPE_LABELS[hover.type]} · Fin {hover.financial.toFixed(1)} · Imp {hover.impact.toFixed(1)}
+                {hover.pillar} · {t(IRO_TYPE_LABELS[hover.type])} · {t('Fin')} {hover.financial.toFixed(1)} · {t('Imp')} {hover.impact.toFixed(1)}
               </div>
               {hover.note && <div className="tt-note">{hover.note}</div>}
             </div>
@@ -146,18 +150,18 @@ export default function Materiality() {
             {(['E', 'S', 'G'] as const).map((p) => (
               <span key={p} className="lg-item">
                 <span className="dot" style={{ background: PILLAR_COLORS[p] }} />
-                {PILLAR_LABELS[p]}
+                {t(PILLAR_LABELS[p])}
               </span>
             ))}
             <span className="lg-sep" />
-            {(Object.keys(IRO_TYPE_LABELS) as IroType[]).map((t) => (
-              <span key={t} className="lg-item shape">
+            {(Object.keys(IRO_TYPE_LABELS) as IroType[]).map((ty) => (
+              <span key={ty} className="lg-item shape">
                 <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden>
-                  {t === 'risk' && <circle cx="8" cy="8" r="6" fill="var(--muted)" />}
-                  {t === 'opportunity' && <rect x="2" y="2" width="12" height="12" rx="2" fill="var(--muted)" />}
-                  {t === 'impact' && <polygon points="8,1 1,14 15,14" fill="var(--muted)" />}
+                  {ty === 'risk' && <circle cx="8" cy="8" r="6" fill="var(--muted)" />}
+                  {ty === 'opportunity' && <rect x="2" y="2" width="12" height="12" rx="2" fill="var(--muted)" />}
+                  {ty === 'impact' && <polygon points="8,1 1,14 15,14" fill="var(--muted)" />}
                 </svg>
-                {IRO_TYPE_LABELS[t]}
+                {t(IRO_TYPE_LABELS[ty])}
               </span>
             ))}
           </figcaption>
@@ -168,10 +172,10 @@ export default function Materiality() {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Issue</th>
+                <th>{t('Issue')}</th>
                 <th>P</th>
-                <th className="num">Fin</th>
-                <th className="num">Imp</th>
+                <th className="num">{t('Fin')}</th>
+                <th className="num">{t('Imp')}</th>
                 <th></th>
               </tr>
             </thead>
@@ -187,15 +191,15 @@ export default function Materiality() {
                   >
                     <td><code>{i.id.replace('IRO-', '')}</code></td>
                     <td>
-                      {i.name}
-                      <span className="mat-type"> · {IRO_TYPE_LABELS[i.type]}</span>
+                      {t(i.name)}
+                      <span className="mat-type"> · {t(IRO_TYPE_LABELS[i.type])}</span>
                     </td>
                     <td>
-                      <span className="dot" style={{ background: PILLAR_COLORS[i.pillar] }} title={PILLAR_LABELS[i.pillar]} /> {i.pillar}
+                      <span className="dot" style={{ background: PILLAR_COLORS[i.pillar] }} title={t(PILLAR_LABELS[i.pillar])} /> {i.pillar}
                     </td>
                     <td className="num">{i.financial.toFixed(1)}</td>
                     <td className="num">{i.impact.toFixed(1)}</td>
-                    <td>{isMaterial(i) ? <span className="mat-badge">Material</span> : <span className="mat-no">—</span>}</td>
+                    <td>{isMaterial(i) ? <span className="mat-badge">{t('Material')}</span> : <span className="mat-no">—</span>}</td>
                   </tr>
                 ))}
             </tbody>
@@ -204,12 +208,24 @@ export default function Materiality() {
       </div>
 
       <p className="mat-note">
-        Demo IRO register (hypothetical manufacturer). Verdict rule: material if
-        either financial or impact score clears the threshold (the union reading
-        of double materiality). Where HongERP goes further: <em>risks</em> judged
-        material feed the Decision Dashboard as exposure parameters (Σ), entering
-        the computation of optimal disclosure d* and hedge h*, instead of ending
-        life as a survey score.
+        {lang === 'ko' ? (
+          <>
+            데모 IRO 등록부(가상 제조사)입니다. 판정 규칙: 재무 점수나 영향 점수 가운데
+            하나라도 기준선을 넘으면 중대 항목입니다(이중 중대성의 합집합 해석). HongERP가
+            한 걸음 더 나아가는 지점은 이것입니다: 중대하다고 판정된 <em>리스크</em>는 설문
+            점수로 끝나지 않고, 의사결정 대시보드에 익스포저 파라미터(Σ)로 투입되어 최적 공시
+            d*와 헤지 h*의 계산에 들어갑니다.
+          </>
+        ) : (
+          <>
+            Demo IRO register (hypothetical manufacturer). Verdict rule: material if
+            either financial or impact score clears the threshold (the union reading
+            of double materiality). Where HongERP goes further: <em>risks</em> judged
+            material feed the Decision Dashboard as exposure parameters (Σ), entering
+            the computation of optimal disclosure d* and hedge h*, instead of ending
+            life as a survey score.
+          </>
+        )}
       </p>
     </div>
   )

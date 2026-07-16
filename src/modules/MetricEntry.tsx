@@ -1,9 +1,11 @@
 import { useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { TAXONOMY, type Datapoint } from '../data/taxonomy'
 import { Chip, useSpine } from '../state/spine'
-import { timeAgo, useErp } from '../state/erp'
+import { useErp } from '../state/erp'
 import Activity from '../components/Activity'
 import { useToast } from '../components/Toast'
+import { useT, useLang } from '../i18n'
+import { agoKo } from '../i18n.ko-reporting'
 import './MetricEntry.css'
 
 // Division-level metrics operations: submit → validation → approval queue →
@@ -27,6 +29,8 @@ const STATUS_LABEL = { pending: 'Pending review', approved: 'Approved', rejected
 export default function MetricEntry() {
   const spine = useSpine()
   const { state, dispatch, role } = useErp()
+  const t = useT()
+  const [lang] = useLang()
   const [division, setDivision] = useState(state.divisions[0].id)
   const [dpCode, setDpCode] = useState(ALL_DPS[0].dp.code)
   const [year, setYear] = useState(2026)
@@ -81,13 +85,21 @@ export default function MetricEntry() {
     })
     setValue('')
     setEvidence(false)
-    toast(`Submitted — ${sel.dp.name} FY${year} is now in the approval queue`)
+    toast(
+      lang === 'ko'
+        ? `제출됨 — ${sel.dp.name} FY${year}이(가) 승인 대기열에 올라갔습니다`
+        : `Submitted — ${sel.dp.name} FY${year} is now in the approval queue`,
+    )
   }
 
   const closePeriod = () => {
     if (role !== 'cfo' || isClosed(year)) return
     dispatch({ type: 'closePeriod', year })
-    toast(`FY${year} closed — the period is locked to new events`)
+    toast(
+      lang === 'ko'
+        ? `FY${year} 마감됨 — 해당 기간은 새 이벤트에 대해 잠겼습니다`
+        : `FY${year} closed — the period is locked to new events`,
+    )
   }
 
   // ── CSV: file-API only, no libraries ──
@@ -140,7 +152,11 @@ export default function MetricEntry() {
       })
       imported++
     }
-    toast(`Imported ${imported} submissions · skipped ${skipped} rows`)
+    toast(
+      lang === 'ko'
+        ? `${imported}건 가져옴 · ${skipped}개 행 건너뜀`
+        : `Imported ${imported} submissions · skipped ${skipped} rows`,
+    )
   }
 
   const onImportFile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -164,11 +180,19 @@ export default function MetricEntry() {
   return (
     <div className="me">
       <div className="spine-row">
-        <Chip from="Decision Dashboard">
-          approved values feed disclosure intensity — current target d* = <strong>{spine.dStar.toFixed(2)}</strong>
+        <Chip from={lang === 'ko' ? '의사결정 대시보드' : 'Decision Dashboard'}>
+          {lang === 'ko' ? (
+            <>승인된 값이 공시 강도에 반영됩니다 — 현재 목표 d* = <strong>{spine.dStar.toFixed(2)}</strong></>
+          ) : (
+            <>approved values feed disclosure intensity — current target d* = <strong>{spine.dStar.toFixed(2)}</strong></>
+          )}
         </Chip>
-        <Chip from="Audit trail">
-          <strong>{pending.length}</strong> submissions awaiting review across {state.divisions.length} divisions
+        <Chip from={lang === 'ko' ? '감사 추적' : 'Audit trail'}>
+          {lang === 'ko' ? (
+            <><strong>{pending.length}</strong>건의 제출이 {state.divisions.length}개 사업부에서 검토를 기다리는 중</>
+          ) : (
+            <><strong>{pending.length}</strong> submissions awaiting review across {state.divisions.length} divisions</>
+          )}
         </Chip>
       </div>
 
@@ -178,14 +202,20 @@ export default function MetricEntry() {
           disabled={role !== 'cfo' || isClosed(year)}
           title={
             role !== 'cfo'
-              ? 'Switch to the CFO role to close the period'
+              ? lang === 'ko'
+                ? '기간을 마감하려면 CFO 역할로 전환하세요'
+                : 'Switch to the CFO role to close the period'
               : isClosed(year)
-                ? `FY${year} is already closed`
-                : `Lock FY${year}: freeze its approved metrics and trades on book`
+                ? lang === 'ko'
+                  ? `FY${year}은(는) 이미 마감되었습니다`
+                  : `FY${year} is already closed`
+                : lang === 'ko'
+                  ? `FY${year} 잠금: 승인된 지표와 장부상 거래를 동결합니다`
+                  : `Lock FY${year}: freeze its approved metrics and trades on book`
           }
           onClick={closePeriod}
         >
-          Close FY{year}
+          {lang === 'ko' ? `FY${year} 마감` : `Close FY${year}`}
         </button>
         {[...state.closes]
           .sort((a, b) => a.year - b.year)
@@ -193,9 +223,15 @@ export default function MetricEntry() {
             <span
               key={c.year}
               className="me-lock"
-              title={`Locked ${new Date(c.closedAt).toLocaleString()} · ${c.approved} approved, ${c.tradeCount} trades on book`}
+              title={
+                lang === 'ko'
+                  ? `${new Date(c.closedAt).toLocaleString()} 잠금 · 승인 ${c.approved}건, 장부상 거래 ${c.tradeCount}건`
+                  : `Locked ${new Date(c.closedAt).toLocaleString()} · ${c.approved} approved, ${c.tradeCount} trades on book`
+              }
             >
-              FY{c.year} closed · {new Date(c.closedAt).toLocaleDateString()}
+              {lang === 'ko'
+                ? `FY${c.year} 마감 · ${new Date(c.closedAt).toLocaleDateString()}`
+                : `FY${c.year} closed · ${new Date(c.closedAt).toLocaleDateString()}`}
             </span>
           ))}
       </div>
@@ -203,16 +239,16 @@ export default function MetricEntry() {
       <div className="me-grid">
         {/* ── submit ── */}
         <div className="me-panel" data-tour="me-submit">
-          <h3>New submission</h3>
+          <h3>{t('New submission')}</h3>
           <div className="me-tabs">
             {state.divisions.map((d) => (
               <button key={d.id} className={d.id === division ? 'me-tab active' : 'me-tab'} onClick={() => setDivision(d.id)}>
-                {d.name}
+                {t(d.name)}
               </button>
             ))}
           </div>
           <label className="me-select">
-            Datapoint
+            {t('Datapoint')}
             <select value={dpCode} onChange={(e) => setDpCode(e.target.value)}>
               {ALL_DPS.map(({ dp }) => (
                 <option key={dp.code} value={dp.code}>
@@ -222,11 +258,11 @@ export default function MetricEntry() {
             </select>
           </label>
           <p className="me-path">
-            {sel.path} {sel.dp.unit && <span className="me-unit">Unit: {sel.dp.unit}</span>}
+            {sel.path} {sel.dp.unit && <span className="me-unit">{lang === 'ko' ? '단위: ' : 'Unit: '}{sel.dp.unit}</span>}
           </p>
           <div className="me-formrow">
             <label className="me-inline">
-              Year
+              {t('Year')}
               <select value={year} onChange={(e) => setYear(Number(e.target.value))}>
                 {[2024, 2025, 2026].map((y) => (
                   <option key={y}>{y}</option>
@@ -234,7 +270,7 @@ export default function MetricEntry() {
               </select>
             </label>
             <label className="me-inline">
-              Value
+              {t('Value')}
               <input
                 type="text"
                 inputMode="decimal"
@@ -246,31 +282,48 @@ export default function MetricEntry() {
             </label>
             <label className="me-evidence">
               <input type="checkbox" checked={evidence} onChange={(e) => setEvidence(e.target.checked)} />
-              Evidence attached (mockup)
+              {t('Evidence attached (mockup)')}
             </label>
           </div>
-          {!numeric && value.trim() !== '' && <p className="me-err">✕ Value must be a non-negative number</p>}
+          {!numeric && value.trim() !== '' && <p className="me-err">{t('✕ Value must be a non-negative number')}</p>}
           <button
             className="me-btn"
             disabled={!canSubmit || role !== 'division' || isClosed(year)}
             title={
               isClosed(year)
-                ? `FY${year} is closed`
+                ? lang === 'ko'
+                  ? `FY${year}은(는) 마감되었습니다`
+                  : `FY${year} is closed`
                 : role !== 'division'
-                  ? 'Switch to the Division head role to submit'
+                  ? lang === 'ko'
+                    ? '제출하려면 사업부장 역할로 전환하세요'
+                    : 'Switch to the Division head role to submit'
                   : !canSubmit
                     ? !numeric
-                      ? 'Enter a non-negative number'
-                      : 'Attach evidence to submit'
+                      ? lang === 'ko'
+                        ? '0 이상의 숫자를 입력하세요'
+                        : 'Enter a non-negative number'
+                      : lang === 'ko'
+                        ? '제출하려면 증빙을 첨부하세요'
+                        : 'Attach evidence to submit'
                     : undefined
             }
             onClick={submit}
           >
-            Submit for review
+            {t('Submit for review')}
           </button>
           <p className="me-note">
-            Submitted as {div.head} ({div.name}). Approved values feed the
-            division's exposure parameters and the firm's disclosure intensity.
+            {lang === 'ko' ? (
+              <>
+                {div.head}({t(div.name)}) 명의로 제출됩니다. 승인된 값은 해당
+                사업부의 익스포저 파라미터와 기업의 공시 강도에 반영됩니다.
+              </>
+            ) : (
+              <>
+                Submitted as {div.head} ({div.name}). Approved values feed the
+                division's exposure parameters and the firm's disclosure intensity.
+              </>
+            )}
           </p>
           <div className="me-csvrow">
             <button
@@ -278,16 +331,16 @@ export default function MetricEntry() {
               disabled={role !== 'division'}
               title={
                 role !== 'division'
-                  ? 'Switch to the Division head role to import'
-                  : 'Bulk submit from a CSV (division,datapoint,year,value) — simple CSV, no quoted fields'
+                  ? t('Switch to the Division head role to import')
+                  : t('Bulk submit from a CSV (division,datapoint,year,value) — simple CSV, no quoted fields')
               }
               onClick={() => fileRef.current?.click()}
             >
-              Import CSV
+              {t('Import CSV')}
             </button>
             <input ref={fileRef} type="file" accept=".csv,text/csv" hidden onChange={onImportFile} />
             <button type="button" className="me-link" onClick={downloadTemplate}>
-              Download template
+              {t('Download template')}
             </button>
           </div>
         </div>
@@ -295,10 +348,10 @@ export default function MetricEntry() {
         {/* ── approval queue + heartbeat ── */}
         <div className="me-panel" data-tour="me-queue">
           <h3>
-            Approval queue <span className="me-count">{pending.length}</span>
+            {t('Approval queue')} <span className="me-count">{pending.length}</span>
           </h3>
           {pending.length === 0 ? (
-            <p className="me-empty">Queue is clear.</p>
+            <p className="me-empty">{t('Queue is clear.')}</p>
           ) : (
             pending.map((m) => {
               const qClosed = isClosed(m.year)
@@ -306,30 +359,30 @@ export default function MetricEntry() {
               <div key={m.id} className={leaving[m.id] ? 'me-qslot leaving' : 'me-qslot'}>
                 <div className="me-qitem">
                   <div className="me-qbody">
-                    <strong>{state.divisions.find((d) => d.id === m.division)?.name}</strong> · {m.name} FY{m.year}
+                    <strong>{t(state.divisions.find((d) => d.id === m.division)?.name ?? '')}</strong> · {m.name} FY{m.year}
                     <span className="me-qval">
                       {m.value.toLocaleString()} {m.unit}
                     </span>
                     <span className="me-qmeta">
-                      by {m.by} · {timeAgo(m.ts)}
+                      {lang === 'ko' ? `제출: ${m.by}` : `by ${m.by}`} · {agoKo(m.ts, lang)}
                     </span>
                   </div>
                   <div className="me-qact">
                     <button
                       className="me-btn sm"
                       disabled={!canReview || qClosed}
-                      title={qClosed ? 'FY closed — adjustments must be new events' : !canReview ? 'Switch to the Audit role to approve' : undefined}
+                      title={qClosed ? t('FY closed — adjustments must be new events') : !canReview ? t('Switch to the Audit role to approve') : undefined}
                       onClick={() => review(m.id, 'approved')}
                     >
-                      Approve
+                      {t('Approve')}
                     </button>
                     <button
                       className="me-btn sm ghost"
                       disabled={!canReview || qClosed}
-                      title={qClosed ? 'FY closed — adjustments must be new events' : !canReview ? 'Switch to the Audit role to reject' : undefined}
+                      title={qClosed ? t('FY closed — adjustments must be new events') : !canReview ? t('Switch to the Audit role to reject') : undefined}
                       onClick={() => review(m.id, 'rejected')}
                     >
-                      Reject
+                      {t('Reject')}
                     </button>
                   </div>
                 </div>
@@ -337,20 +390,20 @@ export default function MetricEntry() {
               )
             })
           )}
-          <h3 className="me-h3gap">Recent activity</h3>
+          <h3 className="me-h3gap">{t('Recent activity')}</h3>
           <Activity limit={5} />
         </div>
 
         {/* ── division ledger: compact list, fits its column ── */}
         <div className="me-panel">
           <div className="me-panelhead">
-            <h3>{div.name} submission ledger</h3>
+            <h3>{lang === 'ko' ? `${t(div.name)} 제출 원장` : `${div.name} submission ledger`}</h3>
             <button
               className="me-btn ghost sm"
-              title="Download every approved metric (all divisions) as CSV"
+              title={t('Download every approved metric (all divisions) as CSV')}
               onClick={exportApproved}
             >
-              Export CSV
+              {t('Export CSV')}
             </button>
           </div>
           <div className="me-ledger">
@@ -358,13 +411,13 @@ export default function MetricEntry() {
               <div key={m.id} className="me-lrow">
                 <div className="me-lmain">
                   <span className="me-lname">{m.name}</span>
-                  <span className={`me-status ${m.status}`}>{STATUS_LABEL[m.status]}</span>
+                  <span className={`me-status ${m.status}`}>{t(STATUS_LABEL[m.status])}</span>
                 </div>
                 <div className="me-lmeta">
                   <span className="me-lval">
                     {m.value.toLocaleString()} {m.unit}
                   </span>
-                  <span>FY{m.year} · {m.by} · {timeAgo(m.ts)}</span>
+                  <span>FY{m.year} · {m.by} · {agoKo(m.ts, lang)}</span>
                 </div>
               </div>
             ))}

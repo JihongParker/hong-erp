@@ -1,4 +1,6 @@
-import { timeAgo, useErp } from '../state/erp'
+import { useErp } from '../state/erp'
+import { useT, useLang } from '../i18n'
+import { agoKo } from '../i18n.ko-reporting'
 import './Activity.css'
 
 const ICONS: Record<string, string> = {
@@ -11,6 +13,8 @@ const ICONS: Record<string, string> = {
 
 export default function Activity({ limit = 6, division }: { limit?: number; division?: string }) {
   const { state } = useErp()
+  const t = useT()
+  const [lang] = useLang()
   const rows = state.events
     .filter((e) => !division || e.detail.toLowerCase().includes(division.toLowerCase()))
     .slice(0, limit)
@@ -20,9 +24,9 @@ export default function Activity({ limit = 6, division }: { limit?: number; divi
         <li key={e.id}>
           <span className={`act-ic act-${e.action}`}>{ICONS[e.action] ?? '·'}</span>
           <span className="act-body">
-            <strong>{e.actor}</strong> {e.action} — {e.detail}
+            <strong>{e.actor}</strong> {t(e.action)} — {e.detail}
           </span>
-          <span className="act-time">{timeAgo(e.ts)}</span>
+          <span className="act-time">{agoKo(e.ts, lang)}</span>
         </li>
       ))}
     </ul>

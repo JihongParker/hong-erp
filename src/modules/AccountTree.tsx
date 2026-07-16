@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { TAXONOMY, countDatapoints, type Account } from '../data/taxonomy'
+import { useT, useLang } from '../i18n'
 import './AccountTree.css'
 
 const FRAMEWORK_LABELS = {
@@ -10,6 +11,8 @@ const FRAMEWORK_LABELS = {
 } as const
 
 export default function AccountTree() {
+  const t = useT()
+  const [lang] = useLang()
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState<Set<string>>(
     () => new Set(['E', 'E-01']), // open the Climate category on first paint
@@ -59,14 +62,16 @@ export default function AccountTree() {
         <div className="cosa-toolbar">
           <input
             type="search"
-            placeholder="Search accounts & datapoints"
+            placeholder={t('Search accounts & datapoints')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-          <span className="cosa-count">{countDatapoints()} datapoints</span>
+          <span className="cosa-count">
+            {lang === 'ko' ? `데이터포인트 ${countDatapoints()}개` : `${countDatapoints()} datapoints`}
+          </span>
         </div>
 
-        {filtered.length === 0 && <p className="cosa-empty">No results</p>}
+        {filtered.length === 0 && <p className="cosa-empty">{t('No results')}</p>}
 
         {filtered.map((pillar) => (
           <div key={pillar.code}>
@@ -113,10 +118,10 @@ export default function AccountTree() {
               <table>
                 <thead>
                   <tr>
-                    <th>Code</th>
-                    <th>Datapoint</th>
-                    <th>Unit</th>
-                    <th>Framework mapping</th>
+                    <th>{t('Code')}</th>
+                    <th>{t('Datapoint')}</th>
+                    <th>{t('Unit')}</th>
+                    <th>{t('Framework mapping')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -148,13 +153,13 @@ export default function AccountTree() {
               </table>
             </div>
             <p className="cosa-note">
-              Demo taxonomy. Mappings are not validated for practice. The point
-              is the structure: hierarchical codes mapped to multiple frameworks
-              at the datapoint level.
+              {t(
+                'Demo taxonomy. Mappings are not validated for practice. The point is the structure: hierarchical codes mapped to multiple frameworks at the datapoint level.',
+              )}
             </p>
           </>
         ) : (
-          <p className="cosa-empty">Select an account on the left</p>
+          <p className="cosa-empty">{t('Select an account on the left')}</p>
         )}
       </div>
     </div>
