@@ -8,6 +8,7 @@ import Dashboard from './modules/Dashboard'
 import Instruments from './modules/Instruments'
 import Budget from './modules/Budget'
 import Accounting from './modules/Accounting'
+import Backtest from './modules/Backtest'
 import { SpineProvider } from './state/spine'
 import { ErpProvider, useErp } from './state/erp'
 import { ToastProvider } from './components/Toast'
@@ -47,6 +48,12 @@ const GROUPS: {
     title: 'What-if',
     items: [
       { id: 'scenario', name: 'Scenarios', desc: 'Division-level parameters → strategy comparison' },
+    ],
+  },
+  {
+    title: 'Validation',
+    items: [
+      { id: 'backtest', name: 'Out-of-sample', desc: 'Walk-forward hedge backtest on 40y of FRED data — realised variance reduction, not alpha' },
     ],
   },
 ]
@@ -393,6 +400,8 @@ export default function App() {
           <Materiality />
         ) : mod.id === 'metrics' ? (
           <MetricEntry />
+        ) : mod.id === 'backtest' ? (
+          <Backtest />
         ) : (
           <Scenario />
         )}
