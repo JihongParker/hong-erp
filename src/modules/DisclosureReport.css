@@ -1,0 +1,281 @@
+/* Disclosure report — read as a document, not a cockpit. Centered column,
+   numbered sections, the same uppercase-tracked table headers as the rest of
+   the ERP. The @media print block at the bottom strips the app shell so the
+   browser's Save-as-PDF produces the document alone. */
+
+.dr {
+  margin-top: 8px;
+}
+
+.dr-doc {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+/* header */
+.dr-header {
+  border-bottom: 2px solid var(--text);
+  padding-bottom: 18px;
+  margin-bottom: 8px;
+}
+
+.dr-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dr-title {
+  font-size: 24px;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.dr-entity {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.dr-subtitle {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin-top: 10px;
+  max-width: 620px;
+}
+
+.dr-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.dr-print {
+  flex: none;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dr-print:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* sections */
+.dr-section {
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+  break-inside: avoid;
+}
+
+.dr-h2 {
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+}
+
+.dr-num {
+  color: var(--muted);
+  margin-right: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dr-h3 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 20px 0 10px;
+}
+
+.dr-lead {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  max-width: 760px;
+}
+
+.dr-body {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text);
+  max-width: 760px;
+  margin-top: 14px;
+}
+
+/* stat row */
+.dr-stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.dr-stat {
+  flex: 1 1 120px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  padding: 12px 14px;
+}
+
+.dr-stat-val {
+  display: block;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.dr-stat-lbl {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* material issue list */
+.dr-material-list {
+  margin: 14px 0 0;
+  padding-left: 22px;
+  display: grid;
+  gap: 8px;
+}
+
+.dr-material-list li {
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.dr-mat-name {
+  font-weight: 600;
+}
+
+.dr-mat-meta {
+  display: block;
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* designation chips */
+.dr-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.dr-desig {
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+}
+
+/* tables — shared visual language with the rest of the ERP */
+.dr-table-wrap {
+  overflow-x: auto;
+  margin-top: 4px;
+}
+
+.dr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.dr-table th,
+.dr-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.dr-table th {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.dr-table th.num,
+.dr-table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dr-table td code {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.dr-unit {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.dr-nomap {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* footer */
+.dr-footer {
+  margin-top: 22px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .dr-title-row {
+    flex-direction: column;
+  }
+}
+
+/* -------- print: strip the app shell, keep the document -------- */
+@media print {
+  .sidebar,
+  .mobile-bar,
+  .nav-scrim,
+  .toast-stack,
+  .content > header {
+    display: none !important;
+  }
+  .content {
+    padding: 0 !important;
+  }
+  .dr-print {
+    display: none !important;
+  }
+  .dr-doc {
+    max-width: none;
+  }
+  .dr-section {
+    break-inside: avoid;
+  }
+  /* white paper regardless of the on-screen theme */
+  .dr-stat,
+  .dr-desig,
+  .dr-print {
+    background: #fff;
+  }
+}
