@@ -71,7 +71,19 @@
 .bt-panel svg { width: 100%; height: auto; display: block; }
 
 /* metrics table — same language as the strategy-comparison table */
-.bt-table-wrap { overflow-x: auto; }
+.bt-table-wrap { overflow-x: auto; position: relative; }
+/* right-edge scroll hint (see .ins-table-wrap) */
+.bt-table-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 24px;
+  pointer-events: none;
+  opacity: 0.9;
+  background: linear-gradient(to right, transparent, var(--panel));
+}
 .bt-table-wrap table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 .bt-table-wrap th,
 .bt-table-wrap td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
