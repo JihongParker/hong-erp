@@ -445,3 +445,60 @@
 .me-status.approved { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
 .me-status.pending { background: #b3610f1a; color: #b3610f; }
 .me-status.rejected { background: #b4232a1a; color: #b4232a; }
+
+/* ── period close header: Close FY button + locked-year chips ── */
+.me-closehead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* locked-year chip — same pill idiom as .me-unit, tinted purple to read as a
+   lock and to echo the 'closed' verb colour in the audit trail */
+.me-lock {
+  padding: 3px 11px;
+  border: 1px solid color-mix(in srgb, #7a5195 45%, var(--line));
+  border-radius: 99px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #7a5195;
+  background: color-mix(in srgb, #7a5195 8%, var(--panel));
+  white-space: nowrap;
+}
+
+/* panel header row: title left, an action (Export CSV) right */
+.me-panelhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.me-panelhead h3 {
+  margin-bottom: 0;
+}
+
+.me-csvrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.me-link {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--accent);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.me-link:hover {
+  opacity: 0.8;
+}

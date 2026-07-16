@@ -32,6 +32,36 @@
   margin-bottom: 12px;
 }
 
+/* panel header row: title left, an action (Export CSV) right */
+.ac-panelhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.ac-panelhead h3 {
+  margin-bottom: 0;
+}
+
+.ac-export {
+  padding: 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color var(--dur-s) var(--ease-out), color var(--dur-s) var(--ease-out);
+}
+.ac-export:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .ac-head {
   display: flex;
   justify-content: space-between;
