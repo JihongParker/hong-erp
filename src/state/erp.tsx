@@ -69,11 +69,24 @@ export interface ErpEvent {
   detail: string
 }
 
+// A fiscal-year close: the data model is annual (FY), so the "period close" is
+// a year close. Snapshots the counts the CFO signs off on. Once a year is in
+// here it is locked — no new submissions, no approve/reject on its queue items;
+// corrections must be booked as fresh events, never edits to closed history.
+export interface Close {
+  year: number
+  closedAt: number
+  approved: number
+  rejected: number
+  tradeCount: number
+}
+
 interface ErpState {
   divisions: Division[]
   metrics: MetricRecord[]
   trades: Trade[]
   events: ErpEvent[]
+  closes: Close[]
 }
 
 const H = 3600_000
@@ -122,7 +135,7 @@ function seed(): ErpState {
     { ts: now - 26 * H, actor: 'S. Choi', action: 'submitted', detail: 'Chemicals · energy consumption FY2025' },
   ].map((e) => ({ ...e, id: nid('EV') }))
 
-  return { divisions: DIVISIONS, metrics, trades, events }
+  return { divisions: DIVISIONS, metrics, trades, events, closes: [] }
 }
 
 type Action =
@@ -131,6 +144,7 @@ type Action =
   | { type: 'bookTrade'; trade: Omit<Trade, 'id' | 'ts'> }
   | { type: 'designate'; id: string; designation: Designation }
   | { type: 'setDivisionParams'; id: string; params: ModelParams }
+  | { type: 'closePeriod'; year: number }
   | { type: 'reset' }
 
 function log(s: ErpState, actor: string, action: string, detail: string): ErpEvent[] {
@@ -205,6 +219,20 @@ function reducer(s: ErpState, a: Action): ErpState {
     }
     case 'setDivisionParams':
       return { ...s, divisions: s.divisions.map((d) => (d.id === a.id ? { ...d, params: a.params } : d)) }
+    case 'closePeriod': {
+      // re-close is a no-op — a fiscal year locks exactly once
+      if (s.closes.some((c) => c.year === a.year)) return s
+      const yearMetrics = s.metrics.filter((m) => m.year === a.year)
+      const approved = yearMetrics.filter((m) => m.status === 'approved').length
+      const rejected = yearMetrics.filter((m) => m.status === 'rejected').length
+      const tradeCount = s.trades.length
+      const close: Close = { year: a.year, closedAt: Date.now(), approved, rejected, tradeCount }
+      return {
+        ...s,
+        closes: [...s.closes, close],
+        events: log(s, 'CFO office', 'closed', `FY${a.year} closed — ${approved} approved metrics, ${tradeCount} trades on book`),
+      }
+    }
     case 'reset':
       return seed()
   }
@@ -232,7 +260,8 @@ function init(): ErpState {
     const raw = localStorage.getItem(KEY)
     if (raw) {
       const parsed = JSON.parse(raw)
-      if (parsed && parsed.divisions?.length === 3) return parsed
+      // closes defaults in for ledgers persisted before the period-close feature
+      if (parsed && parsed.divisions?.length === 3) return { closes: [], ...parsed }
     }
   } catch {
     /* fall through to seed */

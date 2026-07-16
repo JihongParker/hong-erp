@@ -30,6 +30,18 @@ const C_A = '#2f6db4'
 const C_B = '#2e7d52'
 const bn = (v: number) => `₩${(v / 1e9).toFixed(1)}bn`
 
+// CSV export via the file API only — no library. Simple CSV: the blotter's
+// terms/notional fields are plain strings with no commas, so no quoting needed.
+function downloadCsv(filename: string, rows: string[][]) {
+  const text = rows.map((r) => r.join(',')).join('\n')
+  const url = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 const CW = 620
 const CH = 210
 const PAD = { top: 14, right: 96, bottom: 32, left: 60 }
@@ -83,6 +95,15 @@ export default function Accounting() {
   const { state: erp, dispatch, role } = useErp()
   const canDesignate = role === 'cfo'
 
+  // ── CSV export via the file-API helper above; read-only, so every role may ──
+  const exportTrades = () => {
+    const rows: string[][] = [
+      ['division', 'instrument', 'terms', 'notional', 'designation', 'booked'],
+      ...erp.trades.map((t) => [t.division, t.instrument, t.terms, t.notional, t.designation, new Date(t.ts).toISOString()]),
+    ]
+    downloadCsv('blotter.csv', rows)
+  }
+
   return (
     <div className="ac">
       <div className="spine-row" data-tour="chips">
@@ -117,7 +138,12 @@ export default function Accounting() {
       <div className="ac-cols">
       <div className="ac-col">
       <div className="ac-panel">
-        <h3>Trade blotter <span className="ac-count">{erp.trades.length}</span></h3>
+        <div className="ac-panelhead">
+          <h3>Trade blotter <span className="ac-count">{erp.trades.length}</span></h3>
+          <button className="ac-export" title="Download the full blotter as CSV" onClick={exportTrades}>
+            Export CSV
+          </button>
+        </div>
         <div className="ac-blotter">
           <table>
             <thead>

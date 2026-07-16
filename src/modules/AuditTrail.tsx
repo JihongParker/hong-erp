@@ -9,10 +9,19 @@ import './AuditTrail.css'
 
 // canonical verb order so the chip row reads in workflow sequence, not the
 // arbitrary order verbs first appear in the event stream
-const VERB_ORDER = ['submitted', 'approved', 'rejected', 'booked', 'designated']
+const VERB_ORDER = ['submitted', 'approved', 'rejected', 'booked', 'designated', 'closed']
 
 function verbClass(action: string): string {
   return VERB_ORDER.includes(action) ? `at-verb-${action}` : 'at-verb-other'
+}
+
+// 'closed' (fiscal-year close) has no rule in AuditTrail.css — this module owns
+// only its own color, so the period-close verb is tinted inline in the same
+// border + tinted-fill idiom as the CSS verbs, at #7a5195 (a locked-ledger plum).
+const CLOSED_STYLE = {
+  borderColor: '#7a5195',
+  color: '#7a5195',
+  background: 'color-mix(in srgb, #7a5195 10%, var(--panel))',
 }
 
 export default function AuditTrail() {
@@ -106,7 +115,12 @@ export default function AuditTrail() {
                 </td>
                 <td className="at-actor">{e.actor}</td>
                 <td>
-                  <span className={`at-verb ${verbClass(e.action)}`}>{e.action}</span>
+                  <span
+                    className={`at-verb ${verbClass(e.action)}`}
+                    style={e.action === 'closed' ? CLOSED_STYLE : undefined}
+                  >
+                    {e.action}
+                  </span>
                 </td>
                 <td className="at-detail">{e.detail}</td>
               </tr>
