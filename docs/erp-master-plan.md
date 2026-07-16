@@ -1,7 +1,7 @@
 # HongERP 마스터 플랜 v2 — 정확성 감사 + 완전한 ERP 로드맵
 
 작성: Fable, 2026-07-16. `ux-overhaul-plan.md`(UX 전용, Phase 0–8 완료)를 승계·확장한다.
-> **진행 (2026-07-16)**: F ✓ `be588b7` · R1 ✓ `33bc979` · R2+R3 ✓ `f89109d`(Overview 인증일 배지만 이월) · E1 ✓ `ceccebd` · E2 ✓ `b3dfe42` · E4 ✓ `64dcbb2` · 논문 P1/P3/P5/P6 위생 ✓ modeling `9e909fc`. **잔여: E3, E5, P1–P4, D1–D3, R2 인증일 배지.**
+> **진행 (2026-07-16)**: F ✓ `be588b7` · R1 ✓ `33bc979` · R2+R3 ✓ `f89109d`(Overview 인증일 배지만 이월) · E1 ✓ `ceccebd` · E2 ✓ `b3dfe42` · E4 ✓ `64dcbb2` · 논문 P1/P3/P5/P6 위생 ✓ modeling `9e909fc`. **전 페이즈 완주 (2026-07-16)**: E3+E5 `baef011` · P1 팔레트+P3/D1 `442fbe8` · D2+배지 `7928a3f` · 웨이브2(스티치·KR/EN·OG·D3) `d4dd4e4`+`a02c6d3` · 논문 dash 패스 modeling `b1fa10a`. 잔여 없음 — 이후 작업은 신규 요구 기준.
 
 실행 규약은 동일: **한 세션 한 Phase**, 수치 임의 변경 금지, 끝나면 tsc+build+스크린샷(라이트/다크×1440/390) 검증 후 커밋. 이모지 금지.
 
