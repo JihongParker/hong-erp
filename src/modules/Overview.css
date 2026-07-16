@@ -383,13 +383,13 @@
    wobble, so the slab's corners dip in turn instead of see-sawing */
 @keyframes ice-wobble {
   0%    { transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
-  12.5% { transform: rotateX(calc(var(--rx) + 0.5deg))  rotateY(calc(var(--ry) + 1.1deg)) rotateZ(calc(var(--rz) + 0.08deg)); }
-  25%   { transform: rotateX(calc(var(--rx) + 0.7deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) + 0.12deg)); }
-  37.5% { transform: rotateX(calc(var(--rx) + 0.5deg))  rotateY(calc(var(--ry) - 1.1deg)) rotateZ(calc(var(--rz) + 0.08deg)); }
+  12.5% { transform: rotateX(calc(var(--rx) + 2.0deg))  rotateY(calc(var(--ry) + 2.0deg)) rotateZ(calc(var(--rz) + 0.14deg)); }
+  25%   { transform: rotateX(calc(var(--rx) + 1.5deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) + 0.2deg)); }
+  37.5% { transform: rotateX(calc(var(--rx) + 2.0deg))  rotateY(calc(var(--ry) - 2.0deg)) rotateZ(calc(var(--rz) + 0.14deg)); }
   50%   { transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
-  62.5% { transform: rotateX(calc(var(--rx) - 0.5deg))  rotateY(calc(var(--ry) + 1.1deg)) rotateZ(calc(var(--rz) - 0.08deg)); }
-  75%   { transform: rotateX(calc(var(--rx) - 0.7deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) - 0.12deg)); }
-  87.5% { transform: rotateX(calc(var(--rx) - 0.5deg))  rotateY(calc(var(--ry) - 1.1deg)) rotateZ(calc(var(--rz) - 0.08deg)); }
+  62.5% { transform: rotateX(calc(var(--rx) - 2.0deg))  rotateY(calc(var(--ry) + 2.0deg)) rotateZ(calc(var(--rz) - 0.14deg)); }
+  75%   { transform: rotateX(calc(var(--rx) - 1.5deg))  rotateY(var(--ry))                rotateZ(calc(var(--rz) - 0.2deg)); }
+  87.5% { transform: rotateX(calc(var(--rx) - 2.0deg))  rotateY(calc(var(--ry) - 2.0deg)) rotateZ(calc(var(--rz) - 0.14deg)); }
   100%  { transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); }
 }
 /* faint bubble trails rising off each slab — the underwater tell */
@@ -524,15 +524,25 @@
   display: grid;
   gap: 8px;
   padding: 20px 22px;
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, #ffffff 55%, var(--ice-water));
   border-radius: 16px;
-  background: var(--panel);
-  /* thin 3D slab: top sheen, a 2px solid bottom edge = the panel's depth, and a
-     soft shadow cast down onto the water */
+  /* ice, not paper: a translucent block the water shows through. The blurred
+     backdrop is the refraction; the inner glows are light caught in the block. */
+  background:
+    linear-gradient(155deg,
+      color-mix(in srgb, var(--ice-water) 18%, transparent),
+      transparent 45%,
+      color-mix(in srgb, var(--ice-water) 10%, transparent)),
+    color-mix(in srgb, var(--panel) 72%, transparent);
+  -webkit-backdrop-filter: blur(9px) saturate(1.15);
+  backdrop-filter: blur(9px) saturate(1.15);
+  transform-style: preserve-3d;
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.5),
-    0 2px 0 rgb(120 140 150 / 0.3),
-    0 16px 26px -12px rgb(30 50 60 / 0.28);
+    inset 0 1px 0 rgb(255 255 255 / 0.75),
+    inset 1px 0 0 rgb(255 255 255 / 0.35),
+    inset -1px 0 0 rgb(255 255 255 / 0.18),
+    inset 0 -10px 22px color-mix(in srgb, var(--ice-water) 28%, transparent),
+    0 30px 34px -16px color-mix(in srgb, #10222c 52%, transparent);
   font: inherit;
   text-align: inherit;
   cursor: pointer;
@@ -545,26 +555,48 @@
 }
 
 /* the slab's underside — a thin extruded edge below the card */
+/* lit top face of the block — a real 3D plane hinged off the top edge, so the
+   card reads as a volume whose upper facet catches the light */
 .chain-card::before {
   content: "";
   position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: -5px;
-  height: 5px;
+  top: 0;
+  left: 3px;
+  right: 3px;
+  height: 16px;
+  transform-origin: top;
+  transform: rotateX(-72deg);
+  border-radius: 12px 12px 4px 4px;
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, #ffffff 85%, var(--ice-water)),
+    color-mix(in srgb, #ffffff 45%, var(--ice-water)));
+  opacity: 0.9;
+  pointer-events: none;
+}
+/* submerged bottom edge — the darker underside facet */
+.chain-card::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: -6px;
+  height: 6px;
   border-radius: 0 0 12px 12px;
   background: linear-gradient(to bottom,
-    color-mix(in srgb, var(--panel) 68%, #35505e),
-    color-mix(in srgb, var(--panel) 55%, #2a4250));
+    color-mix(in srgb, var(--ice-water) 55%, #2a4250),
+    color-mix(in srgb, var(--ice-water) 35%, #1d323e));
+  opacity: 0.8;
   pointer-events: none;
 }
 
 .chain-card:hover {
   border-color: var(--accent);
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.5),
-    0 2px 0 rgb(120 140 150 / 0.3),
-    0 18px 32px -12px rgb(30 50 60 / 0.4);
+    inset 0 1px 0 rgb(255 255 255 / 0.85),
+    inset 1px 0 0 rgb(255 255 255 / 0.45),
+    inset -1px 0 0 rgb(255 255 255 / 0.22),
+    inset 0 -10px 22px color-mix(in srgb, var(--ice-water) 34%, transparent),
+    0 34px 40px -16px color-mix(in srgb, #10222c 62%, transparent);
 }
 
 .chain-title {
@@ -939,16 +971,16 @@
 
 /* resting orientations — every cube floats at its own angle (photo ref:
    ice cubes underwater, each frozen mid-tumble). Defaults keep old behavior. */
-.chain-item, .ov-flow-item { --rx: 1.4deg; --ry: 0deg; --rz: 0deg; }
-.chain-item:nth-of-type(1) { --rx: 1.9deg;  --ry: -2.2deg; --rz: -0.3deg; }
-.chain-item:nth-of-type(2) { --rx: 0.9deg;  --ry: 1.8deg;  --rz: 0.25deg; }
-.chain-item:nth-of-type(3) { --rx: 2.2deg;  --ry: 1.2deg;  --rz: -0.15deg; }
-.chain-item:nth-of-type(4) { --rx: 1.1deg;  --ry: -1.6deg; --rz: 0.35deg; }
-.ov-flow-item:nth-of-type(1) { --rx: 1.8deg; --ry: 1.9deg;  --rz: 0.2deg; }
-.ov-flow-item:nth-of-type(2) { --rx: 1.0deg; --ry: -1.7deg; --rz: -0.25deg; }
-.ov-flow-item:nth-of-type(3) { --rx: 2.1deg; --ry: -1.1deg; --rz: 0.15deg; }
-.ov-flow-item:nth-of-type(4) { --rx: 0.8deg; --ry: 2.1deg;  --rz: -0.2deg; }
-.ov-flow-item:nth-of-type(5) { --rx: 1.6deg; --ry: -2.0deg; --rz: 0.3deg; }
+.chain-item, .ov-flow-item { --rx: 4deg; --ry: 0deg; --rz: 0deg; }
+.chain-item:nth-of-type(1) { --rx: 5.5deg; --ry: -3.4deg; --rz: -0.5deg; }
+.chain-item:nth-of-type(2) { --rx: 3.2deg; --ry: 2.8deg;  --rz: 0.45deg; }
+.chain-item:nth-of-type(3) { --rx: 6.2deg; --ry: 2.0deg;  --rz: -0.3deg; }
+.chain-item:nth-of-type(4) { --rx: 3.6deg; --ry: -2.6deg; --rz: 0.55deg; }
+.ov-flow-item:nth-of-type(1) { --rx: 5.0deg; --ry: 3.0deg;  --rz: 0.35deg; }
+.ov-flow-item:nth-of-type(2) { --rx: 3.4deg; --ry: -2.7deg; --rz: -0.4deg; }
+.ov-flow-item:nth-of-type(3) { --rx: 5.8deg; --ry: -1.8deg; --rz: 0.25deg; }
+.ov-flow-item:nth-of-type(4) { --rx: 3.0deg; --ry: 3.2deg;  --rz: -0.35deg; }
+.ov-flow-item:nth-of-type(5) { --rx: 4.6deg; --ry: -3.1deg; --rz: 0.5deg; }
 
 /* bubbles: three dots per slab, rising and fading on desynced loops */
 .ice-bubbles,
@@ -972,6 +1004,24 @@
 .ov-flow-item.in .ice-bubbles::before { animation: bubble-rise 8.8s linear calc(var(--i, 0) * -3.4s - 2.6s) infinite; }
 .chain-item.in .ice-bubbles::after,
 .ov-flow-item.in .ice-bubbles::after { animation: bubble-rise 7.6s linear calc(var(--i, 0) * -1.7s - 4.9s) infinite; }
+
+/* flow nodes share the ice material */
+.ov-node {
+  border-color: color-mix(in srgb, #ffffff 55%, var(--ice-water));
+  background:
+    linear-gradient(155deg,
+      color-mix(in srgb, var(--ice-water) 18%, transparent),
+      transparent 45%,
+      color-mix(in srgb, var(--ice-water) 10%, transparent)),
+    color-mix(in srgb, var(--panel) 72%, transparent);
+  -webkit-backdrop-filter: blur(9px) saturate(1.15);
+  backdrop-filter: blur(9px) saturate(1.15);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.75),
+    inset 1px 0 0 rgb(255 255 255 / 0.3),
+    inset 0 -8px 16px color-mix(in srgb, var(--ice-water) 26%, transparent),
+    0 22px 26px -13px color-mix(in srgb, #10222c 50%, transparent);
+}
 
 /* ── a11y: must stay LAST — overrides every ice rule above at equal specificity ── */
 @media (prefers-reduced-motion: reduce) {
