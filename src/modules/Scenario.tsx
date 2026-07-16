@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { solveEquilibrium, type ModelParams } from '../engine/model'
 import { useErp } from '../state/erp'
+import { usePersistentState } from '../state/persist'
 import ParamRow from '../components/ParamRow'
 import './Scenario.css'
 
@@ -32,7 +33,9 @@ function Bar({ frac, color }: { frac: number; color: string }) {
 export default function Scenario() {
   const { state: erp, dispatch } = useErp()
   const divs = erp.divisions
-  const [sel, setSel] = useState(0)
+  // only the selected division tab persists here; the division params themselves
+  // already live in the erp store (do not double-persist them)
+  const [sel, setSel] = usePersistentState('scenario.sel', 0)
 
   const solutions = useMemo(() => divs.map((d) => solveEquilibrium(d.params)), [divs])
   const dMax = Math.max(...solutions.map((s) => s.dStar), 0.1)

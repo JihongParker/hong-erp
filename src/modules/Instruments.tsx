@@ -10,9 +10,11 @@ import {
 import ExoticDesk from './ExoticDesk'
 import { Chip, useSpine } from '../state/spine'
 import { useErp, type Trade } from '../state/erp'
+import { usePersistentState } from '../state/persist'
 import { MARKET } from '../state/market'
 import MarketChip from '../components/MarketChip'
 import ParamRow from '../components/ParamRow'
+import { usePulse } from '../components/usePulse'
 import { useToast } from '../components/Toast'
 import './Instruments.css'
 
@@ -44,13 +46,32 @@ const STRAT_NAME: Record<Strat, Trade['instrument']> = {
   seagull: 'Seagull',
 }
 
+// one strategy tile — its own component so each value gets a settle-only pulse
+function InsTile({ label, value }: { label: string; value: string }) {
+  const pulse = usePulse(value)
+  return (
+    <div className="tile">
+      <span className="tile-label">{label}</span>
+      <span className={pulse ? 'tile-value pulse' : 'tile-value'}>{value}</span>
+    </div>
+  )
+}
+
 export default function Instruments() {
-  const [tab, setTab] = useState<'collar' | 'exotic'>('collar')
-  const [strategy, setStrategy] = useState<Strat>('collar')
-  const [mkt, setMkt] = useState<MarketParams>(DEFAULT_MKT)
-  const [capK, setCapK] = useState(() => Math.round(DEFAULT_MKT.F * 1.12))
-  const [subFloorK, setSubFloorK] = useState(() => Math.round(DEFAULT_MKT.F * 0.78))
-  const [ceilK, setCeilK] = useState(() => Math.round(DEFAULT_MKT.F * 1.34))
+  const [tab, setTab] = usePersistentState<'collar' | 'exotic'>('instruments.tab', 'collar')
+  const [strategy, setStrategy] = usePersistentState<Strat>('instruments.strategy', 'collar')
+  // Market params: σ/T/r persist, but the forward F is always re-seeded from the
+  // live FRED WTI close — persisting F would freeze the desk to a stale price.
+  const [mktUser, setMktUser] = usePersistentState<Omit<MarketParams, 'F'>>('instruments.mkt', {
+    sigma: DEFAULT_MKT.sigma,
+    T: DEFAULT_MKT.T,
+    r: DEFAULT_MKT.r,
+  })
+  const [fFwd, setFFwd] = useState(DEFAULT_MKT.F)
+  const mkt = useMemo<MarketParams>(() => ({ F: fFwd, ...mktUser }), [fFwd, mktUser])
+  const [capK, setCapK] = usePersistentState('instruments.capK', () => Math.round(DEFAULT_MKT.F * 1.12))
+  const [subFloorK, setSubFloorK] = usePersistentState('instruments.subFloorK', () => Math.round(DEFAULT_MKT.F * 0.78))
+  const [ceilK, setCeilK] = usePersistentState('instruments.ceilK', () => Math.round(DEFAULT_MKT.F * 1.34))
   const [hoverS, setHoverS] = useState<number | null>(null)
   const svgRef = useRef<SVGSVGElement | null>(null)
 
@@ -140,7 +161,10 @@ export default function Instruments() {
     setHoverS(s < sMin || s > sMax ? null : s)
   }
 
-  const setM = (key: keyof MarketParams, v: number) => setMkt((p) => ({ ...p, [key]: v }))
+  const setM = (key: keyof MarketParams, v: number) => {
+    if (key === 'F') setFFwd(v)
+    else setMktUser((prev) => ({ ...prev, [key]: v }))
+  }
 
   // tiles per strategy: [label, value][]
   const tiles: [string, string][] = (() => {
@@ -275,10 +299,7 @@ export default function Instruments() {
             <div className="ins-main fade-swap" key={strategy}>
               <div className="ins-tiles">
                 {tiles.map(([label, value]) => (
-                  <div className="tile" key={label}>
-                    <span className="tile-label">{label}</span>
-                    <span className="tile-value">{value}</span>
-                  </div>
+                  <InsTile key={label} label={label} value={value} />
                 ))}
               </div>
 

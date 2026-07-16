@@ -14,6 +14,7 @@ import AuditTrail from './modules/AuditTrail'
 import { SpineProvider } from './state/spine'
 import { ErpProvider, useErp, ROLES, ROLE_LABEL } from './state/erp'
 import { ToastProvider } from './components/Toast'
+import Palette, { type Command } from './components/Palette'
 import { MARKET, marketDate } from './state/market'
 import './App.css'
 
@@ -223,6 +224,48 @@ function PendingBadge({ id }: { id: string }) {
   return <span className="nav-badge" title={`${n} awaiting review`}>{n}</span>
 }
 
+// Command palette wiring. Rendered inside the providers (like ResetDemo) so it
+// can reach the ERP dispatch + role setter; navigation and the guided tour are
+// passed down from App. Cmd/Ctrl+K toggles it from anywhere on the page.
+function CommandK({ go, startTour }: { go: (id: string) => void; startTour: () => void }) {
+  const { dispatch, setRole } = useErp()
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault()
+        setOpen((v) => !v)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  const commands: Command[] = [
+    // module jumps — every sidebar entry, tagged with its layer
+    ...GROUPS.flatMap((g) =>
+      g.items.map((m) => ({
+        id: `go-${m.id}`,
+        label: `Go to ${m.name}`,
+        hint: g.title ?? undefined,
+        run: () => go(m.id),
+      })),
+    ),
+    { id: 'tour', label: 'Start guided tour', hint: 'Walkthrough', run: startTour },
+    { id: 'reset', label: 'Reset demo data', hint: 'All divisions', run: () => dispatch({ type: 'reset' }) },
+    // role switches — same setter the sidebar selector uses
+    ...ROLES.map((r) => ({
+      id: `role-${r}`,
+      label: `Act as ${ROLE_LABEL[r]}`,
+      hint: 'Role',
+      run: () => setRole(r),
+    })),
+  ]
+
+  return <Palette open={open} onClose={() => setOpen(false)} commands={commands} />
+}
+
 export default function App() {
   const [active, setActive] = useState<string>('overview')
   const [tour, setTour] = useState<number | null>(null)
@@ -407,6 +450,7 @@ export default function App() {
             <span className="market-date">FRED {marketDate}</span>
           </div>
           <ResetDemo />
+          <div className="sidebar-cmdk"><kbd className="kbd">⌘K</kbd> commands</div>
           v1 · <a href="https://github.com/JihongParker/hong-erp" target="_blank" rel="noreferrer">GitHub</a>
         </footer>
       </aside>
@@ -447,6 +491,7 @@ export default function App() {
         </div>
       </main>
 
+      <CommandK go={go} startTour={startTour} />
       <TourSpotlight active={tour !== null} />
       {tour !== null && (
         <aside className="tour-card" role="dialog" aria-modal="true" aria-label="Guided tour" ref={tourCardRef}>

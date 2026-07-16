@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react'
 import bt from '../data/backtest.json'
 import { runBacktest, type Ret } from '../engine/backtest'
+import { usePersistentState } from '../state/persist'
+import { usePulse } from '../components/usePulse'
 import ParamRow from '../components/ParamRow'
 import './Backtest.css'
 
@@ -30,15 +32,17 @@ const COLOR: Record<string, string> = {
 const pct = (x: number, d = 1) => `${(x * 100).toFixed(d)}%`
 
 export default function Backtest() {
-  const [window, setWindow] = useState(60)
-  const [budget, setBudget] = useState(1.0)
-  const [tcBps, setTcBps] = useState(5)
+  const [window, setWindow] = usePersistentState('backtest.window', 60)
+  const [budget, setBudget] = usePersistentState('backtest.budget', 1.0)
+  const [tcBps, setTcBps] = usePersistentState('backtest.tcBps', 5)
 
   const out = useMemo(() => runBacktest(RETURNS, { window, budget, tcBps }), [window, budget, tcBps])
   const wf = out.summary.find((s) => s.policy === 'walkforward')!
   const naive = out.summary.find((s) => s.policy === 'naive')!
   const oracle = out.summary.find((s) => s.policy === 'oracle')!
   const unhedged = out.summary.find((s) => s.policy === 'unhedged')!
+  // settle-only pulse for the live headline number
+  const heroPulse = usePulse(wf.varReduction)
 
   return (
     <div className="bt">
@@ -67,7 +71,7 @@ export default function Backtest() {
 
           <div className="bt-panel bt-hero">
             <span className="bt-hero-label">Variance removed — walk-forward, out of sample</span>
-            <span className="bt-hero-value">{pct(wf.varReduction, 0)}</span>
+            <span className={heroPulse ? 'bt-hero-value pulse' : 'bt-hero-value'}>{pct(wf.varReduction, 0)}</span>
             <div className="bt-hero-row">
               <span>vs naive <strong>{pct(naive.varReduction, 0)}</strong></span>
               <span>gap to oracle <strong>{pct(oracle.varReduction - wf.varReduction, 1)}</strong></span>

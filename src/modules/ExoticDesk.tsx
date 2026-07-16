@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import surface from '../data/exotic_surface.json'
 import { Chip, useSpine } from '../state/spine'
 import { useErp } from '../state/erp'
+import { usePersistentState } from '../state/persist'
 import { MARKET, clamp } from '../state/market'
 import MarketChip from '../components/MarketChip'
 import { useToast } from '../components/Toast'
@@ -241,8 +242,9 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
 }
 
 export default function ExoticDesk() {
+  // spot stays live — always seeded from the latest FRED WTI close, never persisted
   const [spot, setSpot] = useState(() => clamp(MARKET.wti.value, S_GRID[0], S_GRID[S_GRID.length - 1]))
-  const [ti, setTi] = useState(0)
+  const [ti, setTi] = usePersistentState('exotic.ti', 0)
 
   const row = useMemo(
     () => ({ price: PRICE[ti], delta: DELTA[ti], ko: KO[ti] }),
@@ -258,7 +260,7 @@ export default function ExoticDesk() {
   const dFx = v / S2_0 // homogeneity theorem: structural FX delta = V/S2
 
   // ── European ablation: same jump-diffusion calibration, barrier removed ──
-  const [mode, setMode] = useState<'ko' | 'euro'>('ko')
+  const [mode, setMode] = usePersistentState<'ko' | 'euro'>('exotic.mode', 'ko')
   const euro = useMemo(() => europeanQuanto(spot, K, T_GRID[ti], CALIB), [spot, ti])
   const euroCurve = useMemo(() => S_GRID.map((s) => europeanQuanto(s, K, T_GRID[ti], CALIB).value), [ti])
   const euroLive = euro.value * fxScale

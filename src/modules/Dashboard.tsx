@@ -7,6 +7,8 @@ import {
 } from '../engine/model'
 import { Chip, useSpine } from '../state/spine'
 import { timeAgo, useErp } from '../state/erp'
+import { usePersistentState } from '../state/persist'
+import { usePulse } from '../components/usePulse'
 import Activity from '../components/Activity'
 import ParamRow from '../components/ParamRow'
 import './Dashboard.css'
@@ -72,11 +74,16 @@ const CH = 300
 const PAD = { top: 14, right: 96, bottom: 34, left: 46 }
 
 export default function Dashboard() {
-  const [p, setP] = useState<ModelParams>(DEFAULTS)
+  const [p, setP] = usePersistentState<ModelParams>('dashboard.params', DEFAULTS)
   const [hoverD, setHoverD] = useState<number | null>(null)
   const svgRef = useRef<SVGSVGElement | null>(null)
 
   const eq = useMemo(() => solveEquilibrium(p), [p])
+  // settle-only pulses for the four result tiles
+  const pulseD = usePulse(eq.dStar)
+  const pulseHf = usePulse(eq.hF)
+  const pulseHc = usePulse(eq.hC)
+  const pulseLam = usePulse(eq.lambdaAtD)
   const spine = useSpine()
   const { state: erp } = useErp()
   const divBook = useMemo(
@@ -178,26 +185,26 @@ export default function Dashboard() {
           <div className="db-tiles">
             <div className="tile">
               <span className="tile-label">Disclosure d*</span>
-              <span className="tile-value">{eq.dStar.toFixed(2)}</span>
+              <span className={pulseD ? 'tile-value pulse' : 'tile-value'}>{eq.dStar.toFixed(2)}</span>
               <span className={eq.floorBinding ? 'tile-badge binding' : 'tile-badge'}>
                 {eq.floorBinding ? 'floor binding' : 'voluntary interior'}
               </span>
             </div>
             <div className="tile">
               <span className="tile-label">Financial hedge h_f*</span>
-              <span className="tile-value" style={{ color: C_FIN }}>
+              <span className={pulseHf ? 'tile-value pulse' : 'tile-value'} style={{ color: C_FIN }}>
                 {(eq.hF * 100).toFixed(0)}%
               </span>
             </div>
             <div className="tile">
               <span className="tile-label">Climate hedge h_c*</span>
-              <span className="tile-value" style={{ color: C_CLI }}>
+              <span className={pulseHc ? 'tile-value pulse' : 'tile-value'} style={{ color: C_CLI }}>
                 {(eq.hC * 100).toFixed(0)}%
               </span>
             </div>
             <div className="tile">
               <span className="tile-label">Risk price Λ(d*)</span>
-              <span className="tile-value">{eq.lambdaAtD.toFixed(2)}</span>
+              <span className={pulseLam ? 'tile-value pulse' : 'tile-value'}>{eq.lambdaAtD.toFixed(2)}</span>
             </div>
           </div>
 
