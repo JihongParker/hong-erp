@@ -9,9 +9,9 @@ export const KO_DECISION: Record<string, string> = {
   'Reporting layer': '보고·공시',
   'What-if': '시나리오 분석',
   'Validation': '검증',
-  'Acting as': '실행 주체',
+  'Acting as': '현재 역할',
   'Switch acting role — gates who can submit, approve, book and designate':
-    '실행 역할 전환 — 상신·승인·부킹·지정 권한 통제',
+    '역할 전환 — 상신·승인·부킹·지정 권한이 역할에 따라 달라집니다',
   'Guide language': '가이드 언어',
   'Restore the seeded demo ledgers': '시드 데모 원장 복원',
   'Reset demo data (all divisions)': '데모 데이터 초기화 (전 사업부)',
@@ -49,7 +49,7 @@ export const KO_DECISION: Record<string, string> = {
   'go to the Decision Dashboard': '의사결정 대시보드로 이동',
   'Take a tour': '투어 시작',
   'guided · no finance needed': '가이드 제공 · 금융 지식 없어도 됩니다',
-  'or follow the chain': '아니면, 흐름을 따라 내려가 보세요',
+  'or follow the chain': '아니면 흐름을 따라 내려가 보세요',
   'One position, four papers, one chain.': '하나의 포지션, 네 편의 논문, 하나의 흐름.',
   'The sidebar is a data flow, not a menu.': '사이드바는 메뉴가 아니라 데이터의 흐름입니다.',
   'And it all moves.': '그리고 이 모든 것이 실시간으로 움직입니다.',
@@ -64,15 +64,15 @@ export const KO_DECISION: Record<string, string> = {
   'Given a fixed premium budget, how much of the oil leg and the currency leg should a Korean importer actually cover?':
     '프리미엄 예산이 정해져 있을 때, 원유 레그와 FX 레그를 각각 얼마나 커버해야 할까요?',
   'Vertex optimum 97.0% / 2.9% reproduced live, budget-exact at ₩45bn':
-    '꼭짓점 최적해 97.0% / 2.9% 실시간 재현, ₩45bn 예산 정확',
+    '꼭짓점 최적해 97.0% / 2.9%를 실시간 재현 · ₩45bn 예산을 정확히 소진',
   'Covariance-aware delta hedging of a double-KO quanto': '더블 녹아웃 퀀토의 공분산 반영 델타 헤지',
   'Run a dynamic hedge on an exotic barrier option written on that same exposure, then watch where textbook deltas break.':
     '같은 익스포저에 걸린 배리어 옵션을 동적으로 헤지하면서, 교과서 델타가 무너지는 지점을 보여 줍니다.',
   'Paper engine surfaces, KO probability anchored 43.5% vs 43.7%':
-    '논문 엔진 표면, 녹아웃 확률 43.5% vs 43.7%로 고정',
+    '논문 엔진 표면 그대로 · 녹아웃 확률 43.5%가 논문 값 43.7%와 일치',
   'IFRS 9 cash-flow-hedge accounting: combined vs split': 'IFRS 9 현금흐름위험회피 회계: 통합 vs 분리',
   'Book the resulting hedge two legal ways. Same economics, very different earnings.':
-    '같은 헤지를 두 가지 회계 방식으로 부킹합니다. 경제적 실질은 같지만 이익은 크게 달라집니다.',
+    '같은 헤지를 두 가지 회계 방식으로 부킹합니다. 경제적 실질은 같지만 손익은 크게 달라집니다.',
   'Designation ledgers verbatim: ineffectiveness ₩23.4bn vs ₩6.4bn':
     '지정 원장 그대로: 비유효 부분 ₩23.4bn vs ₩6.4bn',
   'ESG disclosure mandates and corporate hedging': 'ESG 공시 의무와 기업 헤지',
@@ -81,7 +81,7 @@ export const KO_DECISION: Record<string, string> = {
   'Closed form certified vs independent minimizer, 200 draws, gap ≤3×10⁻⁶':
     '독립 최소화기 대비 닫힌 해 검증, 200회 추출, 격차 ≤3×10⁻⁶',
   'Materiality': '중대성 평가',
-  'risks scored': '리스크 채점',
+  'risks scored': '리스크 평가',
   'Budget': '예산',
   'coverage split': '커버리지 배분',
   'Instruments': '상품',
@@ -98,7 +98,7 @@ export const KO_DECISION: Record<string, string> = {
   'Hedge premia': '헤지 프리미엄',
   'p_f financial': 'p_f 재무',
   'p_c climate': 'p_c 기후',
-  'Disclosure & penalty': '공시 & 벌칙',
+  'Disclosure & penalty': '공시 & 페널티',
   'a disclosure cost': 'a 공시 비용',
   'φ distress price': 'φ 디스트레스 가격',
   'λ stringency': 'λ 규제 강도',
@@ -119,7 +119,7 @@ export const KO_DECISION: Record<string, string> = {
   'financial': '재무',
   'climate': '기후',
   'Both curves fall as disclosure rises: disclosure cheapens residual risk and substitutes for hedging. Dots mark the equilibrium.':
-    '공시가 오르면 두 곡선 모두 하락한다. 공시가 잔여 리스크를 싸게 만들어 헤지를 대체하기 때문이다. 점은 균형점.',
+    '공시가 늘수록 두 곡선 모두 내려갑니다. 공시가 잔여 리스크의 값을 낮춰 헤지를 대체하기 때문입니다. 점이 균형점입니다.',
   'Cost at the optimum': '최적해에서의 비용',
   'Hedge premium': '헤지 프리미엄',
   'Disclosure cost': '공시 비용',
@@ -161,7 +161,7 @@ export const KO_DECISION: Record<string, string> = {
   'sold wing': '매도 윙',
   'research': '리서치',
   'Swap · cap · collar · three-way · seagull: the structures refiners actually run, Black-76 priced':
-    '스왑 · 캡 · 칼라 · 3-way · 시걸: 정유사가 실제로 굴리는 구조, Black-76 프라이싱.',
+    '스왑 · 캡 · 칼라 · 3-way · 시걸. 정유사가 실제로 굴리는 구조를 Black-76으로 프라이싱합니다.',
   "Barrier analytics from the paper's engine: where textbook deltas reverse sign":
     '논문 엔진의 배리어 분석: 교과서 델타가 부호를 뒤집는 지점.',
   'Market & structure': '시장 & 구조',
@@ -173,15 +173,15 @@ export const KO_DECISION: Record<string, string> = {
   'Kp2 sold sub-floor': 'Kp2 매도 서브플로어',
   'Kc2 sold ceiling': 'Kc2 매도 실링',
   'A swap just fixes the price at the forward: nothing to solve.':
-    '스왑은 선도 가격에 고정할 뿐, 풀 것이 없다.',
+    '스왑은 선도 가격에 고정할 뿐이라 따로 풀 것이 없습니다.',
   'Buy the call outright; the premium is paid in cash upfront.':
-    '콜을 직접 매수한다. 프리미엄은 선불 현금 지출.',
+    '콜을 그대로 사는 구조입니다. 프리미엄은 현금으로 먼저 나갑니다.',
   'Pick the cap; the solver finds the floor whose written put exactly finances the purchased call.':
-    '캡을 고르면 솔버가 매도 풋으로 매수 콜을 정확히 상쇄하는 플로어를 찾는다.',
+    '캡을 고르면, 판 풋이 산 콜 값을 정확히 메우는 플로어를 솔버가 찾아냅니다.',
   'The extra sold put funds a lower floor than a plain collar, at the cost of a torn tail below it.':
-    '추가 매도 풋으로 일반 칼라보다 낮은 플로어를 만들지만, 그 아래로 꼬리가 찢어지는 대가를 치른다.',
+    '풋을 하나 더 팔아 일반 칼라보다 낮은 플로어를 얻는 대신, 그 아래 급락 구간에서는 보호가 사라집니다.',
   'Selling a far call cheapens the structure and lowers the floor, but caps how far your protection reaches.':
-    '먼 콜을 매도하면 구조가 싸지고 플로어가 내려가지만, 보호 범위가 제한된다.',
+    '외가격 콜을 팔면 구조가 싸지고 플로어도 내려가지만, 보호가 미치는 범위는 그만큼 좁아집니다.',
   'Book this structure': '이 구조 부킹',
   'Division': '사업부',
   'Notional (M bbl)': '명목금액 (M bbl)',
@@ -199,12 +199,12 @@ export const KO_DECISION: Record<string, string> = {
   'FX · linear': 'FX · 선형',
   'FX forward / NDF': 'FX 선도 / NDF',
   "The Korean importer's biggest lever is USD/KRW, not crude. Forwards and non-deliverable forwards lock the rate; the workhorse of import hedging.":
-    '한국 수입사의 최대 레버는 원유가 아니라 USD/KRW다. 선도와 차액결제선도(NDF)가 환율을 고정하는, 수입 헤지의 주력 수단.',
+    '한국 수입사의 가장 큰 변수는 원유가 아니라 USD/KRW입니다. 선도와 차액결제선도(NDF)로 환율을 고정하는, 수입 헤지의 주력 수단입니다.',
   'averaging': '평균형',
   'Asian / average-price (APO)': '아시안 / 평균가격 (APO)',
   'FX · barrier-risk': 'FX · 배리어 리스크',
   'Target-redemption forward, the FX cousin of KIKO. Cheap or credit upfront, embedded knock-outs, and the same survival-risk tail when the currency gaps.':
-    '타깃 리뎀션 포워드, KIKO의 FX 사촌. 선불 비용이 싸거나 오히려 크레딧을 받고, 녹아웃이 내장되며, 환율이 갭을 낼 때 똑같은 생존 리스크 꼬리를 남긴다.',
+    'KIKO의 FX 버전 격인 타깃 리뎀션 포워드입니다. 초기 비용이 거의 없거나 오히려 돈을 받고 들어가지만, 녹아웃이 숨어 있어 환율이 급변하면 KIKO와 똑같은 생존 리스크가 드러납니다.',
 
   // ── Exotic Desk ──
   'Double-KO quanto': 'Double-KO 퀀토',
@@ -216,12 +216,12 @@ export const KO_DECISION: Record<string, string> = {
   'Textbook desk says': '교과서 데스크의 답',
   'Our engine — true KO odds': '우리 엔진 — 실제 녹아웃 확률',
   'Risk the textbook hides': '교과서가 숨기는 리스크',
-  'Textbook overshoots now': '지금은 교과서가 과대',
-  'understated by the standard tool': '표준 도구가 과소평가',
-  'pumped σ overshoots — wrong process': 'σ를 키워 과대 — 잘못된 프로세스',
+  'Textbook overshoots now': '지금은 교과서 값이 더 높음',
+  'understated by the standard tool': '표준 도구가 그만큼 낮게 잡음',
+  'pumped σ overshoots — wrong process': 'σ를 키우면 이번엔 과대 · 프로세스 자체가 다름',
   'Knock-out probability: lattice vs exact GBM vs paper': '녹아웃 확률: 래티스 vs 정확 GBM vs 논문',
   'Low': '낮음',
-  'Elevated': '상승',
+  'Elevated': '주의',
   'Serious': '심각',
   'Critical': '위험',
   'WTI spot S₁': 'WTI 스팟 S₁',
@@ -231,22 +231,22 @@ export const KO_DECISION: Record<string, string> = {
   'Δ FX = V/S₂ (homogeneity thm)': 'Δ FX = V/S₂ (동차성 정리)',
   'c* covariance multiplier': 'c* 공분산 승수',
   'paper §c* — vs c=1 naive': '논문 §c* — c=1 나이브 대비',
-  'Value across the corridor — the barrier squeeze': '코리도 전반의 가치 — 배리어 압착',
+  'Value across the corridor — the barrier squeeze': '코리도 전 구간의 가치 — 배리어 스퀴즈',
   'Knock-out probability': '녹아웃 확률',
   'European value (KRW / unit)': '유러피언 가치 (KRW / 단위)',
   'Δ WTI — monotone': 'Δ WTI — 단조',
   'Barrier destroys': '배리어 파괴분',
-  'European vs barrier — what the knock-outs destroy': '유러피언 vs 배리어 — 녹아웃이 파괴하는 것',
+  'European vs barrier — what the knock-outs destroy': '유러피언 vs 배리어 — 녹아웃이 깎아 먹는 가치',
   'Where c* comes from': 'c*는 어디서 오는가',
 
   // ── Accounting ──
-  'American KO structure selected upstream': '상류에서 아메리칸 KO 구조 선택됨',
-  'European vanilla structure selected upstream': '상류에서 유러피언 바닐라 구조 선택됨',
+  'American KO structure selected upstream': '앞 단계에서 아메리칸 KO 구조 선택됨',
+  'European vanilla structure selected upstream': '앞 단계에서 유러피언 바닐라 구조 선택됨',
   'Mean |ineffectiveness| — A combined': '평균 |비유효| — A 통합',
   'Mean |ineffectiveness| — B split': '평균 |비유효| — B 분리',
-  '3.7× cleaner in P&L': '손익 3.7× 깔끔',
+  '3.7× cleaner in P&L': '손익 노이즈 3.7배 감소',
   'Economic σ — A vs B': '경제적 σ — A vs B',
-  '≈ same economics': '≈ 동일 경제 실질',
+  '≈ same economics': '경제 실질은 사실상 동일',
   'KO probability (engine)': '녹아웃 확률 (엔진)',
   'Trade blotter': '딜 블로터',
   'Export CSV': 'CSV 내보내기',
@@ -260,7 +260,7 @@ export const KO_DECISION: Record<string, string> = {
   'Cash-flow hedge, split designation': '현금흐름위험회피, 분리 지정',
   'Switch to the CFO role to designate': '지정하려면 CFO 역할로 전환',
   "Book structures on the instrument desks and they land here; the designation choice decides which of the two ledger regimes below governs each trade's earnings path.":
-    '상품 데스크에서 구조를 부킹하면 여기로 들어온다. 지정 선택이 아래 두 원장 체계 중 어느 쪽이 각 딜의 이익 경로를 지배할지 결정한다.',
+    '상품 데스크에서 부킹한 구조는 전부 이 블로터로 들어옵니다. 어떤 지정을 고르느냐에 따라, 아래 두 원장 체계 중 어느 쪽이 그 딜의 손익 경로를 좌우할지 정해집니다.',
   'The designation trade-off': '지정의 트레이드오프',
   'A — combined': 'A — 통합',
   'B — split': 'B — 분리',

@@ -13,7 +13,7 @@ export const KO_REPORTING: Record<string, string> = {
   'Unit': '단위',
   'Framework mapping': '프레임워크 매핑',
   'Demo taxonomy. Mappings are not validated for practice. The point is the structure: hierarchical codes mapped to multiple frameworks at the datapoint level.':
-    '데모 분류체계. 매핑은 실무 검증을 거치지 않았다. 핵심은 구조다. 계층 코드를 데이터포인트 단위로 여러 프레임워크에 매핑한다.',
+    '데모용 분류체계입니다. 매핑은 실무 검증을 거치지 않았습니다. 보여 드리려는 것은 구조 그 자체로, 계층형 계정 코드가 데이터포인트 단위에서 여러 프레임워크로 매핑되는 방식입니다.',
   'Select an account on the left': '왼쪽에서 계정 선택',
 
   // ── Materiality ──
@@ -70,7 +70,7 @@ export const KO_REPORTING: Record<string, string> = {
   'Import CSV': 'CSV 가져오기',
   'Download template': '템플릿 다운로드',
   'Approval queue': '결재함',
-  'Queue is clear.': '결재함이 비었다.',
+  'Queue is clear.': '결재함이 비어 있습니다.',
   'Approve': '승인',
   'Reject': '반려',
   'Recent activity': '최근 활동',
@@ -102,9 +102,9 @@ export const KO_REPORTING: Record<string, string> = {
   'floor binding': '하한 바인딩',
   'voluntary': '자율',
   "These are the divisions' live parameter records: edits persist and flow to the division book on the Decision Dashboard.":
-    '사업부별 실시간 파라미터 레코드다. 수정 사항은 저장되어 의사결정 대시보드의 사업부 장부로 흘러간다.',
+    '사업부별 파라미터의 라이브 레코드입니다. 여기서 고친 값은 그대로 저장되어 의사결정 대시보드의 사업부 장부에 반영됩니다.',
   "How to read it: divisions with larger exposure (σf) and faster penalty attenuation (k) optimally disclose more, and because disclosure lowers the shadow price Λ of residual risk, their hedge ratios move with it — disclosure and hedging are two solutions of one problem. Try raising a division's mandated floor d̲ past its voluntary d* and watch the hedge fall: that is the crowding-out regime.":
-    '읽는 법: 익스포저(σf)가 크고 페널티 감쇠(k)가 빠른 사업부일수록 최적 공시량이 많다. 공시는 잔여 리스크의 잠재가격 Λ를 낮추므로 헤지비율도 함께 움직인다 — 공시와 헤지는 한 문제의 두 해다. 어느 사업부의 의무 하한 d̲를 자율 d*보다 높이 올리면 헤지가 내려간다. 이것이 구축(crowding-out) 국면이다.',
+    '읽는 법: 익스포저(σf)가 크고 페널티 감쇠(k)가 빠른 사업부일수록 공시를 더 많이 하는 것이 최적입니다. 공시는 잔여 리스크의 잠재가격 Λ를 낮추기 때문에 헤지비율도 따라 움직입니다. 공시와 헤지는 결국 한 문제의 두 답인 셈입니다. 어느 사업부든 의무 하한 d̲를 자율 최적 d*보다 높여 보세요. 헤지가 내려갑니다. 이것이 구축(crowding-out) 국면입니다.',
 
   // ── Disclosure report ──
   'Strategy': '전략',

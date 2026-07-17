@@ -161,7 +161,7 @@ export default function Dashboard() {
         </Chip>
         <Chip from="Budget">
           {lang === 'ko' ? (
-            <>배분기 배분 <strong>{(spine.budgetW1 * 100).toFixed(1)}% / {(spine.budgetW2 * 100).toFixed(1)}%</strong> WTI/FX</>
+            <>예산 배분기가 정한 비중 <strong>{(spine.budgetW1 * 100).toFixed(1)}% / {(spine.budgetW2 * 100).toFixed(1)}%</strong> (WTI / FX)</>
           ) : (
             <>allocator split <strong>{(spine.budgetW1 * 100).toFixed(1)}% / {(spine.budgetW2 * 100).toFixed(1)}%</strong> WTI/FX</>
           )}
@@ -237,7 +237,7 @@ export default function Dashboard() {
                   />
                   {leg.h < 0.82 && (
                     <span className="hedge-open" style={{ left: `${leg.h * 100}%` }}>
-                      {lang === 'ko' ? '열림' : 'open'} {(100 - leg.h * 100).toFixed(0)}%
+                      {lang === 'ko' ? '미커버' : 'open'} {(100 - leg.h * 100).toFixed(0)}%
                     </span>
                   )}
                 </div>
@@ -248,10 +248,10 @@ export default function Dashboard() {
               <p className="db-callout">
                 {lang === 'ko' ? (
                   <>
-                    의무 하한 d̲ = {p.dFloor.toFixed(1)}가 바인딩 (자율 최적{' '}
-                    {eq.dVoluntary.toFixed(2)}). 강제 공시는 벌칙을 덜고 잔여 리스크를
-                    싸게 만들어 헤지를 <em>밀어낸다</em>. 하한 슬라이더를 움직이면 두
-                    막대가 함께 줄어든다.
+                    의무 하한 d̲ = {p.dFloor.toFixed(1)}가 바인딩 상태입니다 (자율 최적은{' '}
+                    {eq.dVoluntary.toFixed(2)}). 강제된 공시가 페널티를 덜어 잔여 리스크를
+                    싸게 만들고, 그만큼 헤지를 <em>밀어냅니다</em>. 하한 슬라이더를
+                    올리면 두 막대가 같이 줄어듭니다.
                   </>
                 ) : (
                   <>
@@ -408,10 +408,11 @@ export default function Dashboard() {
           <p className="db-note">
             {lang === 'ko' ? (
               <>
-                모델: Λ(d) = φ + λe<sup>−kd</sup>가 잔여 리스크를 가격화한다. 헤지는
-                코너(KKT) 처리와 함께 2Λ(d)Σu = p를 푼다. 자율 d*는 2ad = kλe
-                <sup>−kd</sup>R을 푼다. 의무는 하한 d ≥ d̲. 기존 ESG 플랫폼은 입력값
-                보고에서 멈춘다 — 이 화면이 그들이 비워 둔 의사결정 레이어다.
+                모델: Λ(d) = φ + λe<sup>−kd</sup>가 잔여 리스크의 가격을 정합니다.
+                헤지는 2Λ(d)Σu = p를 코너(KKT) 처리와 함께 풀고, 자율 d*는 2ad = kλe
+                <sup>−kd</sup>R에서 나옵니다. 규제는 하한 d ≥ d̲로 들어옵니다. 기존
+                ESG 플랫폼은 입력값을 보고하는 데서 멈춥니다. 이 화면이 바로 그들이
+                비워 둔 의사결정 레이어입니다.
               </>
             ) : (
               <>

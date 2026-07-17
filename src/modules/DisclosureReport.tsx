@@ -186,7 +186,7 @@ export default function DisclosureReport() {
           <p className="dr-lead">
             {lang === 'ko' ? (
               <>
-                전략은 이중 중대성 평가에 뿌리를 둔다. 재무 점수나 영향 점수 중 하나라도 중대성 기준선{' '}
+                전략은 이중 중대성 평가에서 출발한다. 재무 점수와 영향 점수 중 하나라도 중대성 기준선{' '}
                 <strong>{threshold.toFixed(1)}</strong>(1–5 척도)을 넘으면 중대 항목으로 판정된다. 그 기준으로
                 IRO 등록부{' '}
                 <strong>
@@ -221,9 +221,9 @@ export default function DisclosureReport() {
           <p className="dr-body">
             {lang === 'ko' ? (
               <>
-                중대 리스크는 설문 점수로 남지 않는다. 의사결정 레이어에 익스포저 파라미터로 투입되어 목표
-                공시 강도 <strong>d* = {spine.dStar.toFixed(2)}</strong>를 정한다. 공시와 헤지는 함께 풀린다.
-                기업이 더 많이 공시하도록 요구받을수록 최적 헤지비율도 그만큼 함께 움직인다.
+                중대 리스크는 설문 점수에 머물지 않는다. 의사결정 레이어에 익스포저 파라미터로 투입되어
+                목표 공시 강도 <strong>d* = {spine.dStar.toFixed(2)}</strong>를 정한다. 공시와 헤지는 하나의
+                문제로 함께 풀리므로, 공시 요구가 강해질수록 최적 헤지비율도 그에 맞춰 움직인다.
               </>
             ) : (
               <>
@@ -310,9 +310,9 @@ export default function DisclosureReport() {
           <p className="dr-body">
             {lang === 'ko' ? (
               <>
-                배리어 구조는 WTI 기준 스팟 <strong>${spine.exoticSpot.toFixed(2)}</strong>에서 라이브 녹아웃
-                확률 <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong>를 가진다. 배리어를 넘어서면 녹아웃된
-                레그는 당기손익-공정가치(FVTPL)로 되돌아간다. 고정 헤지 예산은 WTI/FX 커버리지에{' '}
+                배리어 구조의 실시간 녹아웃 확률은 WTI 기준 스팟 <strong>${spine.exoticSpot.toFixed(2)}</strong>에서{' '}
+                <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong>로 산출된다. 배리어가 발동되면 해당
+                레그는 당기손익-공정가치(FVTPL)로 재분류된다. 고정 헤지 예산은 WTI/FX 커버리지에{' '}
                 <strong>
                   {(spine.budgetW1 * 100).toFixed(1)}% / {(spine.budgetW2 * 100).toFixed(1)}%
                 </strong>{' '}
@@ -342,8 +342,8 @@ export default function DisclosureReport() {
           <p className="dr-lead">
             {lang === 'ko' ? (
               <>
-                아래 정량 공시는 검토를 통과한 지표 {approvedSorted.length}개이며 최신순 정렬. 각 지표에는
-                데이터포인트 코드의 GRI · KSSB · KCGS · MSCI 프레임워크 매핑이 함께 담긴다.
+                아래 정량 공시에는 검토를 통과한 지표 {approvedSorted.length}개를 최신순으로 담았다. 각
+                지표에는 데이터포인트 코드에 연결된 GRI · KSSB · KCGS · MSCI 프레임워크 매핑을 함께 표기한다.
               </>
             ) : (
               <>

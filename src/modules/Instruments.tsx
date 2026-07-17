@@ -187,12 +187,12 @@ export default function Instruments() {
   // full comparison table — every strategy priced off the same market
   const ko = lang === 'ko'
   const rows: { key: Strat | 'unhedged'; label: string; premium: string; worst: string; best: string; giveup: string }[] = [
-    { key: 'unhedged', label: t('Unhedged'), premium: '$0', worst: ko ? '무제한' : 'unbounded', best: '→ $0', giveup: ko ? '없음; 꼬리 전체 부담' : 'nothing; you carry the whole tail' },
-    { key: 'swap', label: t('Swap / forward'), premium: '$0', worst: `$${mkt.F.toFixed(1)}`, best: `$${mkt.F.toFixed(1)}`, giveup: ko ? '모든 하방 참여' : 'all downside participation' },
+    { key: 'unhedged', label: t('Unhedged'), premium: '$0', worst: ko ? '무제한' : 'unbounded', best: '→ $0', giveup: ko ? '없음 · 꼬리 리스크 전부 부담' : 'nothing; you carry the whole tail' },
+    { key: 'swap', label: t('Swap / forward'), premium: '$0', worst: `$${mkt.F.toFixed(1)}`, best: `$${mkt.F.toFixed(1)}`, giveup: ko ? '유가 하락 시 이익 전부' : 'all downside participation' },
     { key: 'cap', label: t('Cap only (bought call)'), premium: `$${capPrem.toFixed(2)}`, worst: `$${(capK + capPrem).toFixed(1)}`, best: ko ? '→ 프리미엄만' : '→ premium only', giveup: ko ? '현금으로 낸 프리미엄' : 'the premium, paid in cash' },
-    { key: 'collar', label: t('Zero-cost collar'), premium: '$0', worst: `$${collar.capK.toFixed(1)}`, best: `$${collar.floorK.toFixed(1)}`, giveup: ko ? `$${collar.floorK.toFixed(1)} 아래의 참여` : `participation below $${collar.floorK.toFixed(1)}` },
-    { key: 'threeway', label: t('Three-way collar'), premium: '$0', worst: `$${Math.max(capK, threeway.floorK + threeway.subFloorK).toFixed(1)} ${ko ? '(급락)' : '(crash)'}`, best: `$${threeway.floorK.toFixed(1)}`, giveup: ko ? `$${threeway.subFloorK} 아래로 보호 찢어짐` : `protection tears below $${threeway.subFloorK}` },
-    { key: 'seagull', label: t('Seagull'), premium: '$0', worst: ko ? '무제한 (급등)' : 'unbounded (spike)', best: `$${seagull.floorK.toFixed(1)}`, giveup: ko ? `$${ceilK}에서 보호 종료` : `protection ends at $${ceilK}` },
+    { key: 'collar', label: t('Zero-cost collar'), premium: '$0', worst: `$${collar.capK.toFixed(1)}`, best: `$${collar.floorK.toFixed(1)}`, giveup: ko ? `$${collar.floorK.toFixed(1)} 아래 하락 이익` : `participation below $${collar.floorK.toFixed(1)}` },
+    { key: 'threeway', label: t('Three-way collar'), premium: '$0', worst: `$${Math.max(capK, threeway.floorK + threeway.subFloorK).toFixed(1)} ${ko ? '(급락 시)' : '(crash)'}`, best: `$${threeway.floorK.toFixed(1)}`, giveup: ko ? `$${threeway.subFloorK} 아래 급락 시 보호 소멸` : `protection tears below $${threeway.subFloorK}` },
+    { key: 'seagull', label: t('Seagull'), premium: '$0', worst: ko ? '무제한 (급등 시)' : 'unbounded (spike)', best: `$${seagull.floorK.toFixed(1)}`, giveup: ko ? `$${ceilK} 위로는 보호 없음` : `protection ends at $${ceilK}` },
   ]
 
   // 3:2:1 crack spread — refiners hedge the MARGIN, not just crude. Illustrative
@@ -222,14 +222,14 @@ export default function Instruments() {
             <MarketChip />
             <Chip from="Budget">
               {lang === 'ko' ? (
-                <>배분기 지시: WTI 레그의 <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> 커버 — 이 데스크를 통해 {(spine.budgetW1 * 2.0).toFixed(2)}M bbl</>
+                <>예산 배분기 지시: WTI 레그의 <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong>를 커버 — 이 데스크 몫 {(spine.budgetW1 * 2.0).toFixed(2)}M bbl</>
               ) : (
                 <>allocator says cover <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> of the WTI leg — {(spine.budgetW1 * 2.0).toFixed(2)}M bbl through this desk</>
               )}
             </Chip>
             <Chip from="Decision Dashboard">
               {lang === 'ko' ? (
-                <>공시 d* = <strong>{spine.dStar.toFixed(2)}</strong>가 헤지가 답해야 할 잔여 리스크 가격을 정한다</>
+                <>공시 d* = <strong>{spine.dStar.toFixed(2)}</strong>가 이 헤지가 마주할 잔여 리스크의 가격을 정합니다</>
               ) : (
                 <>disclosure d* = <strong>{spine.dStar.toFixed(2)}</strong> sets the residual-risk price the hedge answers to</>
               )}
@@ -394,9 +394,10 @@ export default function Instruments() {
                 <p className="ins-muted">
                   {lang === 'ko' ? (
                     <>
-                      정유사의 진짜 익스포저는 원유 가격이 아니라 <em>마진</em>이다.
-                      원유 3배럴을 사고 휘발유 2 + 중간유분 1을 판다. 크랙 스왑과 옵션은
-                      이 스프레드를 직접 고정하는, 위의 어떤 것과도 다른 기초자산이다.
+                      정유사의 진짜 익스포저는 원유 가격이 아니라 <em>마진</em>입니다.
+                      원유 3배럴을 사서 휘발유 2배럴과 중간유분 1배럴을 파는 구조라,
+                      크랙 스왑과 옵션은 이 스프레드 자체를 고정합니다. 위의 어떤
+                      상품과도 기초자산이 다릅니다.
                     </>
                   ) : (
                     <>
@@ -430,7 +431,7 @@ export default function Instruments() {
                     <strong>{t('Asian / average-price (APO)')}</strong>
                     <p>
                       {lang === 'ko' ? (
-                        <>단순 평균형은 한 달짜리 익스포저에 맞고 유러피언보다 싸다. <em>참고:</em> 논문의 아시안은 녹아웃으로 이그저틱화되어 있으며, 그 배리어 버전은 여기가 아니라 리서치 데스크에 있다.</>
+                        <>단순 평균형은 월 단위 익스포저에 맞고 유러피언보다 쌉니다. <em>참고:</em> 논문의 아시안 옵션에는 녹아웃이 붙어 있습니다. 그 배리어 버전은 여기가 아니라 리서치 데스크에서 다룹니다.</>
                       ) : (
                         <>Plain-vanilla averaging matches month-long exposure and is cheaper than European. <em>Note:</em> the paper's Asian is knock-out-exoticized; that barrier version lives in the research desk, not here.</>
                       )}

@@ -200,9 +200,9 @@ export default function Accounting() {
         <p className="ac-banner-inline">
           {lang === 'ko' ? (
             <>
-              IFRS 9가 강제하는 질문: 퀀토를{' '}
+              IFRS 9가 던지는 질문: 퀀토를{' '}
               <strong>하나의 통합 헤지 (A)</strong>로 지정할 것인가, 아니면{' '}
-              <strong>두 개의 라인 (B)</strong>으로 분리할 것인가? 경제적 실질은 같지만 장부는 크게 달라진다.
+              <strong>두 개의 라인 (B)</strong>으로 분리할 것인가? 경제적 실질은 같아도 장부는 크게 달라집니다.
             </>
           ) : (
             <>
@@ -227,10 +227,11 @@ export default function Accounting() {
         <p className="ac-note">
           {lang === 'ko' ? (
             <>
-              경제적 실질은 거의 같지만 회계는 다르다. 분리(B)는 손익 비유효 부분을
-              3.7× 줄이지만, KO 레그가 죽으면({(S.koProb * 100).toFixed(0)}% 확률) 그
-              대체 딜이 FVTPL로 잡혀 {bn(S.postKoFvtplStdB)} 규모의 이익 노이즈를
-              주입한다. 지정은 서류 작업이 아니라 리스크 결정이다.
+              경제적 실질은 거의 같아도 회계 결과는 다릅니다. 분리(B)는 손익에 잡히는
+              비유효 부분을 3.7배 줄이지만, KO 레그가 녹아웃되면(확률{' '}
+              {(S.koProb * 100).toFixed(0)}%) 대체 딜이 FVTPL로 분류되어{' '}
+              {bn(S.postKoFvtplStdB)} 규모의 손익 노이즈가 생깁니다. 지정은 서류
+              작업이 아니라 리스크에 관한 의사결정입니다.
             </>
           ) : (
             <>
@@ -284,16 +285,16 @@ export default function Accounting() {
             <>
               <li>
                 <strong>Hedge Instruments →</strong> 칼라의 정렬된 시간가치는 IFRS 9에서
-                OCI로 간다. 상품 데스크가 실제로 쓰는 바로 그 지정 장치다.
+                OCI로 들어갑니다. 실무 데스크가 실제로 쓰는 지정 방식 그대로입니다.
               </li>
               <li>
                 <strong>Exotic Desk →</strong> B의 녹아웃 이후 FVTPL 노이즈를 좌우하는 KO
-                확률은 배리어 리스크 모니터의 숫자다.
+                확률은 배리어 리스크 모니터에서 온 숫자입니다.
               </li>
               <li>
-                <strong>Decision Dashboard →</strong> 헤지회계 채택은 ESG 논문의 결과
-                변수다. 공시 의무의 정밀 추정 null은 바로 이 지정 선택에서
-                측정된다.
+                <strong>Decision Dashboard →</strong> 헤지회계 채택 여부는 ESG 논문의
+                결과 변수입니다. 공시 의무 효과의 정밀 null 추정도 바로 이 지정 선택
+                위에서 측정됩니다.
               </li>
             </>
           ) : (

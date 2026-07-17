@@ -315,8 +315,8 @@ export default function MetricEntry() {
           <p className="me-note">
             {lang === 'ko' ? (
               <>
-                {div.head}({t(div.name)}) 명의로 상신. 승인 값은 해당 사업부의
-                익스포저 파라미터와 기업 공시 강도에 반영된다.
+                {div.head}({t(div.name)}) 명의로 상신합니다. 승인된 값은 해당
+                사업부의 익스포저 파라미터와 전사 공시 강도에 반영됩니다.
               </>
             ) : (
               <>
