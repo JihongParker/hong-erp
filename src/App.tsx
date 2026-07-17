@@ -69,7 +69,9 @@ const ALL = GROUPS.flatMap((g) => g.items)
 
 // Guided walkthrough — five moves that show the whole system without any
 // finance background. Each step lands on a module and says exactly what to drag.
-const TOUR: { module: string; title: string; body: string; target: string; lift?: string; scrollSel?: string; scrollBlock?: ScrollLogicalPosition }[] = [
+// insTab drives the Hedge Instruments inner tab when the step activates — the
+// barrier step must actually open the quanto desk, not ask the reader to.
+const TOUR: { module: string; title: string; body: string; target: string; lift?: string; scrollSel?: string; scrollBlock?: ScrollLogicalPosition; insTab?: 'collar' | 'exotic' }[] = [
   {
     module: 'materiality',
     target: '.mat-controls',
@@ -104,6 +106,7 @@ const TOUR: { module: string; title: string; body: string; target: string; lift?
     lift: '.ins-tabs, .ins-strat, .ins-tiles',
     scrollSel: '.ins-tabs',
     scrollBlock: 'start',
+    insTab: 'collar',
     title: 'Build a free hedge',
     body: 'This is the Vanilla desk (top): five structures refiners actually run, in the strip below. Zero-cost collar is up: raise the cap slider and the desk instantly finds the floor that pays for it, net premium zero. The Quanto desk next door is the research side.',
   },
@@ -111,8 +114,9 @@ const TOUR: { module: string; title: string; body: string; target: string; lift?
     module: 'instruments',
     target: '.ins-tabs',
     lift: '.ex-deck',
+    insTab: 'exotic',
     title: 'Walk into the barrier',
-    body: 'Open this tab, then push the WTI spot slider up. The risk monitor climbs to Critical and the hedge starts working backwards: the exact place where textbook methods break.',
+    body: 'The quanto desk just opened for you. Push the WTI spot slider in the left panel toward the upper barrier: the risk monitor climbs to Critical and the delta starts working backwards — the exact place where textbook methods break.',
   },
   {
     module: 'accounting',
@@ -377,6 +381,11 @@ export default function App() {
     document.querySelectorAll('.tour-glow').forEach((el) => el.classList.remove('tour-glow'))
     document.querySelectorAll('.tour-lift').forEach((el) => el.classList.remove('tour-lift'))
     if (tour === null) return
+    // steps that need a specific Hedge Instruments tab open it themselves —
+    // the overlay must never instruct the reader to click something it covers
+    if (TOUR[tour].insTab) {
+      window.dispatchEvent(new CustomEvent('hongerp-instab', { detail: TOUR[tour].insTab }))
+    }
     let tries = 0
     let scrolled = false
     const apply = () => {

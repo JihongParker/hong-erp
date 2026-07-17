@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   black76Call,
   effectiveCost as E,
@@ -61,6 +61,16 @@ function InsTile({ label, value }: { label: string; value: string }) {
 
 export default function Instruments() {
   const [tab, setTab] = usePersistentState<'collar' | 'exotic'>('instruments.tab', 'collar')
+
+  // the guided tour drives the inner tab (vanilla ↔ quanto) through this event:
+  // the barrier step must actually open the quanto desk, not ask the reader to
+  useEffect(() => {
+    const onTab = (e: Event) =>
+      setTab((e as CustomEvent).detail === 'exotic' ? 'exotic' : 'collar')
+    window.addEventListener('hongerp-instab', onTab)
+    return () => window.removeEventListener('hongerp-instab', onTab)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const [strategy, setStrategy] = usePersistentState<Strat>('instruments.strategy', 'collar')
   // Market params: σ/T/r persist, but the forward F is always re-seeded from the
   // live FRED WTI close — persisting F would freeze the desk to a stale price.
