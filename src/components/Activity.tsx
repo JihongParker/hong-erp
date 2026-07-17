@@ -24,7 +24,7 @@ export default function Activity({ limit = 6, division }: { limit?: number; divi
         <li key={e.id}>
           <span className={`act-ic act-${e.action}`}>{ICONS[e.action] ?? '·'}</span>
           <span className="act-body">
-            <strong>{e.actor}</strong> {t(e.action)} — {e.detail}
+            <strong>{e.actor}</strong>{lang === 'ko' ? '님이 ' : ' '}{t(e.action)} — {e.detail}
           </span>
           <span className="act-time">{agoKo(e.ts, lang)}</span>
         </li>

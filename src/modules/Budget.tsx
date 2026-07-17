@@ -79,7 +79,7 @@ export default function Budget() {
       <div className="spine-row">
         <Chip from="Materiality">
           {lang === 'ko' ? (
-            <>상류에 중대 리스크 <strong>{spine.materialCount}</strong>개 — 이 배분은 시장리스크 쌍을 커버</>
+            <>중대 리스크 <strong>{spine.materialCount}</strong>개 확정 — 그중 시장 리스크(유가·환율)를 이 예산으로 커버합니다</>
           ) : (
             <><strong>{spine.materialCount}</strong> material risks upstream — this split covers the market-risk pair</>
           )}
