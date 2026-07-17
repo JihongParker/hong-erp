@@ -113,7 +113,9 @@ const TOUR: { module: string; title: string; body: string; target: string; lift?
   {
     module: 'instruments',
     target: '.ins-tabs',
-    lift: '.ex-deck',
+    // lift the quanto structure selector too — on the exotic tab .ins-strat is
+    // the Double-KO / European row, and it must read as part of this step
+    lift: '.ex-deck, .ins-strat',
     insTab: 'exotic',
     title: 'Walk into the barrier',
     body: 'The quanto desk just opened for you. Push the WTI spot slider in the left panel toward the upper barrier: the risk monitor climbs to Critical and the delta starts working backwards — the exact place where textbook methods break.',
