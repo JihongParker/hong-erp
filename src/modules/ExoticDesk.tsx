@@ -173,12 +173,12 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
       <p className="ex-foil-sub">
         {lang === 'ko' ? (
           <>
-            같은 녹아웃, 세 개의 숫자. 표준 이항 데스크 도구는 (그리고 그 도구가 좇는 정확한
-            1-요인 GBM 공식조차) 이 헤지가 대략 세 번에 한 번꼴로 사라진다고 말한다. 우리
-            점프-확산 퀀토 엔진은 거의 절반이라고 말한다. 그 격차가 바로{' '}
-            <strong> 교과서가 표현하지 못하는 생존 리스크</strong>다. 가격 점프도, 환율
-            상관성도 담기지 않는다. 이것을 과소평가한 방식이 바로 2008년 배리어 장부가 터진
-            경로였다.
+            같은 녹아웃을 두고 숫자가 셋입니다. 표준 이항 트리 도구도, 그 도구가 수렴해
+            가는 1-요인 GBM 정확해도 이 헤지가 세 번에 한 번꼴로 사라진다고 계산합니다.
+            반면 점프-확산 퀀토 엔진의 답은 거의 절반입니다. 이 격차가{' '}
+            <strong>교과서 모델로는 표현할 수 없는 생존 리스크</strong>입니다. 가격
+            점프도 환율 상관도 1-요인 GBM에는 들어갈 자리가 없습니다. 2008년 배리어
+            장부들이 무너진 것도 바로 이 부분을 과소평가했기 때문입니다.
           </>
         ) : (
           <>
@@ -212,7 +212,7 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
         <div className="tile hero">
           <span className="tile-label">{t('Our engine — true KO odds')}</span>
           <span className="tile-value">{(paperKo * 100).toFixed(1)}<span className="tile-unit">%</span></span>
-          <span className="tile-sub">{lang === 'ko' ? `점프-확산 퀀토, $${spot.toFixed(0)}에서` : `jump-diffusion quanto, at $${spot.toFixed(0)}`}</span>
+          <span className="tile-sub">{lang === 'ko' ? `점프-확산 퀀토 · 스팟 $${spot.toFixed(0)} 기준` : `jump-diffusion quanto, at $${spot.toFixed(0)}`}</span>
         </div>
         <div className={modelGap >= 0 ? 'tile danger' : 'tile naive'}>
           <span className="tile-label">{modelGap >= 0 ? t('Risk the textbook hides') : t('Textbook overshoots now')}</span>
@@ -252,9 +252,9 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
       <ul className="ex-foil-why">
         {lang === 'ko' ? (
           <>
-            <li><strong>교과서 값은 너무 높은 게 아니라 너무 낮다.</strong> 녹아웃은 발동되는 순간 헤지를 벌거벗은 익스포저로 바꿔 버린다. 그러니 KO 확률을 낮잡는 데스크 도구는 이 구조가 견디려고 존재하는 바로 그 재앙을 과소평가한다. 진실을 말하는 쪽은 우리 엔진이다.</li>
-            <li><strong>수치 오차는 사소한 부분이다.</strong> 들쭉날쭉한 선(래티스)과 회색 선(정확한 GBM)의 차이는 ~1pp에 불과하다. 순전히 노드 스트래들링(Boyle–Lau)이며, N을 키우면 줄어든다. 정작 중요한 {Math.abs(modelGap).toFixed(0)}pp는 산술이 아니라 모델에서 나온다.</li>
-            <li><strong>1-요인으로는 퀀토를 감당할 수 없다.</strong> 교과서 세계에는 FX 레그가 아예 없으므로, 논문의 퀀토 델타 Δ_FX = V/S₂와 공분산 승수 c* = {C_STAR}는 존재조차 하지 않는다. 교과서 숫자로 헤지하면 상관성 익스포저가 그대로 열린 채 남는다.</li>
+            <li><strong>교과서 값은 높은 쪽이 아니라 낮은 쪽으로 틀렸습니다.</strong> 녹아웃이 터지는 순간 헤지는 사라지고 익스포저만 고스란히 남습니다. KO 확률을 낮게 잡는 도구는, 이 구조가 막으라고 존재하는 바로 그 재앙을 과소평가하는 셈입니다.</li>
+            <li><strong>수치 오차는 곁가지입니다.</strong> 톱니 모양 선(래티스)과 회색 선(GBM 정확해)의 차이는 1pp 남짓으로, 노드 스트래들링(Boyle–Lau) 때문이며 N을 키우면 사라집니다. 정작 문제가 되는 {Math.abs(modelGap).toFixed(0)}pp 격차는 계산이 아니라 모델 선택에서 나옵니다.</li>
+            <li><strong>1-요인 모델로는 퀀토를 다룰 수 없습니다.</strong> 교과서 모델에는 FX 레그 자체가 없어서, 논문의 퀀토 델타 Δ_FX = V/S₂도 공분산 승수 c* = {C_STAR}도 정의되지 않습니다. 그 숫자로 헤지하면 상관 익스포저가 고스란히 열려 있게 됩니다.</li>
           </>
         ) : (
           <>
@@ -319,7 +319,7 @@ export default function ExoticDesk() {
     })
     toast(
       lang === 'ko'
-        ? `부킹 완료 — ${erp.divisions.find((d) => d.id === bookDiv)?.name} ${n.toFixed(2)}M bbl ${mode === 'euro' ? '유러피언 퀀토' : '퀀토'}.${mode === 'euro' ? '' : ' 배리어 확률이 회계로 흘러간다.'}`
+        ? `부킹 완료 — ${erp.divisions.find((d) => d.id === bookDiv)?.name} ${n.toFixed(2)}M bbl ${mode === 'euro' ? '유러피언 퀀토' : '퀀토'}.${mode === 'euro' ? '' : ' 배리어 확률은 헤지회계로 전달됩니다.'}`
         : `Booked — ${n.toFixed(2)}M bbl ${mode === 'euro' ? 'European quanto' : 'quanto'} for ${erp.divisions.find((d) => d.id === bookDiv)?.name}.${mode === 'euro' ? '' : ' Barrier odds flow to Accounting.'}`,
     )
   }
@@ -338,14 +338,14 @@ export default function ExoticDesk() {
         <MarketChip />
         <Chip from="Budget">
           {lang === 'ko' ? (
-            <>배분기 지시: WTI 레그의 <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> 커버 — 이 데스크를 통해 {(spine.budgetW1 * 2.0).toFixed(2)}M bbl</>
+            <>예산 배분기 지시: WTI 레그의 <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong>를 커버 — 이 데스크 몫 {(spine.budgetW1 * 2.0).toFixed(2)}M bbl</>
           ) : (
             <>allocator says cover <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> of the WTI leg — {(spine.budgetW1 * 2.0).toFixed(2)}M bbl through this desk</>
           )}
         </Chip>
         <Chip from="Decision Dashboard">
           {lang === 'ko' ? (
-            <>공시 d* = <strong>{spine.dStar.toFixed(2)}</strong>가 헤지가 답해야 할 잔여 리스크 가격을 정한다</>
+            <>공시 d* = <strong>{spine.dStar.toFixed(2)}</strong>가 이 헤지가 마주할 잔여 리스크의 가격을 정합니다</>
           ) : (
             <>disclosure d* = <strong>{spine.dStar.toFixed(2)}</strong> sets the residual-risk price the hedge answers to</>
           )}
@@ -409,10 +409,11 @@ export default function ExoticDesk() {
                 <div className="ex-contingency">
                   {lang === 'ko' ? (
                     <>
-                      <strong>KO 대응 계획:</strong> 구조가 녹아웃되면 익스포저는 살아
-                      있는데 헤지는 죽는다. 데스크 규칙: 잔여 익스포저는 같은 날 예산
-                      배분기(바닐라 레그 / 칼라)로 되돌린다. 계획은 배리어가 닿기{' '}
-                      <em>전에</em> 존재한다.
+                      <strong>KO 대응 계획:</strong> 구조가 녹아웃되면 익스포저는
+                      그대로인데 헤지만 사라집니다. 데스크 규칙은 하나 — 남은
+                      익스포저는 당일 안에 예산 배분기(바닐라 레그 / 칼라)로
+                      되돌립니다. 이 계획은 배리어에 닿기 <em>전에</em> 이미 서
+                      있어야 합니다.
                     </>
                   ) : (
                     <>
@@ -428,10 +429,10 @@ export default function ExoticDesk() {
               <div className="ex-contingency">
                 {lang === 'ko' ? (
                   <>
-                    <strong>배리어 없음.</strong> 가치는 스팟에 따라 단조 증가하고
-                    아무것도 녹아웃되지 않는다. 논문 구조를 퀀토 핵심만 남기고 벗겨낸
-                    것이다. 헤지로 부킹하기 위해서가 아니라 Double-KO에서 빼기 위해
-                    존재한다.
+                    <strong>배리어가 없습니다.</strong> 가치는 스팟을 따라 단조롭게
+                    오르고, 녹아웃될 것도 없습니다. 논문 구조에서 퀀토 뼈대만 남긴
+                    버전으로, 헤지로 부킹하기 위해서가 아니라 Double-KO 값에서 빼기
+                    위한 비교 기준입니다.
                   </>
                 ) : (
                   <>
@@ -502,7 +503,7 @@ export default function ExoticDesk() {
                   <Curve values={row.price} color="#2f6db4" spot={spot} fmt={(v) => `${(v / 1000).toFixed(0)}k`} />
                   <figcaption className="ex-cap">
                     {lang === 'ko' ? (
-                      <>가치는 S₁과 함께 오르다가 상단 배리어를 향해 무너진다. 자산별 델타 추정을 깨뜨리는 비단조성이자, 논문의 공분산 인식 c* ≠ 1인 이유다.</>
+                      <>가치는 S₁을 따라 오르다가 상단 배리어 앞에서 꺾여 내려갑니다. 이 비단조성이 자산별 델타 추정을 무너뜨리고, 논문에서 공분산을 반영한 c*가 1이 아닌 이유이기도 합니다.</>
                     ) : (
                       <>Value rises with S₁ then collapses toward the upper barrier: the non-monotonicity that makes per-asset delta estimation break, and the reason the paper's covariance-aware c* ≠ 1.</>
                     )}
@@ -514,7 +515,7 @@ export default function ExoticDesk() {
                   <Curve values={row.ko} color="#b3610f" spot={spot} fmt={(v) => `${(v * 100).toFixed(0)}%`} yMaxHint={1.05} />
                   <figcaption className="ex-cap">
                     {lang === 'ko' ? (
-                      <>만기 전에 어느 한쪽 배리어에 닿을 Q-측도 확률. 음영 가장자리는 데드존, 점선은 행사가 K={K}.</>
+                      <>만기 전에 어느 한쪽 배리어에 닿을 Q-측도 확률입니다. 음영 가장자리는 데드존, 점선은 행사가 K={K}.</>
                     ) : (
                       <>Q-measure probability of hitting either barrier before maturity. Shaded edges are the dead zones; dashed line is the strike K={K}.</>
                     )}
@@ -535,17 +536,17 @@ export default function ExoticDesk() {
                 <div className="tile">
                   <span className="tile-label">{t('Δ WTI — monotone')}</span>
                   <span className="tile-value">{euro.deltaWTI.toFixed(0)}</span>
-                  <span className="tile-badge">{lang === 'ko' ? `항상 ≥ 0 · 여기 배리어 Δ: ${dWti.toFixed(0)}` : `always ≥ 0 · barrier Δ here: ${dWti.toFixed(0)}`}</span>
+                  <span className="tile-badge">{lang === 'ko' ? `항상 ≥ 0 · 같은 지점의 배리어 Δ: ${dWti.toFixed(0)}` : `always ≥ 0 · barrier Δ here: ${dWti.toFixed(0)}`}</span>
                 </div>
                 <div className="tile">
                   <span className="tile-label">{t('Barrier destroys')}</span>
                   <span className="tile-value" style={{ color: '#b3610f' }}>{(destroyed * 100).toFixed(0)}%</span>
-                  <span className="tile-badge">{lang === 'ko' ? `유러피언 가치 대비, $${spot.toFixed(0)}에서` : `of European value, at $${spot.toFixed(0)}`}</span>
+                  <span className="tile-badge">{lang === 'ko' ? `유러피언 가치 대비 · 스팟 $${spot.toFixed(0)} 기준` : `of European value, at $${spot.toFixed(0)}`}</span>
                 </div>
                 <div className="tile">
                   <span className="tile-label">{t('c* covariance multiplier')}</span>
                   <span className="tile-value">{C_STAR}</span>
-                  <span className="tile-badge">{lang === 'ko' ? '아래 −ρσ₁σ₂ 드리프트에서' : 'from the −ρσ₁σ₂ drift below'}</span>
+                  <span className="tile-badge">{lang === 'ko' ? '아래 −ρσ₁σ₂ 드리프트에서 나온 값' : 'from the −ρσ₁σ₂ drift below'}</span>
                 </div>
               </div>
 
@@ -555,12 +556,13 @@ export default function ExoticDesk() {
                 <figcaption className="ex-cap">
                   {lang === 'ko' ? (
                     <>
-                      유러피언 가치(파랑)는 스팟과 함께 매끄럽게 오르고, Double-KO(주황)는
-                      정점을 찍은 뒤 각 배리어를 향해 무너진다. 음영 격차(${spot.toFixed(0)}에서
-                      가치의 <strong>{(destroyed * 100).toFixed(0)}%</strong>)가 배리어가 주입하는 생존
-                      리스크다. 배리어는 델타도 짓뭉갠다. 여기서 유러피언 Δ =
-                      +{euro.deltaWTI.toFixed(0)}인 반면 Double-KO는 {dWti.toFixed(0)}이며, 스팟이 상단
-                      배리어에 다가가면 음수로 돌아선다 — 유러피언은 결코 보이지 않는 반전이다.
+                      유러피언 가치(파랑)는 스팟을 따라 매끄럽게 오르지만, Double-KO(주황)는
+                      정점을 지나면 배리어 쪽으로 주저앉습니다. 두 곡선 사이의 음영이
+                      배리어가 얹는 생존 리스크로, ${spot.toFixed(0)} 기준 가치의{' '}
+                      <strong>{(destroyed * 100).toFixed(0)}%</strong>에 이릅니다. 델타도 함께 일그러집니다.
+                      지금 유러피언 Δ는 +{euro.deltaWTI.toFixed(0)}인데 Double-KO는 {dWti.toFixed(0)}이고,
+                      스팟이 상단 배리어에 다가서면 아예 음수로 뒤집힙니다. 유러피언에서는
+                      절대 나타나지 않는 반전입니다.
                     </>
                   ) : (
                     <>
@@ -579,11 +581,12 @@ export default function ExoticDesk() {
                 <p className="ex-cap" style={{ paddingTop: 0 }}>
                   {lang === 'ko' ? (
                     <>
-                      유러피언 드리프트는 r<sub>US</sub> − <strong>ρσ₁σ₂</strong>다.
-                      −ρσ₁σ₂ 항(ρ = {rho}, σ₁ = {sigma1.toFixed(3)}, σ₂ = {sigma2.toFixed(3)})은
-                      나이브한 c = 1 데스크가 빠뜨리는 퀀토 공분산 보정이다. 논문은 이를
-                      공분산 승수 <strong>c* = {C_STAR}</strong>로 정규화한다. 배리어가 있든 없든,
-                      c = 1로 두는 순간 퀀토 레그는 이미 잘못 가격이 매겨진다.
+                      유러피언 드리프트는 r<sub>US</sub> − <strong>ρσ₁σ₂</strong>입니다.
+                      이 −ρσ₁σ₂ 항(ρ = {rho}, σ₁ = {sigma1.toFixed(3)}, σ₂ = {sigma2.toFixed(3)})이
+                      바로 c = 1로 계산하는 데스크가 빠뜨리는 퀀토 공분산 보정입니다.
+                      논문은 이를 공분산 승수 <strong>c* = {C_STAR}</strong>로 정규화합니다.
+                      배리어가 있든 없든, c = 1로 두는 순간 퀀토 레그의 가격은 이미
+                      어긋나 있습니다.
                     </>
                   ) : (
                     <>

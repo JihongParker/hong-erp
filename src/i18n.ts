@@ -84,7 +84,7 @@ export const KO_DESC: Record<string, string> = {
 export const KO_TOUR: { title: string; body: string }[] = [
   {
     title: '무엇이 중요한지 정하기',
-    body: '중대성 기준선을 움직여 보세요. 기준을 넘는 리스크는 중대 항목이 되어 매트릭스에 불이 들어옵니다. 여기서 확정된 개수가 이후 모든 화면 상단에, 모델이 헤지할 익스포저로 따라붙습니다. ERP는 여기서 시작됩니다.',
+    body: '중대성 기준선을 움직여 보세요. 기준을 넘는 리스크는 중대 항목이 되어 매트릭스에 불이 들어옵니다. 여기서 확정된 항목 수는 이후 모든 화면 상단에 따라다니면서, 모델이 헤지할 익스포저가 됩니다. ERP는 여기서 시작됩니다.',
   },
   {
     title: '숫자를 상신하고 결재받기',
@@ -92,15 +92,15 @@ export const KO_TOUR: { title: string; body: string }[] = [
   },
   {
     title: '의무 공시를 올려 보기',
-    body: '의무 하한 슬라이더를 오른쪽으로 끌면서 위쪽 숫자를 지켜보세요. 헤지비율이 내려갑니다. 규제가 공시를 더 강제할수록, 헤지는 조용히 그만큼 내려갑니다.',
+    body: '의무 하한 슬라이더를 오른쪽으로 끌면서 위쪽 숫자를 지켜보세요. 헤지비율이 내려갑니다. 규제가 공시를 강하게 요구할수록 헤지는 그만큼 조용히 줄어듭니다.',
   },
   {
     title: '예산을 풀어 보기',
-    body: '예산 슬라이더를 올려 보세요. 쓸 수 있는 돈이 크게 늘어도 원유와 환의 배분은 97 / 3에서 거의 움직이지 않습니다. 예산 제약이 풀리는 순간, 배분을 정하는 건 지갑 크기가 아니라 시장의 형태입니다.',
+    body: '예산 슬라이더를 올려 보세요. 쓸 수 있는 돈이 크게 늘어도 원유와 환의 배분은 97 / 3에서 거의 움직이지 않습니다. 예산 제약이 풀리고 나면 배분을 정하는 것은 돈의 크기가 아니라 시장의 구조입니다.',
   },
   {
     title: '제로코스트 헤지 짜 보기',
-    body: '위쪽이 바닐라 데스크입니다. 정유사가 실제로 굴리는 다섯 가지 구조가 아래 띠에 있고, 지금은 제로코스트 칼라가 떠 있습니다. 캡 슬라이더를 올리면 데스크가 그 비용을 상쇄하는 플로어를 즉시 찾아 순 프리미엄을 0으로 맞춥니다. 옆의 퀀토 데스크는 리서치 영역입니다.',
+    body: '위쪽이 바닐라 데스크입니다. 정유사가 실제로 굴리는 다섯 가지 구조가 아래 띠에 있고, 지금은 제로코스트 칼라가 선택되어 있습니다. 캡 슬라이더를 올리면 데스크가 그 비용을 상쇄하는 플로어를 즉시 찾아 순 프리미엄을 0으로 맞춥니다. 옆의 퀀토 데스크는 리서치 영역입니다.',
   },
   {
     title: '배리어 앞까지 가 보기',
@@ -108,11 +108,11 @@ export const KO_TOUR: { title: string; body: string }[] = [
   },
   {
     title: '숫자를 따라가 보기',
-    body: '방금 설정한 녹아웃 확률이 스스로 여기까지, 화면 상단으로 넘어와 있습니다. 하나의 공유 상태로 모든 화면이 연결됩니다. 이 시스템의 핵심입니다.',
+    body: '방금 데스크에서 만든 녹아웃 확률이 어느새 이 화면 상단까지 따라와 있습니다. 모든 화면이 하나의 공유 상태로 연결되어 있기 때문입니다. 이 시스템의 핵심입니다.',
   },
   {
     title: '표본 밖에서 증명하기',
-    body: '지금까지는 한 장의 스냅샷이었습니다. 여기서는 같은 헤지를 실제 원유·환율 데이터 40년에 걸쳐 매달 다시 돌리되, 매 결정에 과거 데이터만 씁니다. 슬라이더를 조금만 건드려도 전체 이력이 다시 계산되는데, 그래도 헤지는 수입 대금의 출렁임을 약 89% 지웁니다. 돈을 버는 베팅이 아니라, 버텨 주는 헤지라는 것 — 그게 핵심입니다.',
+    body: '지금까지는 한 장의 스냅샷이었습니다. 여기서는 같은 헤지를 실제 원유·환율 데이터 40년에 걸쳐 매달 다시 돌리되, 매 결정에 과거 데이터만 씁니다. 슬라이더를 조금만 건드려도 전체 이력이 다시 계산되는데, 그래도 헤지는 수입 대금의 출렁임을 약 89% 지워 줍니다. 수익을 노리는 베팅이 아니라 흔들릴 때 버텨 주는 헤지, 그것이 핵심입니다.',
   },
 ]
 
@@ -125,45 +125,45 @@ export const KO_TOUR: { title: string; body: string }[] = [
 export const KO_COPY: Record<string, string> = {
   // ── Overview ──
   "Four papers, one Korean oil importer's WTI × USD/KRW exposure. Each picks up where the last leaves off.":
-    '논문 네 편, 한국 원유 수입사의 WTI × USD/KRW 익스포저 하나. 각 논문은 앞 논문이 끝난 지점에서 이어진다.',
+    '논문 네 편이 한국 원유 수입사의 WTI × USD/KRW 익스포저 하나를 릴레이로 다룹니다. 앞 논문이 끝난 자리에서 다음 논문이 이어집니다.',
   "Risks set the exposure, the budget hits the desks, the desks' knock-out odds drive the books, and disclosure closes the loop.":
-    '리스크가 익스포저를 정하고, 예산이 데스크로 내려가며, 데스크의 녹아웃 확률이 장부를 움직이고, 공시가 그 고리를 닫는다.',
+    '리스크 평가가 익스포저를 정하면 예산이 데스크로 내려가고, 데스크에서 산출된 녹아웃 확률이 장부에 반영되며, 마지막에 공시가 전체 흐름을 마무리합니다.',
   '+ two applied notes: KIKO forensics (P5) · the benign vs. the lethal barrier (P6)':
     '+ 응용 노트 두 편: KIKO 포렌식 (P5) · 무해한 배리어 vs. 치명적 배리어 (P6)',
 
   // ── Hedge Instruments: vanilla strategy blurbs ──
   'Lock the price. Zero premium, zero optionality — the corporate default.':
-    '가격을 고정한다. 프리미엄 0, 옵셔널리티 0 — 기업의 표준 선택.',
+    '선도 가격에 그대로 고정합니다. 프리미엄도 옵셔널리티도 없는, 기업 헤지의 기본값입니다.',
   'Buy protection outright, keep all the downside. Costs premium in cash.':
-    '보호를 직접 매수하고 하방 이익은 모두 유지한다. 대신 프리미엄을 현금으로 지불한다.',
+    '보호를 통째로 사 오고, 유가가 내릴 때의 이익은 전부 남깁니다. 대신 프리미엄이 현금으로 나갑니다.',
   'Cap financed by a sold floor. No cash out; you give up participation below the floor.':
     '플로어를 팔아 캡 프리미엄을 상쇄합니다. 들어가는 비용은 없지만, 유가가 플로어 아래로 내려갔을 때의 이익은 포기하는 구조입니다.',
   'Collar + a second sold put funds a lower floor, but a crash below it tears the protection back open.':
-    '칼라에 풋을 하나 더 매도해 더 낮은 플로어를 만든다. 다만 그 아래로 급락하면 보호막이 다시 찢어진다.',
+    '칼라에 풋을 한 장 더 팔아 플로어를 더 낮게 가져갑니다. 다만 유가가 그 아래로 급락하면 보호가 도로 뚫립니다.',
   'Collar whose upside cap ends at a ceiling. Cheaper strikes, but a spike past the ceiling re-exposes you.':
-    '상방 캡이 실링에서 끝나는 칼라. 행사가는 싸지지만, 실링을 넘어 급등하면 다시 익스포저가 열린다.',
+    '상방 보호가 실링까지만 미치는 칼라입니다. 그만큼 조건은 좋아지지만, 실링을 넘는 급등에는 다시 무방비가 됩니다.',
 
   // ── Hedge Instruments: the "zero cost" caveat banner ──
   [`"Zero cost" is not "no cost" — every sold leg is short optionality, paid for in scenarios rather than cash. Push it one step further and the sold wing becomes a barrier: the three-way and seagull are one calibration away from the knock-in/knock-out structures that devastated Korean SMEs in 2008. Barrier analytics for exactly that risk are the Exotic Desk's job (research tab).`]:
-    '‘제로 코스트’는 ‘무비용’이 아니다 — 매도한 레그는 모두 옵셔널리티 매도 포지션이며, 그 대가는 현금이 아니라 시나리오로 치른다. 여기서 한 걸음 더 나아가면 매도 윙이 배리어가 된다. 3-way와 시걸은 2008년 한국 중소기업을 무너뜨린 녹인/녹아웃 구조와 캘리브레이션 한 끗 차이다. 바로 그 리스크를 겨냥한 배리어 분석이 이그저틱 데스크(리서치 탭)의 몫이다.',
+    "'제로 코스트'는 공짜라는 뜻이 아닙니다. 매도한 레그는 전부 옵션을 판 포지션이고, 그 값은 현금 대신 불리한 시나리오에서 치르게 됩니다. 여기서 한 발만 더 나가면 매도 윙이 배리어로 변합니다. 3-way와 시걸은 2008년 한국 중소기업들을 무너뜨린 녹인/녹아웃 구조와 캘리브레이션 한 끗 차이입니다. 바로 그 리스크를 뜯어보는 배리어 분석은 이그저틱 데스크(리서치 탭)에서 다룹니다.",
 
   // ── Exotic Desk: structure-selector blurb ──
   'The paper structure: a double knock-out quanto priced from the jump-diffusion MC surface. Watch the value collapse and the delta reverse as spot nears a barrier.':
-    '논문의 구조. 점프-확산 MC 표면에서 프라이싱한 더블 녹아웃 퀀토. 스팟이 배리어에 다가갈수록 가치가 무너지고 델타가 뒤집히는 것을 지켜보라.',
+    '논문에서 다루는 바로 그 구조입니다. 점프-확산 몬테카를로 표면으로 가격을 매긴 더블 녹아웃 퀀토로, 스팟이 배리어에 가까워질수록 가치가 급락하고 델타의 부호가 뒤집힙니다.',
   'The same jump-diffusion calibration with both barriers removed, priced in closed form. Subtract it from the Double-KO and what is left is exactly the survival risk the barriers inject.':
-    '같은 점프-확산 캘리브레이션에서 두 배리어를 모두 제거해 닫힌 해로 프라이싱한다. 이 값을 더블 녹아웃에서 빼면 남는 것이 바로 배리어가 주입하는 생존 리스크다.',
+    '같은 점프-확산 캘리브레이션에서 배리어만 둘 다 걷어내고 닫힌 해로 가격을 구합니다. 더블 녹아웃 값에서 이 값을 빼면, 배리어가 얹는 생존 리스크만 정확히 남습니다.',
 
   // ── Disclosure report: header subtitle + footer ──
   'Prepared on the ISSB/KSSB four-pillar structure · demo document assembled live from the ERP ledgers':
     'ISSB/KSSB 4대 축 구조로 작성 · ERP 원장에서 실시간 조립한 데모 문서',
   'Sustainability data reaches this report only through a segregated approval workflow. Submission, review, booking and designation are held in four separate hands: division heads submit metrics, Audit (J. Kim) approves or rejects them, the Treasury desk books hedges, and the CFO office designates them. No single actor can both file a figure and sign it off.':
-    '지속가능성 데이터는 분리된 승인 워크플로를 거쳐야만 이 보고서에 도달한다. 상신·검토·기표·지정은 네 손에 나뉜다. 사업부장이 지표를 상신하고, 감사팀(J. Kim)이 승인 또는 반려하며, 자금부 데스크가 헤지를 부킹하고, CFO 오피스가 지정한다. 어느 한 주체도 수치를 작성하면서 동시에 승인할 수는 없다.',
+    '지속가능성 데이터는 분리된 승인 워크플로를 거쳐야만 본 보고서에 반영된다. 상신·검토·부킹·지정의 권한은 네 주체에 분리되어 있다. 사업부장이 지표를 상신하면 감사팀(J. Kim)이 승인 또는 반려하고, 자금부 데스크가 헤지를 부킹하며, CFO 오피스가 회계 지정을 맡는다. 수치를 작성한 사람이 그 수치를 승인할 수 없도록 설계된 구조다.',
   'Draft assembled from live ERP state: figures are demo data; engines are frozen paper transcriptions.':
-    '실시간 ERP 상태에서 조립한 초안. 수치는 데모 데이터이며, 엔진은 고정된 논문 전사본이다.',
+    '실시간 ERP 상태로부터 조립한 초안이다. 수치는 데모 데이터이며, 계산 엔진은 논문 수식을 그대로 옮겨 동결한 것이다.',
 
   // ── Backtest: control caption ──
   'Rolling window sets how much past data estimates Σ; budget caps total coverage (<2 binds); cost is charged on rebalancing turnover. The walk-forward result stays ~14pp above naive across the whole slider range — the edge is not a tuned artifact.':
-    '롤링 윈도는 Σ 추정에 과거 데이터를 얼마나 쓸지 정한다. 예산은 총 커버리지에 상한을 둔다(<2에서 바인딩). 비용은 리밸런싱 회전에 부과된다. 워크포워드 결과는 슬라이더 전 구간에서 나이브 대비 ~14pp 위를 유지한다 — 이 우위는 튜닝으로 만든 산물이 아니다.',
+    '롤링 윈도는 Σ를 추정할 때 과거 데이터를 몇 달치 쓸지 정합니다. 예산은 총 커버리지의 상한이고(2 밑에서 바인딩), 비용은 리밸런싱 회전량에 붙습니다. 워크포워드 결과는 슬라이더를 어디에 두든 나이브 대비 14pp 안팎 앞서 있어, 파라미터를 잘 골라 만든 우위가 아님을 보여 줍니다.',
 }
 
 // master lookup: base copy + the two layer dictionaries (later wins on dupes)

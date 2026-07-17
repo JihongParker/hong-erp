@@ -150,7 +150,8 @@ export default function Budget() {
                 <strong>상품 규칙 (§7–8):</strong> 스트레스 KO 확률{' '}
                 {(P1_INPUTS.p_KO_stress * 100).toFixed(0)}% ≫ 손익분기{' '}
                 {(P1_INPUTS.p_KO_breakeven * 100).toFixed(1)}% — 스트레스 상황에서는
-                WTI 장부를 <em>바닐라</em>로 유지한다. 실시간 확률: 이그저틱 데스크.
+                WTI 장부를 <em>바닐라</em>로 유지합니다. 실시간 확률은 이그저틱
+                데스크에서 볼 수 있습니다.
               </>
             ) : (
               <>
@@ -217,10 +218,10 @@ export default function Budget() {
             <figcaption className="bg-muted">
               {lang === 'ko' ? (
                 <>
-                  빨간 곡선: 총비용 경계 C = B. 점선: 배분 포락선. 최적해(점)는 꼭짓점에
-                  제약으로 고정된다. 그래서 10% 변동성 오차는 배분이{' '}
-                  <em>실현하는</em> 것을 바꿀 뿐, 배분 <em>자체</em>는 바꾸지 않는다
-                  (논문 §6.5).
+                  빨간 곡선은 총비용 경계 C = B, 점선은 배분 포락선입니다. 최적해(점)는
+                  제약에 붙들려 꼭짓점에 고정되어 있습니다. 그래서 변동성을 10% 잘못
+                  재더라도 배분이 <em>가져다주는 결과</em>가 달라질 뿐, 배분{' '}
+                  <em>자체</em>는 그대로입니다 (논문 §6.5).
                 </>
               ) : (
                 <>
@@ -252,10 +253,10 @@ export default function Budget() {
             <p className="bg-muted">
               {lang === 'ko' ? (
                 <>
-                  이 비대칭은 예산이 아니라 구조에서 온다. σ₁²/σ₂² ≈{' '}
+                  이 비대칭은 예산이 아니라 구조에서 옵니다. σ₁²/σ₂² ≈{' '}
                   {((regime === 'european' ? P1_INPUTS.sigma1EU : P1_INPUTS.sigma1AM) ** 2 / P1_INPUTS.sigma2 ** 2).toFixed(0)}
-                  ×이고 ρ ≈ 0.09이므로, 최소분산 배분은 예산을 없애도 FX 레그를 거의
-                  전부 열어 둔다 (논문 §6.2).
+                  ×에 ρ ≈ 0.09이므로, 예산 제약을 없애도 최소분산 배분은 FX 레그를
+                  거의 통째로 열어 둡니다 (논문 §6.2).
                 </>
               ) : (
                 <>
