@@ -120,7 +120,7 @@ export default function Overview({
                   <span className="ov-accent">비워 둔</span>
                   <span className="ov-underflow" aria-hidden />
                 </span>{' '}
-                의사결정 층
+                의사결정 레이어
               </>
             ) : (
               <>
@@ -135,10 +135,10 @@ export default function Overview({
           <p className="ov-lede reveal in">
             {lang === 'ko' ? (
               <>
-                ESG 도구는 기업이 공시하는 내용을 기록하고는 거기서 <strong>멈춥니다</strong>.
-                HongERP는 그 리스크를 트레이딩 데스크처럼 다룹니다: <strong>얼마나 헤지할지</strong>와{' '}
-                <strong>얼마나 공시할지</strong>를 함께 계산합니다. 리스크를 공시하면 그것을 떠안는 비용이
-                낮아지므로, 두 결정은 결국 하나입니다.
+                ESG 도구는 기업이 공시하는 내용을 기록하고는 거기서 <strong>멈춘다</strong>.
+                HongERP는 그 리스크를 트레이딩 데스크처럼 다룬다. <strong>얼마나 헤지할지</strong>와{' '}
+                <strong>얼마나 공시할지</strong>를 함께 계산한다. 리스크를 공시하면 떠안는 비용이
+                낮아지므로, 두 결정은 결국 하나다.
               </>
             ) : (
               <>

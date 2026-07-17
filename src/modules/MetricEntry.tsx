@@ -87,7 +87,7 @@ export default function MetricEntry() {
     setEvidence(false)
     toast(
       lang === 'ko'
-        ? `제출됨 — ${sel.dp.name} FY${year}이(가) 승인 대기열에 올라갔습니다`
+        ? `상신 완료 — ${sel.dp.name} FY${year} 결재함 등록`
         : `Submitted — ${sel.dp.name} FY${year} is now in the approval queue`,
     )
   }
@@ -97,7 +97,7 @@ export default function MetricEntry() {
     dispatch({ type: 'closePeriod', year })
     toast(
       lang === 'ko'
-        ? `FY${year} 마감됨 — 해당 기간은 새 이벤트에 대해 잠겼습니다`
+        ? `FY${year} 마감 완료. 이후 기표 불가`
         : `FY${year} closed — the period is locked to new events`,
     )
   }
@@ -154,7 +154,7 @@ export default function MetricEntry() {
     }
     toast(
       lang === 'ko'
-        ? `${imported}건 가져옴 · ${skipped}개 행 건너뜀`
+        ? `${imported}건 가져옴 · ${skipped}행 건너뜀`
         : `Imported ${imported} submissions · skipped ${skipped} rows`,
     )
   }
@@ -182,14 +182,14 @@ export default function MetricEntry() {
       <div className="spine-row">
         <Chip from={lang === 'ko' ? '의사결정 대시보드' : 'Decision Dashboard'}>
           {lang === 'ko' ? (
-            <>승인된 값이 공시 강도에 반영됩니다 — 현재 목표 d* = <strong>{spine.dStar.toFixed(2)}</strong></>
+            <>승인 값이 공시 강도에 반영 — 현재 목표 d* = <strong>{spine.dStar.toFixed(2)}</strong></>
           ) : (
             <>approved values feed disclosure intensity — current target d* = <strong>{spine.dStar.toFixed(2)}</strong></>
           )}
         </Chip>
         <Chip from={lang === 'ko' ? '감사 추적' : 'Audit trail'}>
           {lang === 'ko' ? (
-            <><strong>{pending.length}</strong>건의 제출이 {state.divisions.length}개 사업부에서 검토를 기다리는 중</>
+            <>{state.divisions.length}개 사업부에서 상신 <strong>{pending.length}</strong>건 결재 대기 중</>
           ) : (
             <><strong>{pending.length}</strong> submissions awaiting review across {state.divisions.length} divisions</>
           )}
@@ -203,14 +203,14 @@ export default function MetricEntry() {
           title={
             role !== 'cfo'
               ? lang === 'ko'
-                ? '기간을 마감하려면 CFO 역할로 전환하세요'
+                ? '기말 마감하려면 CFO 역할로 전환'
                 : 'Switch to the CFO role to close the period'
               : isClosed(year)
                 ? lang === 'ko'
-                  ? `FY${year}은(는) 이미 마감되었습니다`
+                  ? `FY${year} 이미 마감됨`
                   : `FY${year} is already closed`
                 : lang === 'ko'
-                  ? `FY${year} 잠금: 승인된 지표와 장부상 거래를 동결합니다`
+                  ? `FY${year} 잠금: 승인 지표와 부킹된 딜 동결`
                   : `Lock FY${year}: freeze its approved metrics and trades on book`
           }
           onClick={closePeriod}
@@ -225,7 +225,7 @@ export default function MetricEntry() {
               className="me-lock"
               title={
                 lang === 'ko'
-                  ? `${new Date(c.closedAt).toLocaleString()} 잠금 · 승인 ${c.approved}건, 장부상 거래 ${c.tradeCount}건`
+                  ? `${new Date(c.closedAt).toLocaleString()} 잠금 · 승인 ${c.approved}건, 부킹 딜 ${c.tradeCount}건`
                   : `Locked ${new Date(c.closedAt).toLocaleString()} · ${c.approved} approved, ${c.tradeCount} trades on book`
               }
             >
@@ -292,19 +292,19 @@ export default function MetricEntry() {
             title={
               isClosed(year)
                 ? lang === 'ko'
-                  ? `FY${year}은(는) 마감되었습니다`
+                  ? `FY${year} 마감됨`
                   : `FY${year} is closed`
                 : role !== 'division'
                   ? lang === 'ko'
-                    ? '제출하려면 사업부장 역할로 전환하세요'
+                    ? '상신하려면 사업부장 역할로 전환'
                     : 'Switch to the Division head role to submit'
                   : !canSubmit
                     ? !numeric
                       ? lang === 'ko'
-                        ? '0 이상의 숫자를 입력하세요'
+                        ? '0 이상의 숫자 입력'
                         : 'Enter a non-negative number'
                       : lang === 'ko'
-                        ? '제출하려면 증빙을 첨부하세요'
+                        ? '상신하려면 증빙 첨부'
                         : 'Attach evidence to submit'
                     : undefined
             }
@@ -315,8 +315,8 @@ export default function MetricEntry() {
           <p className="me-note">
             {lang === 'ko' ? (
               <>
-                {div.head}({t(div.name)}) 명의로 제출됩니다. 승인된 값은 해당
-                사업부의 익스포저 파라미터와 기업의 공시 강도에 반영됩니다.
+                {div.head}({t(div.name)}) 명의로 상신. 승인 값은 해당 사업부의
+                익스포저 파라미터와 기업 공시 강도에 반영된다.
               </>
             ) : (
               <>
@@ -364,7 +364,7 @@ export default function MetricEntry() {
                       {m.value.toLocaleString()} {m.unit}
                     </span>
                     <span className="me-qmeta">
-                      {lang === 'ko' ? `제출: ${m.by}` : `by ${m.by}`} · {agoKo(m.ts, lang)}
+                      {lang === 'ko' ? `상신: ${m.by}` : `by ${m.by}`} · {agoKo(m.ts, lang)}
                     </span>
                   </div>
                   <div className="me-qact">
@@ -397,7 +397,7 @@ export default function MetricEntry() {
         {/* ── division ledger: compact list, fits its column ── */}
         <div className="me-panel">
           <div className="me-panelhead">
-            <h3>{lang === 'ko' ? `${t(div.name)} 제출 원장` : `${div.name} submission ledger`}</h3>
+            <h3>{lang === 'ko' ? `${t(div.name)} 상신 원장` : `${div.name} submission ledger`}</h3>
             <button
               className="me-btn ghost sm"
               title={t('Download every approved metric (all divisions) as CSV')}
