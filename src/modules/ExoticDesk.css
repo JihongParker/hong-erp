@@ -69,6 +69,7 @@
 }
 
 .ex-panel label {
+  position: relative; /* anchors the HelpDot tooltip to the row */
   display: grid;
   grid-template-columns: 110px 1fr 52px;
   align-items: center;
@@ -78,6 +79,9 @@
 }
 
 .ex-plabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: var(--muted);
 }
 

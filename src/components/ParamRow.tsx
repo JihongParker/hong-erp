@@ -3,8 +3,8 @@
 // and behave identically. A circled "?" after the name opens a plain-language
 // explanation of the parameter (hover or click/tap) for readers without a
 // finance background.
-import { useState } from 'react'
 import type { CSSProperties } from 'react'
+import HelpDot from './HelpDot'
 
 // keyed by the descriptor that follows the symbol in the label — both the
 // English descriptor and its Korean rendering, since ParamRow receives the
@@ -82,7 +82,6 @@ export default function ParamRow({
   const [base, subMark] = sym.split('_')
   const fill = `${((value - min) / (max - min)) * 100}%`
   const help = HELP[desc]
-  const [helpOpen, setHelpOpen] = useState(false)
   return (
     <label className="param-row">
       <span className="param-name">
@@ -91,27 +90,7 @@ export default function ParamRow({
           {subMark && <sub className="p-sub">{subMark}</sub>}
         </span>
         <span className="p-desc">{desc}</span>
-        {help && (
-          <span className={helpOpen ? 'p-help open' : 'p-help'}>
-            <button
-              type="button"
-              aria-label={`${desc} — ${help}`}
-              aria-expanded={helpOpen}
-              onClick={(e) => {
-                // keep the wrapping <label> from focusing the slider
-                e.preventDefault()
-                e.stopPropagation()
-                setHelpOpen((o) => !o)
-              }}
-              onBlur={() => setHelpOpen(false)}
-            >
-              ?
-            </button>
-            <span className="p-help-tip" role="tooltip">
-              {help}
-            </span>
-          </span>
-        )}
+        {help && <HelpDot text={help} subject={desc} />}
       </span>
       <span className="p-track">
         <input
