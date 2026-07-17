@@ -254,7 +254,7 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
           <>
             <li><strong>교과서 값은 너무 높은 게 아니라 너무 낮다.</strong> 녹아웃은 발동되는 순간 헤지를 벌거벗은 익스포저로 바꿔 버린다. 그러니 KO 확률을 낮잡는 데스크 도구는 이 구조가 견디려고 존재하는 바로 그 재앙을 과소평가한다. 진실을 말하는 쪽은 우리 엔진이다.</li>
             <li><strong>수치 오차는 사소한 부분이다.</strong> 들쭉날쭉한 선(래티스)과 회색 선(정확한 GBM)의 차이는 ~1pp에 불과하다. 순전히 노드 스트래들링(Boyle–Lau)이며, N을 키우면 줄어든다. 정작 중요한 {Math.abs(modelGap).toFixed(0)}pp는 산술이 아니라 모델에서 나온다.</li>
-            <li><strong>1-요인으로는 퀀토를 감당할 수 없다.</strong> 교과서 세계에는 FX 다리가 아예 없으므로, 논문의 퀀토 델타 Δ_FX = V/S₂와 공분산 승수 c* = {C_STAR}는 존재조차 하지 않는다. 교과서 숫자로 헤지하면 상관성 익스포저가 그대로 열린 채 남는다.</li>
+            <li><strong>1-요인으로는 퀀토를 감당할 수 없다.</strong> 교과서 세계에는 FX 레그가 아예 없으므로, 논문의 퀀토 델타 Δ_FX = V/S₂와 공분산 승수 c* = {C_STAR}는 존재조차 하지 않는다. 교과서 숫자로 헤지하면 상관성 익스포저가 그대로 열린 채 남는다.</li>
           </>
         ) : (
           <>
@@ -338,7 +338,7 @@ export default function ExoticDesk() {
         <MarketChip />
         <Chip from="Budget">
           {lang === 'ko' ? (
-            <>배분기 지시: WTI 다리의 <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> 커버 — 이 데스크를 통해 {(spine.budgetW1 * 2.0).toFixed(2)}M bbl</>
+            <>배분기 지시: WTI 레그의 <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> 커버 — 이 데스크를 통해 {(spine.budgetW1 * 2.0).toFixed(2)}M bbl</>
           ) : (
             <>allocator says cover <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> of the WTI leg — {(spine.budgetW1 * 2.0).toFixed(2)}M bbl through this desk</>
           )}
@@ -411,7 +411,7 @@ export default function ExoticDesk() {
                     <>
                       <strong>KO 대응 계획:</strong> 구조가 녹아웃되면 익스포저는 살아
                       있는데 헤지는 죽는다. 데스크 규칙: 잔여 익스포저는 같은 날 예산
-                      배분기(바닐라 다리 / 칼라)로 되돌린다. 계획은 배리어가 닿기{' '}
+                      배분기(바닐라 레그 / 칼라)로 되돌린다. 계획은 배리어가 닿기{' '}
                       <em>전에</em> 존재한다.
                     </>
                   ) : (
@@ -583,7 +583,7 @@ export default function ExoticDesk() {
                       −ρσ₁σ₂ 항(ρ = {rho}, σ₁ = {sigma1.toFixed(3)}, σ₂ = {sigma2.toFixed(3)})은
                       나이브한 c = 1 데스크가 빠뜨리는 퀀토 공분산 보정이다. 논문은 이를
                       공분산 승수 <strong>c* = {C_STAR}</strong>로 정규화한다. 배리어가 있든 없든,
-                      c = 1로 두는 순간 퀀토 다리는 이미 잘못 가격이 매겨진다.
+                      c = 1로 두는 순간 퀀토 레그는 이미 잘못 가격이 매겨진다.
                     </>
                   ) : (
                     <>

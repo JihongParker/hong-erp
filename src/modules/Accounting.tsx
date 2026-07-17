@@ -228,7 +228,7 @@ export default function Accounting() {
           {lang === 'ko' ? (
             <>
               경제적 실질은 거의 같지만 회계는 다르다. 분리(B)는 손익 비유효 부분을
-              3.7× 줄이지만, KO 다리가 죽으면({(S.koProb * 100).toFixed(0)}% 확률) 그
+              3.7× 줄이지만, KO 레그가 죽으면({(S.koProb * 100).toFixed(0)}% 확률) 그
               대체 딜이 FVTPL로 잡혀 {bn(S.postKoFvtplStdB)} 규모의 이익 노이즈를
               주입한다. 지정은 서류 작업이 아니라 리스크 결정이다.
             </>

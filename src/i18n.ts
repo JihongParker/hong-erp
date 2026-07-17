@@ -83,38 +83,39 @@ export const KO_DESC: Record<string, string> = {
 // where a Korean gloss would read heavier than the English term.
 export const KO_TOUR: { title: string; body: string }[] = [
   {
-    title: '무엇이 중요한지 정한다',
-    body: '중대성 기준선을 움직여 보라. 기준을 넘는 리스크는 모두 중대 항목이 되어 매트릭스에 불이 들어온다. 여기서 확정된 개수가 이후 모든 화면 상단에, 모델이 헤지하는 익스포저로 따라붙는다. ERP는 여기서 시작된다.',
+    title: '무엇이 중요한지 정하기',
+    body: '중대성 기준선을 움직여 보세요. 기준을 넘는 리스크는 중대 항목이 되어 매트릭스에 불이 들어옵니다. 여기서 확정된 개수가 이후 모든 화면 상단에, 모델이 헤지할 익스포저로 따라붙습니다. ERP는 여기서 시작됩니다.',
   },
   {
-    title: '숫자를 입력하고 결재한다',
-    body: '사업부장이 여기서 지표를 상신하면 오른쪽 결재함으로 넘어가 감사팀이 승인한다. 승인된 값만이 의사결정 레이어가 돌리는 공시 강도 d*를 정한다. 결재를 거치지 않은 숫자는 모델에 닿지 않는다.',
+    title: '숫자를 상신하고 결재받기',
+    body: '사업부장이 지표를 상신하면 오른쪽 결재함으로 넘어가고, 감사팀이 승인합니다. 승인된 값만 의사결정 레이어의 공시 강도 d*에 반영됩니다. 결재를 거치지 않은 숫자는 모델에 닿지 않습니다.',
   },
   {
-    title: '의무 공시를 올려 본다',
-    body: '의무 하한 슬라이더를 오른쪽으로 끌며 위쪽 숫자를 보라. 헤지비율이 내려간다. 규제 당국이 기업에 공시를 더 강제하면, 헤지도 조용히 그만큼 내려간다.',
+    title: '의무 공시를 올려 보기',
+    body: '의무 하한 슬라이더를 오른쪽으로 끌면서 위쪽 숫자를 지켜보세요. 헤지비율이 내려갑니다. 규제가 공시를 더 강제할수록, 헤지는 조용히 그만큼 내려갑니다.',
   },
   {
-    title: '예산을 풀어 본다',
-    body: '예산 슬라이더를 올려 보라. 쓸 돈이 크게 늘어도 원유와 환의 배분은 97 / 3에서 거의 움직이지 않는다. 예산 제약이 풀리는 순간, 배분을 정하는 것은 지갑 크기가 아니라 시장의 형태다.',
+    title: '예산을 풀어 보기',
+    body: '예산 슬라이더를 올려 보세요. 쓸 수 있는 돈이 크게 늘어도 원유와 환의 배분은 97 / 3에서 거의 움직이지 않습니다. 예산 제약이 풀리는 순간, 배분을 정하는 건 지갑 크기가 아니라 시장의 형태입니다.',
   },
   {
-    title: '공짜 헤지를 짜 본다',
-    body: '위쪽이 바닐라 데스크다 — 정유사가 실제로 굴리는 다섯 구조가 아래 띠에 있다. 제로코스트 칼라가 떠 있다. 캡 슬라이더를 올리면 데스크가 그 비용을 상쇄하는 플로어를 즉시 찾아 순 프리미엄이 0이 된다. 옆의 퀀토 데스크는 리서치 쪽이다.',
+    title: '제로코스트 헤지 짜 보기',
+    body: '위쪽이 바닐라 데스크입니다. 정유사가 실제로 굴리는 다섯 가지 구조가 아래 띠에 있고, 지금은 제로코스트 칼라가 떠 있습니다. 캡 슬라이더를 올리면 데스크가 그 비용을 상쇄하는 플로어를 즉시 찾아 순 프리미엄을 0으로 맞춥니다. 옆의 퀀토 데스크는 리서치 영역입니다.',
   },
   {
-    title: '배리어 안으로 걸어 들어간다',
-    body: '이 탭을 연 다음 WTI 스팟 슬라이더를 밀어 올려 보라. 리스크 모니터가 위험까지 오르고 헤지가 거꾸로 작동하기 시작한다. 교과서적 방법이 무너지는 바로 그 지점이다.',
+    title: '배리어 앞까지 가 보기',
+    body: '이 탭을 연 다음 WTI 스팟 슬라이더를 밀어 올려 보세요. 리스크 모니터가 위험 단계까지 오르고, 헤지가 거꾸로 움직이기 시작합니다. 교과서적 방법이 무너지는 바로 그 지점입니다.',
   },
   {
-    title: '숫자를 따라가 본다',
-    body: '방금 설정한 녹아웃 확률이 스스로 여기까지, 화면 상단으로 넘어왔다. 하나의 공유 상태로 모든 화면이 연결된다. 그것이 이 시스템의 전부다.',
+    title: '숫자를 따라가 보기',
+    body: '방금 설정한 녹아웃 확률이 스스로 여기까지, 화면 상단으로 넘어와 있습니다. 하나의 공유 상태로 모든 화면이 연결됩니다. 이 시스템의 핵심입니다.',
   },
   {
-    title: '표본 밖에서 증명한다',
-    body: '지금까지는 전부 한 장의 스냅샷이었다. 여기서는 같은 헤지를 실제 원유·환 데이터 40년에 걸쳐 매달 다시 돌리되, 매 결정에 과거 데이터만 쓴다. 슬라이더를 조금만 건드려도 전체 이력이 다시 계산된다. 그래도 헤지는 수입 대금의 출렁임을 약 89% 지운다. 핵심은 이것이다 — 돈을 버는 베팅이 아니라, 그저 버텨 주는 헤지라는 것.',
+    title: '표본 밖에서 증명하기',
+    body: '지금까지는 한 장의 스냅샷이었습니다. 여기서는 같은 헤지를 실제 원유·환율 데이터 40년에 걸쳐 매달 다시 돌리되, 매 결정에 과거 데이터만 씁니다. 슬라이더를 조금만 건드려도 전체 이력이 다시 계산되는데, 그래도 헤지는 수입 대금의 출렁임을 약 89% 지웁니다. 돈을 버는 베팅이 아니라, 버텨 주는 헤지라는 것 — 그게 핵심입니다.',
   },
 ]
+
 
 // Running-prose dictionary for useT(). Keys are the final English strings exactly
 // as they render (whitespace collapsed to single spaces). Only plain-text blocks
@@ -144,7 +145,7 @@ export const KO_COPY: Record<string, string> = {
 
   // ── Hedge Instruments: the "zero cost" caveat banner ──
   [`"Zero cost" is not "no cost" — every sold leg is short optionality, paid for in scenarios rather than cash. Push it one step further and the sold wing becomes a barrier: the three-way and seagull are one calibration away from the knock-in/knock-out structures that devastated Korean SMEs in 2008. Barrier analytics for exactly that risk are the Exotic Desk's job (research tab).`]:
-    '‘제로 코스트’는 ‘무비용’이 아니다 — 매도한 다리는 모두 옵셔널리티 매도 포지션이며, 그 대가는 현금이 아니라 시나리오로 치른다. 여기서 한 걸음 더 나아가면 매도 윙이 배리어가 된다. 3-way와 시걸은 2008년 한국 중소기업을 무너뜨린 녹인/녹아웃 구조와 캘리브레이션 한 끗 차이다. 바로 그 리스크를 겨냥한 배리어 분석이 이그저틱 데스크(리서치 탭)의 몫이다.',
+    '‘제로 코스트’는 ‘무비용’이 아니다 — 매도한 레그는 모두 옵셔널리티 매도 포지션이며, 그 대가는 현금이 아니라 시나리오로 치른다. 여기서 한 걸음 더 나아가면 매도 윙이 배리어가 된다. 3-way와 시걸은 2008년 한국 중소기업을 무너뜨린 녹인/녹아웃 구조와 캘리브레이션 한 끗 차이다. 바로 그 리스크를 겨냥한 배리어 분석이 이그저틱 데스크(리서치 탭)의 몫이다.',
 
   // ── Exotic Desk: structure-selector blurb ──
   'The paper structure: a double knock-out quanto priced from the jump-diffusion MC surface. Watch the value collapse and the delta reverse as spot nears a barrier.':

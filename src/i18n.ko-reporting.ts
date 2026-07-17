@@ -170,7 +170,7 @@ export const KO_REPORTING: Record<string, string> = {
   'Full-sample MV (oracle)': '전체 표본 MV (오라클)',
   'Walk-forward MV': '워크포워드 MV',
   'carry the whole two-factor exposure': '2요인 익스포저 전체를 그대로 부담',
-  'split the budget evenly across both legs': '예산을 두 다리에 균등 분할',
+  'split the budget evenly across both legs': '예산을 두 레그에 균등 분할',
   'look-ahead: MV split on the full sample (upper bound)': '미래 참조: 전체 표본 MV 분할 (상한)',
   'covariance-aware split, estimated on strictly past data': '공분산 반영 분할, 철저히 과거 데이터로 추정',
   'Cumulative hedged cost — the flatter the better': '누적 헤지 비용 — 평평할수록 좋음',

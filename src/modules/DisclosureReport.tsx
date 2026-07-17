@@ -312,7 +312,7 @@ export default function DisclosureReport() {
               <>
                 배리어 구조는 WTI 기준 스팟 <strong>${spine.exoticSpot.toFixed(2)}</strong>에서 라이브 녹아웃
                 확률 <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong>를 가진다. 배리어를 넘어서면 녹아웃된
-                다리는 당기손익-공정가치(FVTPL)로 되돌아간다. 고정 헤지 예산은 WTI/FX 커버리지에{' '}
+                레그는 당기손익-공정가치(FVTPL)로 되돌아간다. 고정 헤지 예산은 WTI/FX 커버리지에{' '}
                 <strong>
                   {(spine.budgetW1 * 100).toFixed(1)}% / {(spine.budgetW2 * 100).toFixed(1)}%
                 </strong>{' '}
