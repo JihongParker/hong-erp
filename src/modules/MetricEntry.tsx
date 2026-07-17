@@ -210,7 +210,7 @@ export default function MetricEntry() {
                   ? `FY${year} 이미 마감됨`
                   : `FY${year} is already closed`
                 : lang === 'ko'
-                  ? `FY${year} 잠금: 승인 지표와 부킹된 딜 동결`
+                  ? `FY${year} 잠금: 승인 지표와 체결된 딜 동결`
                   : `Lock FY${year}: freeze its approved metrics and trades on book`
           }
           onClick={closePeriod}
@@ -225,7 +225,7 @@ export default function MetricEntry() {
               className="me-lock"
               title={
                 lang === 'ko'
-                  ? `${new Date(c.closedAt).toLocaleString()} 잠금 · 승인 ${c.approved}건, 부킹 딜 ${c.tradeCount}건`
+                  ? `${new Date(c.closedAt).toLocaleString()} 잠금 · 승인 ${c.approved}건, 체결 딜 ${c.tradeCount}건`
                   : `Locked ${new Date(c.closedAt).toLocaleString()} · ${c.approved} approved, ${c.tradeCount} trades on book`
               }
             >

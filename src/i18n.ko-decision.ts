@@ -11,7 +11,7 @@ export const KO_DECISION: Record<string, string> = {
   'Validation': '검증',
   'Acting as': '현재 역할',
   'Switch acting role — gates who can submit, approve, book and designate':
-    '역할 전환 — 상신·승인·부킹·지정 권한이 역할에 따라 달라집니다',
+    '역할 전환 — 상신·승인·체결·지정 권한이 역할에 따라 달라집니다',
   'Guide language': '가이드 언어',
   'Restore the seeded demo ledgers': '시드 데모 원장 복원',
   'Reset demo data (all divisions)': '데모 데이터 초기화 (전 사업부)',
@@ -53,8 +53,8 @@ export const KO_DECISION: Record<string, string> = {
   'One position, four papers, one chain.': '하나의 포지션, 네 편의 논문, 하나의 흐름.',
   'The sidebar is a data flow, not a menu.': '사이드바는 메뉴가 아니라 데이터의 흐름입니다.',
   'And it all moves.': '그리고 이 모든 것이 실시간으로 움직입니다.',
-  'Drag a dial, the equilibrium recomputes. Flip through, or let them play.':
-    '다이얼을 움직이면 균형이 그 자리에서 다시 계산됩니다. 직접 넘겨 봐도, 자동 재생으로 둬도 됩니다.',
+  'Drag a dial, the equilibrium recomputes.': '다이얼을 움직이면 균형이 그 자리에서 다시 계산됩니다.',
+  'Flip through, or let them play.': '직접 넘겨 봐도, 자동 재생으로 둬도 됩니다.',
   'See where the decision gets made.': '결정이 만들어지는 과정을 확인해 보세요.',
   'Take a look': '직접 살펴보기',
   'Start': '시작',
@@ -72,7 +72,7 @@ export const KO_DECISION: Record<string, string> = {
     '논문 엔진 표면 그대로 · 녹아웃 확률 43.5%가 논문 값 43.7%와 일치',
   'IFRS 9 cash-flow-hedge accounting: combined vs split': 'IFRS 9 현금흐름위험회피 회계: 통합 vs 분리',
   'Book the resulting hedge two legal ways. Same economics, very different earnings.':
-    '같은 헤지를 두 가지 회계 방식으로 부킹합니다. 경제적 실질은 같지만 손익은 크게 달라집니다.',
+    '같은 헤지를 두 가지 회계 방식으로 장부에 올립니다. 경제적 실질은 같지만 손익은 크게 달라집니다.',
   'Designation ledgers verbatim: ineffectiveness ₩23.4bn vs ₩6.4bn':
     '지정 원장 그대로: 비유효 부분 ₩23.4bn vs ₩6.4bn',
   'ESG disclosure mandates and corporate hedging': 'ESG 공시 의무와 기업 헤지',
@@ -182,10 +182,10 @@ export const KO_DECISION: Record<string, string> = {
     '풋을 하나 더 팔아 일반 칼라보다 낮은 플로어를 얻는 대신, 그 아래 급락 구간에서는 보호가 사라집니다.',
   'Selling a far call cheapens the structure and lowers the floor, but caps how far your protection reaches.':
     '외가격 콜을 팔면 구조가 싸지고 플로어도 내려가지만, 보호가 미치는 범위는 그만큼 좁아집니다.',
-  'Book this structure': '이 구조 부킹',
+  'Book this structure': '이 구조 체결',
   'Division': '사업부',
   'Notional (M bbl)': '명목금액 (M bbl)',
-  'Switch to the Treasury desk role to book': '부킹하려면 자금부 데스크 역할로 전환',
+  'Switch to the Treasury desk role to book': '체결하려면 자금부 데스크 역할로 전환',
   'Strategy comparison — one market, every structure': '전략 비교 — 하나의 시장, 모든 구조',
   'Strategy': '전략',
   'Upfront premium': '선불 프리미엄',
@@ -210,7 +210,7 @@ export const KO_DECISION: Record<string, string> = {
   'Double-KO quanto': 'Double-KO 퀀토',
   'European quanto': '유러피언 퀀토',
   'barrier · paper surface': '배리어 · 논문 표면',
-  'ablation · no barrier': '어블레이션 · 배리어 없음',
+  'ablation · no barrier': '대조용 · 배리어 없음',
   'Lattice steps N': '래티스 스텝 N',
   'model risk': '모델 리스크',
   'Textbook desk says': '교과서 데스크의 답',
@@ -226,6 +226,11 @@ export const KO_DECISION: Record<string, string> = {
   'Critical': '위험',
   'WTI spot S₁': 'WTI 스팟 S₁',
   'Time to maturity': '만기까지 기간',
+  'Current WTI spot — sets how close you stand to the barriers':
+    '현재 WTI 현물 가격 — 배리어까지의 거리가 여기서 정해집니다',
+  'Time left until the structure expires': '구조가 만기될 때까지 남은 기간',
+  'Binomial tree steps — more steps, less numerical wobble':
+    '이항 트리 스텝 수 — 늘릴수록 수치 오차가 줄어듭니다',
   'Value (KRW / unit)': '가치 (KRW / 단위)',
   'Δ WTI (regression-grid FD)': 'Δ WTI (회귀격자 FD)',
   'Δ FX = V/S₂ (homogeneity thm)': 'Δ FX = V/S₂ (동차성 정리)',
@@ -254,13 +259,13 @@ export const KO_DECISION: Record<string, string> = {
   'Instrument': '상품',
   'Terms': '거래조건',
   'Notional': '명목금액',
-  'Booked': '부킹 시각',
+  'Booked': '체결 시각',
   'Designation': '지정',
   'Cash-flow hedge, combined designation': '현금흐름위험회피, 통합 지정',
   'Cash-flow hedge, split designation': '현금흐름위험회피, 분리 지정',
   'Switch to the CFO role to designate': '지정하려면 CFO 역할로 전환',
   "Book structures on the instrument desks and they land here; the designation choice decides which of the two ledger regimes below governs each trade's earnings path.":
-    '상품 데스크에서 부킹한 구조는 전부 이 블로터로 들어옵니다. 어떤 지정을 고르느냐에 따라, 아래 두 원장 체계 중 어느 쪽이 그 딜의 손익 경로를 좌우할지 정해집니다.',
+    '상품 데스크에서 체결한 구조는 전부 이 블로터로 들어옵니다. 어떤 지정을 고르느냐에 따라, 아래 두 원장 체계 중 어느 쪽이 그 딜의 손익 경로를 좌우할지 정해집니다.',
   'The designation trade-off': '지정의 트레이드오프',
   'A — combined': 'A — 통합',
   'B — split': 'B — 분리',

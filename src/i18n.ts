@@ -75,7 +75,7 @@ export const KO_DESC: Record<string, string> = {
   report: 'ISSB/KSSB 4대 축 초안 — 승인 지표·헤지 북·의사결정 레이어에서 실시간 조립',
   scenario: '사업부 단위 파라미터 → 전략 비교',
   backtest: 'FRED 40년 데이터 워크포워드 헤지 백테스트 — 알파가 아니라 실현 변동성 축소',
-  audittrail: '추가 전용 이벤트 원장 — 모든 상신·승인·부킹·지정 기록',
+  audittrail: '추가 전용 이벤트 원장 — 모든 상신·승인·체결·지정 기록',
 }
 
 // Korean guided-tour copy, in the same order as TOUR in App.tsx (8 steps). Kept
@@ -157,7 +157,7 @@ export const KO_COPY: Record<string, string> = {
   'Prepared on the ISSB/KSSB four-pillar structure · demo document assembled live from the ERP ledgers':
     'ISSB/KSSB 4대 축 구조로 작성 · ERP 원장에서 실시간 조립한 데모 문서',
   'Sustainability data reaches this report only through a segregated approval workflow. Submission, review, booking and designation are held in four separate hands: division heads submit metrics, Audit (J. Kim) approves or rejects them, the Treasury desk books hedges, and the CFO office designates them. No single actor can both file a figure and sign it off.':
-    '지속가능성 데이터는 분리된 승인 워크플로를 거쳐야만 본 보고서에 반영된다. 상신·검토·부킹·지정의 권한은 네 주체에 분리되어 있다. 사업부장이 지표를 상신하면 감사팀(J. Kim)이 승인 또는 반려하고, 자금부 데스크가 헤지를 부킹하며, CFO 오피스가 회계 지정을 맡는다. 수치를 작성한 사람이 그 수치를 승인할 수 없도록 설계된 구조다.',
+    '지속가능성 데이터는 분리된 승인 워크플로를 거쳐야만 본 보고서에 반영된다. 상신·검토·체결·지정의 권한은 네 주체에 분리되어 있다. 사업부장이 지표를 상신하면 감사팀(J. Kim)이 승인 또는 반려하고, 자금부 데스크가 헤지를 체결하며, CFO 오피스가 회계 지정을 맡는다. 수치를 작성한 사람이 그 수치를 승인할 수 없도록 설계된 구조다.',
   'Draft assembled from live ERP state: figures are demo data; engines are frozen paper transcriptions.':
     '실시간 ERP 상태로부터 조립한 초안이다. 수치는 데모 데이터이며, 계산 엔진은 논문 수식을 그대로 옮겨 동결한 것이다.',
 
