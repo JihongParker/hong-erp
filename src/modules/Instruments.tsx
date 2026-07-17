@@ -14,6 +14,7 @@ import { usePersistentState } from '../state/persist'
 import { MARKET } from '../state/market'
 import MarketChip from '../components/MarketChip'
 import ParamRow from '../components/ParamRow'
+import HelpDot from '../components/HelpDot'
 import { usePulse } from '../components/usePulse'
 import { useToast } from '../components/Toast'
 import { useT, useLang } from '../i18n'
@@ -129,7 +130,7 @@ export default function Instruments() {
     })
     toast(
       lang === 'ko'
-        ? `부킹 완료 — ${erp.divisions.find((d) => d.id === bookDiv)?.name} ${n.toFixed(2)}M bbl ${t(STRAT_NAME[strategy])}. 헤지회계 딜 블로터에서 확인.`
+        ? `체결 완료 — ${erp.divisions.find((d) => d.id === bookDiv)?.name} ${n.toFixed(2)}M bbl ${t(STRAT_NAME[strategy])}. 헤지회계 딜 블로터에서 확인.`
         : `Booked — ${n.toFixed(2)}M bbl ${STRAT_NAME[strategy]} for ${erp.divisions.find((d) => d.id === bookDiv)?.name}. See the blotter in Hedge Accounting.`,
     )
   }
@@ -246,7 +247,10 @@ export default function Instruments() {
                 className={strategy === s.key ? 'ins-strat-btn active' : 'ins-strat-btn'}
                 onClick={() => setStrategy(s.key)}
               >
-                <span className="ins-strat-name">{t(s.name)}</span>
+                <span className="ins-strat-name">
+                  {t(s.name)}
+                  <HelpDot text={t(s.blurb)} subject={t(s.name)} />
+                </span>
                 <span className={s.tag === 'sold wing' ? 'ins-strat-tag warn' : 'ins-strat-tag'}>{t(s.tag)}</span>
               </button>
             ))}
@@ -306,7 +310,7 @@ export default function Instruments() {
                     title={!canBook ? t('Switch to the Treasury desk role to book') : undefined}
                     onClick={bookStructure}
                   >
-                    {lang === 'ko' ? `${t(STRAT_NAME[strategy])} 부킹` : `Book ${STRAT_NAME[strategy].toLowerCase()}`}
+                    {lang === 'ko' ? `${t(STRAT_NAME[strategy])} 체결` : `Book ${STRAT_NAME[strategy].toLowerCase()}`}
                   </button>
                 </div>
               </div>

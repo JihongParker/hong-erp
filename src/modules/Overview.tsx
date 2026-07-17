@@ -159,10 +159,12 @@ export default function Overview({
               <span className="ov-btn-sub">{t('guided · no finance needed')}</span>
             </button>
           </div>
-          <button className="ov-scrollcue reveal in" onClick={() => chainRef.current?.scrollIntoView({ behavior: 'smooth' })}>
-            {t('or follow the chain')} <span className="ov-cue-arrow">↓</span>
-          </button>
         </div>
+        {/* direct child of the hero flex column: auto margins centre it in the
+            open water between the hero copy and the chain section */}
+        <button className="ov-scrollcue reveal in" onClick={() => chainRef.current?.scrollIntoView({ behavior: 'smooth' })}>
+          {t('or follow the chain')} <span className="ov-cue-arrow">↓</span>
+        </button>
       </section>
 
       {/* ── 2 · the research chain ── */}
@@ -209,7 +211,11 @@ export default function Overview({
       <section className="ov-live reveal">
         <div className="ov-live-head">
           <h3>{t('And it all moves.')}</h3>
-          <p>{t('Drag a dial, the equilibrium recomputes. Flip through, or let them play.')}</p>
+          <p>
+            {/* one sentence per inline-block: the wrap can only land between sentences */}
+            <span className="ov-sent">{t('Drag a dial, the equilibrium recomputes.')}</span>{' '}
+            <span className="ov-sent">{t('Flip through, or let them play.')}</span>
+          </p>
         </div>
         <AppPreview />
       </section>

@@ -262,7 +262,7 @@ nav {
   align-self: center;
 }
 
-.p-help button {
+.p-help .p-help-btn {
   width: 13px;
   height: 13px;
   padding: 0;
@@ -277,12 +277,13 @@ nav {
   align-items: center;
   justify-content: center;
   cursor: help;
+  user-select: none;
   transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
-.p-help:hover button,
-.p-help.open button,
-.p-help button:focus-visible {
+.p-help:hover .p-help-btn,
+.p-help.open .p-help-btn,
+.p-help .p-help-btn:focus-visible {
   color: var(--accent);
   border-color: var(--accent);
   background: var(--accent-soft);
@@ -315,7 +316,7 @@ nav {
 
 .p-help:hover .p-help-tip,
 .p-help.open .p-help-tip,
-.p-help button:focus-visible + .p-help-tip {
+.p-help .p-help-btn:focus-visible + .p-help-tip {
   opacity: 1;
   visibility: visible;
 }

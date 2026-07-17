@@ -4,9 +4,10 @@ import './AppPreview.css'
 // Hero stage: a live photocard stack. Each card is a miniature of one module,
 // its picture continuously morphing under an internal "dial" (a looping value
 // that plays the module's key motion like a gif). Left/right arrows flip cards;
-// with no interaction it auto-advances every 5s. The stack tilts in perspective
-// and drifts on scroll (parallax). Decorative — the real screens are one click
-// away — and reduced-motion safe.
+// it auto-advances every 2.7s, pausing for 8s after any manual interaction
+// (hover alone never pauses it — the cursor naturally rests on the stage).
+// The stack tilts in perspective and drifts on scroll (parallax). Decorative —
+// the real screens are one click away — and reduced-motion safe.
 
 const C_FIN = '#2f6db4'
 const C_CLI = '#2e7d52'
@@ -70,8 +71,12 @@ function budget(d: number) {
         <line key={v} x1={pl} y1={Y(v)} x2={W - pr} y2={Y(v)} stroke="var(--line)" strokeWidth={1} />
       ))}
       <line x1={X(1)} y1={Y(0)} x2={X(0.8)} y2={Y(0.2)} stroke="var(--muted)" strokeWidth={1} strokeDasharray="4 4" />
+      {/* feasible sliver between the cost boundary and the envelope */}
+      <path d={`M${X(1)},${Y(0.01)} C${X(0.97)},${Y(0.05)} ${X(0.965)},${Y(0.12)} ${X(0.955)},${Y(0.2)} L${X(0.8)},${Y(0.2)} L${X(1)},${Y(0)}Z`} fill={C_ACC} opacity={0.06} />
       <path d={`M${X(1)},${Y(0.01)} C${X(0.97)},${Y(0.05)} ${X(0.965)},${Y(0.12)} ${X(0.955)},${Y(0.2)}`} fill="none" stroke={C_ACC} strokeWidth={1.6} />
+      <circle cx={X(w1)} cy={Y(w2)} r={10} fill={C_ACC} opacity={0.16} />
       <circle cx={X(w1)} cy={Y(w2)} r={5.5} fill={C_ACC} stroke="#fff" strokeWidth={2} />
+      <text x={X(0.955) + 4} y={Y(0.055)} className="hc-lbl" fill={C_ACC}>C = B</text>
       <text x={X(0.86)} y={Y(0.17)} className="hc-lbl" fill="var(--muted)">w₁+w₂=1</text>
     </svg>
   )
@@ -92,30 +97,74 @@ function collar(d: number) {
         <line key={f} x1={pl} y1={pt + f * (H - pt - pb)} x2={W - pr} y2={pt + f * (H - pt - pb)} stroke="var(--line)" strokeWidth={1} />
       ))}
       <path d={line((s) => s, X, Y)} fill="none" stroke="var(--muted)" strokeWidth={1.4} strokeDasharray="4 4" />
-      <path d={line(pay, X, Y)} fill="none" stroke={C_FIN} strokeWidth={2.6} />
-      <text x={W - pr + 5} y={Y(cap) + 4} fill={C_FIN} className="hc-lbl">collar</text>
+      <path d={line(pay, X, Y)} fill="none" stroke={C_FIN} strokeWidth={2.6} strokeLinecap="round" />
+      {/* kink markers: where the sold floor and bought cap take over */}
+      <circle cx={X(floor)} cy={Y(floor)} r={3.5} fill={C_FIN} stroke="#fff" strokeWidth={1.5} />
+      <circle cx={X(cap)} cy={Y(cap)} r={3.5} fill={C_FIN} stroke="#fff" strokeWidth={1.5} />
+      <text x={W - pr + 5} y={Y(cap) + 4} fill={C_FIN} className="hc-lbl">cap</text>
+      <text x={W - pr + 5} y={Y(floor) + 4} fill={C_FIN} className="hc-lbl" opacity={0.7}>floor</text>
     </svg>
   )
 }
 
-// ── card 4: Exotic Desk — barrier squeeze, spot travelling the corridor ──
+// ── card 4: Exotic Desk — the barrier squeeze in full: value hump collapsing
+// into the barriers, KO-probability bed underneath, and the delta tangent
+// flipping sign as spot walks the corridor ──
+const exoticVal = (t: number) => (t ** 1.5 * (1 - t) ** 0.7) / (0.62 ** 1.5 * 0.38 ** 0.7)
+const exoticKoP = (t: number) => 0.22 + 0.66 * Math.abs(2 * t - 1) ** 1.6
 function exotic(d: number) {
   const pl = 14, pr = 48, pt = 16, pb = 20
   const X = (t: number) => pl + t * (W - pl - pr)
   const Y = (v: number) => pt + (1 - v) * (H - pt - pb)
-  // U-shaped KO probability across the corridor; spot travels left→right→left
-  const ko = (t: number) => 0.30 + 0.62 * Math.abs(2 * t - 1) ** 1.5
-  const st = d
+  // keep the travelling spot off the exact barriers so the marker stays readable
+  const st = 0.06 + d * 0.88
+  const slope = (exoticVal(st + 0.01) - exoticVal(st - 0.01)) / 0.02
+  // unit tangent segment at the spot — the delta the textbook can't see
+  const dxN = 16 / Math.hypot(1, slope * 0.4)
+  const dyN = dxN * slope * 0.4
+  const area =
+    Array.from({ length: 41 }, (_, i) => {
+      const t = i / 40
+      return `${i ? 'L' : 'M'}${X(t).toFixed(1)},${Y(exoticKoP(t) * 0.45).toFixed(1)}`
+    }).join('') + `L${X(1).toFixed(1)},${Y(0)}L${X(0).toFixed(1)},${Y(0)}Z`
+  const nearBarrier = Math.min(st, 1 - st) < 0.18
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="hc-svg">
-      <line x1={X(0)} y1={pt} x2={X(0)} y2={H - pb} stroke={C_AMBER} strokeWidth={1.4} />
-      <line x1={X(1)} y1={pt} x2={X(1)} y2={H - pb} stroke={C_AMBER} strokeWidth={1.4} />
+      <defs>
+        {/* dead zones: the corridor edges fade to amber where value dies */}
+        <linearGradient id="apx-dead-l" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor={C_AMBER} stopOpacity="0.16" />
+          <stop offset="1" stopColor={C_AMBER} stopOpacity="0" />
+        </linearGradient>
+        <linearGradient id="apx-dead-r" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor={C_AMBER} stopOpacity="0" />
+          <stop offset="1" stopColor={C_AMBER} stopOpacity="0.16" />
+        </linearGradient>
+      </defs>
+      <rect x={X(0)} y={pt} width={X(0.14) - X(0)} height={H - pt - pb} fill="url(#apx-dead-l)" />
+      <rect x={X(0.86)} y={pt} width={X(1) - X(0.86)} height={H - pt - pb} fill="url(#apx-dead-r)" />
+      {/* KO-probability bed under everything */}
+      <path d={area} fill={C_AMBER} opacity={0.14} />
+      {/* barriers, breathing when the spot closes in */}
+      <line x1={X(0)} y1={pt} x2={X(0)} y2={H - pb} stroke={C_AMBER} strokeWidth={st < 0.18 ? 2.4 : 1.4} opacity={st < 0.18 ? 1 : 0.75} />
+      <line x1={X(1)} y1={pt} x2={X(1)} y2={H - pb} stroke={C_AMBER} strokeWidth={st > 0.82 ? 2.4 : 1.4} opacity={st > 0.82 ? 1 : 0.75} />
       <text x={X(0) + 3} y={pt + 9} className="hc-lbl" fill={C_AMBER}>L</text>
       <text x={X(1) - 9} y={pt + 9} className="hc-lbl" fill={C_AMBER}>U</text>
-      <path d={line(ko, X, Y)} fill="none" stroke={C_AMBER} strokeWidth={2.4} />
+      {/* the value hump — rises with spot, then the squeeze tears it down */}
+      <path d={line((t) => exoticVal(t) * 0.9, X, (v) => Y(v))} fill="none" stroke={C_FIN} strokeWidth={2.6} strokeLinecap="round" />
+      {/* spot guide + marker + delta tangent (flips sign past the peak) */}
       <line x1={X(st)} y1={pt} x2={X(st)} y2={H - pb} stroke="var(--muted)" strokeWidth={1} strokeDasharray="3 3" />
-      <circle cx={X(st)} cy={Y(ko(st))} r={4.5} fill={C_AMBER} stroke="#fff" strokeWidth={2} />
-      <text x={W - pr + 5} y={Y(ko(1)) + 4} fill={C_AMBER} className="hc-lbl">KO prob</text>
+      <line
+        x1={X(st) - dxN} y1={Y(exoticVal(st) * 0.9) + dyN * 0.9}
+        x2={X(st) + dxN} y2={Y(exoticVal(st) * 0.9) - dyN * 0.9}
+        stroke={slope < 0 ? C_AMBER : C_ACC} strokeWidth={2.4} strokeLinecap="round"
+      />
+      <circle cx={X(st)} cy={Y(exoticVal(st) * 0.9)} r={4.5} fill={slope < 0 ? C_AMBER : C_ACC} stroke="#fff" strokeWidth={2} />
+      <text x={W - pr + 5} y={Y(exoticVal(1) * 0.9 + 0.08) + 4} fill={C_FIN} className="hc-lbl">value</text>
+      <text x={W - pr + 5} y={Y(exoticKoP(1) * 0.45) + 4} fill={C_AMBER} className="hc-lbl">KO prob</text>
+      {nearBarrier && (
+        <text x={X(st) + (st > 0.5 ? -46 : 6)} y={pt + 9} className="hc-lbl" fill={C_AMBER}>Δ flips</text>
+      )}
     </svg>
   )
 }
@@ -138,8 +187,16 @@ function accounting(d: number) {
       {[0.25, 0.5, 0.75].map((f) => (
         <line key={f} x1={pl} y1={pt + f * (H - pt - pb)} x2={W - pr} y2={pt + f * (H - pt - pb)} stroke="var(--line)" strokeWidth={1} />
       ))}
-      <path d={seg(A)} fill="none" stroke={C_FIN} strokeWidth={2.4} />
-      <path d={seg(B)} fill="none" stroke={C_CLI} strokeWidth={2.4} />
+      <path d={seg(A)} fill="none" stroke={C_FIN} strokeWidth={2.4} strokeLinecap="round" />
+      <path d={seg(B)} fill="none" stroke={C_CLI} strokeWidth={2.4} strokeLinecap="round" />
+      {/* the knock-out event: A's ineffectiveness kinks upward here */}
+      {reveal > 0.78 && (
+        <>
+          <line x1={X(0.78)} y1={pt} x2={X(0.78)} y2={H - pb} stroke={C_AMBER} strokeWidth={1} strokeDasharray="3 3" opacity={0.8} />
+          <circle cx={X(0.78)} cy={Y(A(0.78))} r={3.5} fill={C_AMBER} stroke="#fff" strokeWidth={1.5} />
+          <text x={X(0.78) + 4} y={pt + 9} className="hc-lbl" fill={C_AMBER}>KO</text>
+        </>
+      )}
       <text x={W - pr + 5} y={Y(A(reveal)) + 2} fill={C_FIN} className="hc-lbl">A</text>
       <text x={W - pr + 5} y={Y(B(reveal)) + 6} fill={C_CLI} className="hc-lbl">B</text>
     </svg>
@@ -192,11 +249,13 @@ const CARDS: Card[] = [
     url: 'Exotic Desk · barrier monitor',
     chartTitle: 'The barrier squeeze',
     tiles: (d) => {
-      const ko = (0.30 + 0.62 * Math.abs(2 * d - 1) ** 1.5) * 100
+      const st = 0.06 + d * 0.88
+      const ko = exoticKoP(st) * 100
+      const delta = Math.round(((exoticVal(st + 0.01) - exoticVal(st - 0.01)) / 0.02) * 90)
       return [
         { l: 'KO probability', v: `${ko.toFixed(0)}%`, c: C_AMBER },
+        { l: 'Δ WTI', v: `${delta > 0 ? '+' : '−'}${Math.abs(delta)}`, c: delta < 0 ? C_AMBER : C_ACC },
         { l: 'Status', v: ko > 70 ? 'Critical' : ko > 50 ? 'Elevated' : 'Watch', c: C_AMBER },
-        { l: 'c* multiplier', v: '−0.55' },
       ]
     },
     draw: exotic,
@@ -239,12 +298,22 @@ export default function AppPreview() {
     return () => cancelAnimationFrame(raf)
   }, [reduced])
 
-  // auto-advance every 5s unless paused; resets whenever idx changes
+  // auto-advance every 2.7s; resets whenever idx changes. `paused` is only
+  // set by manual interaction (arrows, pips, swipe) and clears itself after 8s
+  // — hover must NOT pause, or the stage freezes whenever the cursor rests on it.
   useEffect(() => {
     if (paused) return
     const t = setTimeout(() => setIdx((i) => (i + 1) % CARDS.length), 2700)
     return () => clearTimeout(t)
   }, [idx, paused])
+
+  const holdT = useRef<number | undefined>(undefined)
+  const hold = () => {
+    setPaused(true)
+    window.clearTimeout(holdT.current)
+    holdT.current = window.setTimeout(() => setPaused(false), 8000)
+  }
+  useEffect(() => () => window.clearTimeout(holdT.current), [])
 
   // parallax drift on scroll
   useEffect(() => {
@@ -267,17 +336,15 @@ export default function AppPreview() {
     }
   }, [reduced])
 
-  const go = (dir: 1 | -1) => setIdx((i) => (i + dir + CARDS.length) % CARDS.length)
+  const go = (dir: 1 | -1) => {
+    hold()
+    setIdx((i) => (i + dir + CARDS.length) % CARDS.length)
+  }
   const card = CARDS[idx]
   const tiles = card.tiles(dial)
 
   return (
-    <div
-      className="ap"
-      ref={rootRef}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
+    <div className="ap" ref={rootRef}>
       <div
         className="ap-stack"
         onTouchStart={(e) => { touchX.current = e.touches[0].clientX }}
@@ -330,7 +397,10 @@ export default function AppPreview() {
               aria-label={c.url}
               aria-selected={i === idx}
               role="tab"
-              onClick={() => setIdx(i)}
+              onClick={() => {
+                hold()
+                setIdx(i)
+              }}
             />
           ))}
         </div>

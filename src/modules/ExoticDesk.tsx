@@ -5,6 +5,7 @@ import { useErp } from '../state/erp'
 import { usePersistentState } from '../state/persist'
 import { MARKET, clamp } from '../state/market'
 import MarketChip from '../components/MarketChip'
+import HelpDot from '../components/HelpDot'
 import { useToast } from '../components/Toast'
 import { useT, useLang } from '../i18n'
 import { crrDoubleKO, koConvergence, gbmDoubleKOprob } from '../engine/lattice'
@@ -193,7 +194,10 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
 
       <div className="ex-foil-ctrl">
         <label>
-          <span className="ex-plabel">{t('Lattice steps N')}</span>
+          <span className="ex-plabel">
+            {t('Lattice steps N')}
+            <HelpDot text={t('Binomial tree steps — more steps, less numerical wobble')} subject={t('Lattice steps N')} />
+          </span>
           <input type="range" min={10} max={340} step={2} value={nSteps} onChange={(e) => setNSteps(Number(e.target.value))} />
           <span className="ex-pval">{nSteps}</span>
         </label>
@@ -319,7 +323,7 @@ export default function ExoticDesk() {
     })
     toast(
       lang === 'ko'
-        ? `부킹 완료 — ${erp.divisions.find((d) => d.id === bookDiv)?.name} ${n.toFixed(2)}M bbl ${mode === 'euro' ? '유러피언 퀀토' : '퀀토'}.${mode === 'euro' ? '' : ' 배리어 확률은 헤지회계로 전달됩니다.'}`
+        ? `체결 완료 — ${erp.divisions.find((d) => d.id === bookDiv)?.name} ${n.toFixed(2)}M bbl ${mode === 'euro' ? '유러피언 퀀토' : '퀀토'}.${mode === 'euro' ? '' : ' 배리어 확률은 헤지회계로 전달됩니다.'}`
         : `Booked — ${n.toFixed(2)}M bbl ${mode === 'euro' ? 'European quanto' : 'quanto'} for ${erp.divisions.find((d) => d.id === bookDiv)?.name}.${mode === 'euro' ? '' : ' Barrier odds flow to Accounting.'}`,
     )
   }
@@ -355,11 +359,17 @@ export default function ExoticDesk() {
       {/* structure selector — Double-KO (paper surface) vs European ablation */}
       <div className="ins-strat" role="tablist" aria-label={lang === 'ko' ? '퀀토 구조' : 'Quanto structure'}>
         <button role="tab" aria-selected={mode === 'ko'} className={mode === 'ko' ? 'ins-strat-btn active' : 'ins-strat-btn'} onClick={() => setMode('ko')}>
-          <span className="ins-strat-name">{t('Double-KO quanto')}</span>
+          <span className="ins-strat-name">
+            {t('Double-KO quanto')}
+            <HelpDot text={t('The paper structure: a double knock-out quanto priced from the jump-diffusion MC surface. Watch the value collapse and the delta reverse as spot nears a barrier.')} subject={t('Double-KO quanto')} />
+          </span>
           <span className="ins-strat-tag warn">{t('barrier · paper surface')}</span>
         </button>
         <button role="tab" aria-selected={mode === 'euro'} className={mode === 'euro' ? 'ins-strat-btn active' : 'ins-strat-btn'} onClick={() => setMode('euro')}>
-          <span className="ins-strat-name">{t('European quanto')}</span>
+          <span className="ins-strat-name">
+            {t('European quanto')}
+            <HelpDot text={t('The same jump-diffusion calibration with both barriers removed, priced in closed form. Subtract it from the Double-KO and what is left is exactly the survival risk the barriers inject.')} subject={t('European quanto')} />
+          </span>
           <span className="ins-strat-tag">{t('ablation · no barrier')}</span>
         </button>
       </div>
@@ -375,12 +385,18 @@ export default function ExoticDesk() {
           <div className="ex-panel ex-deck">
             <h3>{lang === 'ko' ? `포지션${mode === 'ko' ? ' & 배리어 모니터' : ' — 유러피언'}` : `Position${mode === 'ko' ? ' & barrier monitor' : ' — European'}`}</h3>
             <label data-tour="spot">
-              <span className="ex-plabel">{t('WTI spot S₁')}</span>
+              <span className="ex-plabel">
+                {t('WTI spot S₁')}
+                <HelpDot text={t('Current WTI spot — sets how close you stand to the barriers')} subject={t('WTI spot S₁')} />
+              </span>
               <input type="range" min={S_GRID[0]} max={S_GRID[S_GRID.length - 1]} step={0.5} value={spot} onChange={(e) => setSpot(Number(e.target.value))} />
               <span className="ex-pval">${spot.toFixed(1)}</span>
             </label>
             <label>
-              <span className="ex-plabel">{t('Time to maturity')}</span>
+              <span className="ex-plabel">
+                {t('Time to maturity')}
+                <HelpDot text={t('Time left until the structure expires')} subject={t('Time to maturity')} />
+              </span>
               <input type="range" min={0} max={T_GRID.length - 1} step={1} value={T_GRID.length - 1 - ti} onChange={(e) => setTi(T_GRID.length - 1 - Number(e.target.value))} />
               <span className="ex-pval">{T_GRID[ti].toFixed(2)}y</span>
             </label>
@@ -431,7 +447,7 @@ export default function ExoticDesk() {
                   <>
                     <strong>배리어가 없습니다.</strong> 가치는 스팟을 따라 단조롭게
                     오르고, 녹아웃될 것도 없습니다. 논문 구조에서 퀀토 뼈대만 남긴
-                    버전으로, 헤지로 부킹하기 위해서가 아니라 Double-KO 값에서 빼기
+                    버전으로, 헤지로 체결하기 위해서가 아니라 Double-KO 값에서 빼기
                     위한 비교 기준입니다.
                   </>
                 ) : (
@@ -466,7 +482,7 @@ export default function ExoticDesk() {
                 title={!canBook ? t('Switch to the Treasury desk role to book') : undefined}
                 onClick={bookQuanto}
               >
-                {lang === 'ko' ? `${mode === 'euro' ? '유러피언' : '퀀토'} 부킹` : `Book ${mode === 'euro' ? 'European' : 'quanto'}`}
+                {lang === 'ko' ? `${mode === 'euro' ? '유러피언' : '퀀토'} 체결` : `Book ${mode === 'euro' ? 'European' : 'quanto'}`}
               </button>
             </div>
           </div>
