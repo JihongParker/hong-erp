@@ -164,7 +164,7 @@ export default function DisclosureReport() {
           <p className="dr-body">
             {lang === 'ko' ? (
               <>
-                기록상 검토 책임자는 <strong>J. Kim (감사팀)</strong>이다. 모든 상신·승인·반려·부킹·지정은
+                기록상 검토 책임자는 <strong>J. Kim (감사팀)</strong>이다. 모든 상신·승인·반려·체결·지정은
                 추가 전용 감사 추적에 기록되며, 최근 이벤트 {events.length}건이 실시간 원장에 보존된다.
               </>
             ) : (
@@ -246,7 +246,7 @@ export default function DisclosureReport() {
             {lang === 'ko' ? (
               <>
                 수입 대금에 실린 상품·통화 가격 리스크는 라이브 구조 {trades.length}개로 이루어진 헤지
-                북으로 관리된다. 자금부 데스크가 부킹하고 CFO 오피스가 IFRS 9에 따라 지정한다.
+                북으로 관리된다. 자금부 데스크가 체결하고 CFO 오피스가 IFRS 9에 따라 지정한다.
               </>
             ) : (
               <>

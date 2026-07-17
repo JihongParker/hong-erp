@@ -148,7 +148,7 @@ export const KO_REPORTING: Record<string, string> = {
   'submitted': '상신',
   'approved': '승인',
   'rejected': '반려',
-  'booked': '부킹',
+  'booked': '체결',
   'designated': '지정',
   'closed': '마감',
 
