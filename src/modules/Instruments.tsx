@@ -129,7 +129,7 @@ export default function Instruments() {
     })
     toast(
       lang === 'ko'
-        ? `기표 완료 — ${erp.divisions.find((d) => d.id === bookDiv)?.name}의 ${n.toFixed(2)}M bbl ${t(STRAT_NAME[strategy])}. 헤지 회계의 블로터에서 확인하세요.`
+        ? `부킹 완료 — ${erp.divisions.find((d) => d.id === bookDiv)?.name} ${n.toFixed(2)}M bbl ${t(STRAT_NAME[strategy])}. 헤지회계 딜 블로터에서 확인.`
         : `Booked — ${n.toFixed(2)}M bbl ${STRAT_NAME[strategy]} for ${erp.divisions.find((d) => d.id === bookDiv)?.name}. See the blotter in Hedge Accounting.`,
     )
   }
@@ -187,7 +187,7 @@ export default function Instruments() {
   // full comparison table — every strategy priced off the same market
   const ko = lang === 'ko'
   const rows: { key: Strat | 'unhedged'; label: string; premium: string; worst: string; best: string; giveup: string }[] = [
-    { key: 'unhedged', label: t('Unhedged'), premium: '$0', worst: ko ? '무제한' : 'unbounded', best: '→ $0', giveup: ko ? '없음; 꼬리 전체를 떠안습니다' : 'nothing; you carry the whole tail' },
+    { key: 'unhedged', label: t('Unhedged'), premium: '$0', worst: ko ? '무제한' : 'unbounded', best: '→ $0', giveup: ko ? '없음; 꼬리 전체 부담' : 'nothing; you carry the whole tail' },
     { key: 'swap', label: t('Swap / forward'), premium: '$0', worst: `$${mkt.F.toFixed(1)}`, best: `$${mkt.F.toFixed(1)}`, giveup: ko ? '모든 하방 참여' : 'all downside participation' },
     { key: 'cap', label: t('Cap only (bought call)'), premium: `$${capPrem.toFixed(2)}`, worst: `$${(capK + capPrem).toFixed(1)}`, best: ko ? '→ 프리미엄만' : '→ premium only', giveup: ko ? '현금으로 낸 프리미엄' : 'the premium, paid in cash' },
     { key: 'collar', label: t('Zero-cost collar'), premium: '$0', worst: `$${collar.capK.toFixed(1)}`, best: `$${collar.floorK.toFixed(1)}`, giveup: ko ? `$${collar.floorK.toFixed(1)} 아래의 참여` : `participation below $${collar.floorK.toFixed(1)}` },
@@ -229,7 +229,7 @@ export default function Instruments() {
             </Chip>
             <Chip from="Decision Dashboard">
               {lang === 'ko' ? (
-                <>공시 d* = <strong>{spine.dStar.toFixed(2)}</strong>가 헤지가 답해야 할 잔여 리스크 가격을 정합니다</>
+                <>공시 d* = <strong>{spine.dStar.toFixed(2)}</strong>가 헤지가 답해야 할 잔여 리스크 가격을 정한다</>
               ) : (
                 <>disclosure d* = <strong>{spine.dStar.toFixed(2)}</strong> sets the residual-risk price the hedge answers to</>
               )}
@@ -306,7 +306,7 @@ export default function Instruments() {
                     title={!canBook ? t('Switch to the Treasury desk role to book') : undefined}
                     onClick={bookStructure}
                   >
-                    {lang === 'ko' ? `${t(STRAT_NAME[strategy])} 기표` : `Book ${STRAT_NAME[strategy].toLowerCase()}`}
+                    {lang === 'ko' ? `${t(STRAT_NAME[strategy])} 부킹` : `Book ${STRAT_NAME[strategy].toLowerCase()}`}
                   </button>
                 </div>
               </div>
@@ -394,9 +394,9 @@ export default function Instruments() {
                 <p className="ins-muted">
                   {lang === 'ko' ? (
                     <>
-                      정유사의 진짜 익스포저는 원유 가격이 아니라 <em>마진</em>입니다:
-                      원유 3배럴을 사고 휘발유 2 + 중간유분 1을 팝니다. 크랙 스왑과 옵션은
-                      이 스프레드를 직접 고정하며, 위의 어떤 것과도 다른 기초자산입니다.
+                      정유사의 진짜 익스포저는 원유 가격이 아니라 <em>마진</em>이다.
+                      원유 3배럴을 사고 휘발유 2 + 중간유분 1을 판다. 크랙 스왑과 옵션은
+                      이 스프레드를 직접 고정하는, 위의 어떤 것과도 다른 기초자산이다.
                     </>
                   ) : (
                     <>
@@ -430,7 +430,7 @@ export default function Instruments() {
                     <strong>{t('Asian / average-price (APO)')}</strong>
                     <p>
                       {lang === 'ko' ? (
-                        <>단순 평균형은 한 달 길이의 익스포저에 맞고 유러피언보다 쌉니다. <em>참고:</em> 논문의 아시안은 녹아웃으로 이그저틱화되어 있으며, 그 배리어 버전은 여기가 아니라 리서치 데스크에 있습니다.</>
+                        <>단순 평균형은 한 달짜리 익스포저에 맞고 유러피언보다 싸다. <em>참고:</em> 논문의 아시안은 녹아웃으로 이그저틱화되어 있으며, 그 배리어 버전은 여기가 아니라 리서치 데스크에 있다.</>
                       ) : (
                         <>Plain-vanilla averaging matches month-long exposure and is cheaper than European. <em>Note:</em> the paper's Asian is knock-out-exoticized; that barrier version lives in the research desk, not here.</>
                       )}

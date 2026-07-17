@@ -278,7 +278,7 @@ function CommandK({ go, startTour }: { go: (id: string) => void; startTour: () =
     ...GROUPS.flatMap((g) =>
       g.items.map((m) => ({
         id: `go-${m.id}`,
-        label: lang === 'ko' ? `${m.name}(으)로 이동` : `Go to ${m.name}`,
+        label: lang === 'ko' ? `${t(m.name)} 이동` : `Go to ${m.name}`,
         hint: g.title ? t(g.title) : undefined,
         run: () => go(m.id),
       })),
@@ -288,7 +288,7 @@ function CommandK({ go, startTour }: { go: (id: string) => void; startTour: () =
     // role switches — same setter the sidebar selector uses
     ...ROLES.map((r) => ({
       id: `role-${r}`,
-      label: lang === 'ko' ? `${ROLE_LABEL[r]}(으)로 전환` : `Act as ${ROLE_LABEL[r]}`,
+      label: lang === 'ko' ? `${ROLE_LABEL[r]} 역할로 전환` : `Act as ${ROLE_LABEL[r]}`,
       hint: t('Role'),
       run: () => setRole(r),
     })),
@@ -470,7 +470,7 @@ export default function App() {
                   className={m.id === active ? 'nav-item active' : 'nav-item'}
                   onClick={() => go(m.id)}
                 >
-                  {m.name}
+                  {t(m.name)}
                   <PendingBadge id={m.id} />
                 </button>
               ))}
@@ -492,7 +492,7 @@ export default function App() {
       <main className="content" id="main-content">
         {mod.id !== 'overview' && (
           <header>
-            <h1>{mod.name}</h1>
+            <h1>{t(mod.name)}</h1>
             {mod.desc && (
               <p className="mod-desc">{lang === 'ko' ? KO_DESC[mod.id] ?? mod.desc : mod.desc}</p>
             )}

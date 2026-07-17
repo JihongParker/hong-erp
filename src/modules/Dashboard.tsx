@@ -154,7 +154,7 @@ export default function Dashboard() {
       <div className="spine-row">
         <Chip from="Materiality">
           {lang === 'ko' ? (
-            <><strong>{spine.materialCount}</strong>개 중대 리스크 (≥{spine.materialityThreshold.toFixed(1)})가 익스포저 파라미터로 들어옵니다</>
+            <><strong>{spine.materialCount}</strong>개 중대 리스크 (≥{spine.materialityThreshold.toFixed(1)})가 익스포저 파라미터로 투입</>
           ) : (
             <><strong>{spine.materialCount}</strong> material risks (≥{spine.materialityThreshold.toFixed(1)}) feed the exposure parameters</>
           )}
@@ -248,10 +248,10 @@ export default function Dashboard() {
               <p className="db-callout">
                 {lang === 'ko' ? (
                   <>
-                    의무 하한 d̲ = {p.dFloor.toFixed(1)}가 구속합니다 (자율 최적{' '}
-                    {eq.dVoluntary.toFixed(2)}): 강제 공시는 벌칙을 덜고, 잔여 리스크를
-                    싸게 만들며, 헤지를 <em>밀어냅니다</em>. 하한 슬라이더를 움직여 두
-                    막대가 함께 줄어드는 것을 지켜보세요.
+                    의무 하한 d̲ = {p.dFloor.toFixed(1)}가 바인딩 (자율 최적{' '}
+                    {eq.dVoluntary.toFixed(2)}). 강제 공시는 벌칙을 덜고 잔여 리스크를
+                    싸게 만들어 헤지를 <em>밀어낸다</em>. 하한 슬라이더를 움직이면 두
+                    막대가 함께 줄어든다.
                   </>
                 ) : (
                   <>
@@ -389,7 +389,7 @@ export default function Dashboard() {
                     </div>
                     <div className="db-div-meta">
                       {lang === 'ko' ? (
-                        <>{d.approved} 승인{d.pending > 0 && <> · <em>{d.pending} 대기</em></>} · 거래 {d.trades}건</>
+                        <>승인 {d.approved}{d.pending > 0 && <> · <em>대기 {d.pending}</em></>} · 딜 {d.trades}건</>
                       ) : (
                         <>{d.approved} approved{d.pending > 0 && <> · <em>{d.pending} pending</em></>} · {d.trades} {d.trades === 1 ? 'trade' : 'trades'}</>
                       )}
@@ -408,10 +408,10 @@ export default function Dashboard() {
           <p className="db-note">
             {lang === 'ko' ? (
               <>
-                모델: Λ(d) = φ + λe<sup>−kd</sup>가 잔여 리스크를 가격화합니다; 헤지는
-                코너(KKT) 처리와 함께 2Λ(d)Σu = p를 풉니다; 자율 d*는 2ad = kλe
-                <sup>−kd</sup>R을 풉니다; 의무는 하한 d ≥ d̲입니다. 기존 ESG 플랫폼은
-                입력값 보고에서 멈춥니다 — 이 화면이 그들이 비워 둔 의사결정 층입니다.
+                모델: Λ(d) = φ + λe<sup>−kd</sup>가 잔여 리스크를 가격화한다. 헤지는
+                코너(KKT) 처리와 함께 2Λ(d)Σu = p를 푼다. 자율 d*는 2ad = kλe
+                <sup>−kd</sup>R을 푼다. 의무는 하한 d ≥ d̲. 기존 ESG 플랫폼은 입력값
+                보고에서 멈춘다 — 이 화면이 그들이 비워 둔 의사결정 레이어다.
               </>
             ) : (
               <>

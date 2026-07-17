@@ -202,7 +202,7 @@ export default function Accounting() {
             <>
               IFRS 9가 강제하는 질문: 퀀토를{' '}
               <strong>하나의 통합 헤지 (A)</strong>로 지정할 것인가, 아니면{' '}
-              <strong>두 개의 라인 (B)</strong>으로 분리할 것인가? 경제적 실질은 같지만 — 장부는 크게 달라집니다.
+              <strong>두 개의 라인 (B)</strong>으로 분리할 것인가? 경제적 실질은 같지만 장부는 크게 달라진다.
             </>
           ) : (
             <>
@@ -227,10 +227,10 @@ export default function Accounting() {
         <p className="ac-note">
           {lang === 'ko' ? (
             <>
-              경제적 실질은 거의 다르지 않지만, 회계는 다릅니다. 분리(B)는 P&L
-              비효과성을 3.7× 줄이지만, KO 다리가 죽으면({(S.koProb * 100).toFixed(0)}%
-              확률) 그 대체 거래는 FVTPL로 잡혀 {bn(S.postKoFvtplStdB)}의 이익 노이즈를
-              주입합니다. 지정은 서류 작업이 아니라 리스크 결정입니다.
+              경제적 실질은 거의 같지만 회계는 다르다. 분리(B)는 손익 비유효 부분을
+              3.7× 줄이지만, KO 다리가 죽으면({(S.koProb * 100).toFixed(0)}% 확률) 그
+              대체 딜이 FVTPL로 잡혀 {bn(S.postKoFvtplStdB)} 규모의 이익 노이즈를
+              주입한다. 지정은 서류 작업이 아니라 리스크 결정이다.
             </>
           ) : (
             <>
@@ -284,16 +284,16 @@ export default function Accounting() {
             <>
               <li>
                 <strong>Hedge Instruments →</strong> 칼라의 정렬된 시간가치는 IFRS 9에서
-                OCI로 갑니다: 상품 데스크가 실제로 쓰는 바로 그 지정 장치입니다.
+                OCI로 간다. 상품 데스크가 실제로 쓰는 바로 그 지정 장치다.
               </li>
               <li>
                 <strong>Exotic Desk →</strong> B의 녹아웃 이후 FVTPL 노이즈를 좌우하는 KO
-                확률은 배리어 리스크 모니터의 숫자입니다.
+                확률은 배리어 리스크 모니터의 숫자다.
               </li>
               <li>
-                <strong>Decision Dashboard →</strong> 헤지 회계 채택은 ESG 논문의 결과
-                변수입니다: 공시 의무에 대한 정밀 추정 null은 바로 이 지정 선택에서
-                측정되었습니다.
+                <strong>Decision Dashboard →</strong> 헤지회계 채택은 ESG 논문의 결과
+                변수다. 공시 의무의 정밀 추정 null은 바로 이 지정 선택에서
+                측정된다.
               </li>
             </>
           ) : (

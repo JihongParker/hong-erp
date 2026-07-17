@@ -52,11 +52,11 @@ export default function Backtest() {
       <div className="bt-banner">
         {lang === 'ko' ? (
           <>
-            <strong>알파 전략이 아니라 — 헤지 백테스트입니다.</strong> 한국 원유 수입사는 의무적 익스포저를
-            집니다 (원유는 USD로 사고 대금은 KRW로 지불): 월 청구액은 Q · P<sub>oil</sub> · FX, 즉 2-요인
-            곱입니다. 유일한 질문은 최적 헤지가 비용을 반영한 뒤 표본 밖에서 잔여 <em>현금흐름 분산</em>을
-            얼마나 제거하는가입니다: 수익 스트림도, 샤프도 아닙니다. 아래 모든 숫자는 슬라이더를 움직이면
-            실제 수익률 486개월치에서 실시간으로 다시 계산됩니다.
+            <strong>알파 전략이 아니라 헤지 백테스트다.</strong> 한국 원유 수입사는 의무 익스포저를
+            진다 (원유는 USD로 사고 대금은 KRW로 지불). 월 청구액은 Q · P<sub>oil</sub> · FX, 즉 2요인
+            곱이다. 유일한 질문은 최적 헤지가 비용을 반영한 뒤 표본외에서 잔여 <em>현금흐름 변동성</em>을
+            얼마나 제거하느냐다. 수익 스트림도 샤프도 아니다. 아래 모든 숫자는 슬라이더를 움직이면
+            실제 수익률 486개월치에서 실시간으로 다시 계산된다.
           </>
         ) : (
           <>
@@ -136,10 +136,10 @@ export default function Backtest() {
             <p className="bt-verdict">
               {lang === 'ko' ? (
                 <>
-                  공분산을 반영한 헤지는 <strong>과거</strong> 데이터만으로 추정해 매달 리밸런싱하며, 표본 밖에서
-                  현금흐름 분산의 <strong>{pct(wf.varReduction, 0)}</strong>를 제거합니다
-                  {' '}(나이브 균등 분할보다 {((wf.varReduction - naive.varReduction) * 100).toFixed(0)}pp 더 높음).
-                  그리고 미래를 미리 본 오라클과의 격차는 {pct(oracle.varReduction - wf.varReduction, 1)} 이내에 듭니다.
+                  공분산을 반영한 헤지는 <strong>과거</strong> 데이터만으로 추정해 매달 리밸런싱하며, 표본외에서
+                  현금흐름 변동성의 <strong>{pct(wf.varReduction, 0)}</strong>를 제거한다
+                  {' '}(나이브 균등 분할보다 {((wf.varReduction - naive.varReduction) * 100).toFixed(0)}pp 높음).
+                  미래를 미리 본 오라클과의 격차는 {pct(oracle.varReduction - wf.varReduction, 1)} 이내다.
                 </>
               ) : (
                 <>
@@ -165,10 +165,10 @@ export default function Backtest() {
         <ul>
           {lang === 'ko' ? (
             <>
-              <li><strong>엄격한 워크포워드.</strong> Σ는 <em>철저히 과거</em> 월간 수익률의 롤링 윈도에서 추정하고, 그 분할을 다음 달 실현 수익률에 적용합니다. 미래 참조 없음: 오라클 행만이 유일한 미래 참조 정책이며, 상한선을 보여 주려고 일부러 넣었습니다.</li>
-              <li><strong>비용 포함.</strong> 매달 리밸런싱 회전율에 부과됩니다. 워크포워드 비용({pct(wf.totalCost, 2)})은 그 대가로 얻는 추가 분산 {pct(wf.varReduction - naive.varReduction, 0)}에 비하면 작습니다.</li>
-              <li><strong>알파가 아니라 분산.</strong> 모든 숫자는 헤지된 비용 분포의 속성입니다: 수익 스트림도, 샤프도 아닙니다.</li>
-              <li><strong>무엇을 확인해 주는가.</strong> 전체 표본 분할은 {out.oracleSplit.w1.toFixed(2)} / {out.oracleSplit.w2.toFixed(2)}(원유 / FX)입니다: 커버리지는 고분산 원유 다리에 집중되며, 이는 논문의 구조적 97/3입니다. 그리고 ρ는 {pct(out.negShare, 0)}의 기간 동안 음수여서 FX 다리가 원유를 부분적으로 자체 헤지합니다. 논문의 반직관적 c* &lt; 0에 대응하는 실데이터 결과입니다.</li>
+              <li><strong>엄격한 워크포워드.</strong> Σ는 <em>철저히 과거</em> 월간 수익률의 롤링 윈도에서 추정하고, 그 분할을 다음 달 실현 수익률에 적용한다. 미래 참조 없음. 오라클 행만이 유일한 미래 참조 정책이며, 상한선을 보여 주려고 일부러 넣었다.</li>
+              <li><strong>비용 포함.</strong> 매달 리밸런싱 회전에 부과된다. 워크포워드 비용({pct(wf.totalCost, 2)})은 그 대가로 얻는 추가 분산 {pct(wf.varReduction - naive.varReduction, 0)}에 비하면 작다.</li>
+              <li><strong>알파가 아니라 분산.</strong> 모든 숫자는 헤지된 비용 분포의 속성이다. 수익 스트림도 샤프도 아니다.</li>
+              <li><strong>무엇을 확인해 주는가.</strong> 전체 표본 분할은 {out.oracleSplit.w1.toFixed(2)} / {out.oracleSplit.w2.toFixed(2)}(원유 / FX)다. 커버리지는 고분산 원유 다리에 집중되며, 이는 논문의 구조적 97/3이다. ρ는 {pct(out.negShare, 0)} 기간 동안 음수여서 FX 다리가 원유를 부분적으로 자체 헤지한다. 논문의 반직관적 c* &lt; 0에 대응하는 실데이터 결과다.</li>
             </>
           ) : (
             <>
@@ -189,7 +189,7 @@ export default function Backtest() {
         </ul>
         <p className="bt-src">
           {lang === 'ko'
-            ? `출처: ${META.source}. 월간 수익률은 GitHub Actions가 FRED에서 매월 자동 갱신하며(최근: ${META.generated}), 워크포워드 엔진은 브라우저에서 실시간으로 다시 돌립니다.`
+            ? `출처: ${META.source}. 월간 수익률은 GitHub Actions가 FRED에서 매월 자동 갱신하며(최근: ${META.generated}), 워크포워드 엔진은 브라우저에서 실시간으로 다시 돌린다.`
             : `Source: ${META.source}. Monthly returns auto-refreshed monthly from FRED by GitHub Actions (last: ${META.generated}); the walk-forward engine then re-runs live in the browser.`}
         </p>
       </div>
@@ -267,14 +267,14 @@ function ParabolaPanel() {
         {lang === 'ko' ? (
           <>
             FX 헤지를 WTI 델타에 δ<sub>FX</sub> = c · δ<sub>WTI</sub>로 결합하면 경로별 헤지 비용이
-            c에 대해 정확히 아핀(affine)이 되고, 따라서 그 분산은 닫힌 형태의 꼭짓점
-            c* = −Cov(A,B)/Var(B)를 갖는 정확한 포물선이 됩니다. 논문의 200k-경로 정밀 엔진에서
-            Cov(A,B)는 <strong>양수</strong>이므로 꼭짓점은 <strong>음수(c* = −0.548)</strong>입니다:
-            양으로 결합된 FX 다리는 비용 분산을 상쇄하기는커녕 오히려 더합니다. 그리고 나이브한 1대1
-            전가(c = 1)는 비싼 오른쪽 팔 위에 한참 올라앉아 있습니다. 다만 솔직히 이 레버는 2차적입니다:
-            표준편차는 51.90에서 48.76억 KRW(~6%)로만 내려갑니다. WTI 다리가 Var(A)를 지배하고 어떤
-            c도 거기에 손댈 수 없기 때문입니다. 위의 정적 분할과 같은 결론입니다: FX 다리는 헤지의 작은
-            일부일 뿐입니다.
+            c에 대해 정확히 아핀(affine)이 되고, 그 분산은 닫힌 해 꼭짓점
+            c* = −Cov(A,B)/Var(B)를 갖는 정확한 포물선이 된다. 논문의 200k-경로 정밀 엔진에서
+            Cov(A,B)는 <strong>양수</strong>이므로 꼭짓점은 <strong>음수(c* = −0.548)</strong>다.
+            양으로 결합된 FX 다리는 비용 분산을 상쇄하기는커녕 오히려 더한다. 나이브한 1대1
+            전가(c = 1)는 비싼 오른쪽 팔 위에 한참 올라앉아 있다. 다만 이 레버는 2차적이다.
+            표준편차는 51.90에서 48.76억 KRW(~6%)로만 내려간다. WTI 다리가 Var(A)를 지배하고 어떤
+            c도 거기에 손댈 수 없기 때문이다. 위의 정적 분할과 같은 결론이다. FX 다리는 헤지의 작은
+            일부일 뿐이다.
           </>
         ) : (
           <>
@@ -319,7 +319,7 @@ function ParabolaPanel() {
         {lang === 'ko' ? (
           <>
             <span className="bt-lg"><span className="bt-dot" style={{ background: '#b3610f' }} /> 스윕 구간 [0.5, 1.5] — 포물선의 오른쪽 팔</span>
-            <span className="bt-lg"><span className="bt-dot" style={{ background: '#2f6db4' }} /> 닫힌 형태 꼭짓점 c* (분산 최소화)</span>
+            <span className="bt-lg"><span className="bt-dot" style={{ background: '#2f6db4' }} /> 닫힌 해 꼭짓점 c* (분산 최소화)</span>
           </>
         ) : (
           <>
@@ -331,10 +331,10 @@ function ParabolaPanel() {
       <p className="bt-src">
         {lang === 'ko' ? (
           <>
-            논문의 인증된 모멘트에서 포물선을 정확히 재구성했습니다 (Park_quanto §c*: c* = −0.548,
+            논문의 인증된 모멘트에서 포물선을 정확히 재구성했다 (Park_quanto §c*: c* = −0.548,
             c = 1에서 std 51.90억, c*에서 48.76억, 200k 점프-적응 정밀 경로, 아핀 항등식 6×10⁻¹⁶까지).
-            여기 독립적인 고정 엔진 델타 헤지가 그 방향을 확인해 줍니다: c = 1은 비싼 팔 위에 있으므로,
-            나이브한 "c = 1이 최적"이라는 해석은 틀렸습니다.
+            독립적인 고정 엔진 델타 헤지가 그 방향을 확인해 준다. c = 1은 비싼 팔 위에 있으므로,
+            나이브한 "c = 1이 최적"이라는 해석은 틀렸다.
           </>
         ) : (
           <>
@@ -367,11 +367,11 @@ function CStarPanel({ rolling, negShare }: { rolling: { month: string; w1: numbe
       <p className="bt-cstar-sub">
         {lang === 'ko' ? (
           <>
-            원유와 FX의 월간 수익률은 전체 기간의 {pct(negShare, 0)} 동안 음의 상관을 보입니다: 리스크오프
+            원유와 FX의 월간 수익률은 전체 기간의 {pct(negShare, 0)} 동안 음의 상관을 보인다. 리스크오프
             국면에서 원유가 떨어지는 동시에 원화가 약세를 보여, FX 익스포저가 스스로 원유를 부분적으로
-            상쇄합니다. ρ가 음수로 내려가면 분산을 최소화하는 FX 커버리지 w<sub>2</sub>는 0을 향해
-            떨어집니다: 나이브한 1대1 전가라면 과도하게 헤지하게 됩니다. 이것이 표본 밖에서 나타나는
-            공분산 반영 c* &lt; 0입니다.
+            상쇄한다. ρ가 음수로 내려가면 분산을 최소화하는 FX 커버리지 w<sub>2</sub>는 0을 향해
+            떨어진다. 나이브한 1대1 전가라면 과도하게 헤지하게 된다. 이것이 표본외에서 나타나는
+            공분산 반영 c* &lt; 0이다.
           </>
         ) : (
           <>

@@ -79,7 +79,7 @@ export default function Budget() {
       <div className="spine-row">
         <Chip from="Materiality">
           {lang === 'ko' ? (
-            <>상류에 <strong>{spine.materialCount}</strong>개 중대 리스크 — 이 배분은 시장리스크 쌍을 커버합니다</>
+            <>상류에 중대 리스크 <strong>{spine.materialCount}</strong>개 — 이 배분은 시장리스크 쌍을 커버</>
           ) : (
             <><strong>{spine.materialCount}</strong> material risks upstream — this split covers the market-risk pair</>
           )}
@@ -131,7 +131,7 @@ export default function Budget() {
           <p className="bg-muted">
             {lang === 'ko' ? (
               <>
-                고정값 (논문 Table 1): 2.0M bbl/월, $157.88M/월, 현물 78.94 / 1540.64,
+                고정값 (논문 Table 1): 2.0M bbl/월, $157.88M/월, 스팟 78.94 / 1540.64,
                 스트레스 FX 1550, σ₁ {regime === 'european' ? '0.395 (원값)' : '0.324 (확산)'},
                 σ₂ 0.093, ρ 0.088.
               </>
@@ -150,7 +150,7 @@ export default function Budget() {
                 <strong>상품 규칙 (§7–8):</strong> 스트레스 KO 확률{' '}
                 {(P1_INPUTS.p_KO_stress * 100).toFixed(0)}% ≫ 손익분기{' '}
                 {(P1_INPUTS.p_KO_breakeven * 100).toFixed(1)}% — 스트레스 상황에서는
-                WTI 장부를 <em>바닐라</em>로 유지합니다. 실시간 확률: 이그저틱 데스크.
+                WTI 장부를 <em>바닐라</em>로 유지한다. 실시간 확률: 이그저틱 데스크.
               </>
             ) : (
               <>
@@ -217,9 +217,9 @@ export default function Budget() {
             <figcaption className="bg-muted">
               {lang === 'ko' ? (
                 <>
-                  빨간 곡선: 총비용 경계 C = B. 점선: 배분 포락선. 최적점(점)은 꼭짓점에
-                  제약으로 고정됩니다. 그래서 10% 변동성 오차는 배분이{' '}
-                  <em>실현하는</em> 것을 바꿀 뿐, 배분 <em>자체</em>는 바꾸지 않습니다
+                  빨간 곡선: 총비용 경계 C = B. 점선: 배분 포락선. 최적해(점)는 꼭짓점에
+                  제약으로 고정된다. 그래서 10% 변동성 오차는 배분이{' '}
+                  <em>실현하는</em> 것을 바꿀 뿐, 배분 <em>자체</em>는 바꾸지 않는다
                   (논문 §6.5).
                 </>
               ) : (
@@ -252,10 +252,10 @@ export default function Budget() {
             <p className="bg-muted">
               {lang === 'ko' ? (
                 <>
-                  이 비대칭은 예산이 아니라 구조에서 옵니다: σ₁²/σ₂² ≈{' '}
+                  이 비대칭은 예산이 아니라 구조에서 온다. σ₁²/σ₂² ≈{' '}
                   {((regime === 'european' ? P1_INPUTS.sigma1EU : P1_INPUTS.sigma1AM) ** 2 / P1_INPUTS.sigma2 ** 2).toFixed(0)}
                   ×이고 ρ ≈ 0.09이므로, 최소분산 배분은 예산을 없애도 FX 다리를 거의
-                  전부 열어 둡니다 (논문 §6.2).
+                  전부 열어 둔다 (논문 §6.2).
                 </>
               ) : (
                 <>

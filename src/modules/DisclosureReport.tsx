@@ -164,9 +164,8 @@ export default function DisclosureReport() {
           <p className="dr-body">
             {lang === 'ko' ? (
               <>
-                기록상 검토 책임자는 <strong>J. Kim (감사)</strong>입니다. 모든 제출·승인·반려·기표·지정은
-                추가 전용 감사 추적에 기록되며, 가장 최근 이벤트 가운데 {events.length}건이 실시간 원장에
-                보존됩니다.
+                기록상 검토 책임자는 <strong>J. Kim (감사팀)</strong>이다. 모든 상신·승인·반려·부킹·지정은
+                추가 전용 감사 추적에 기록되며, 최근 이벤트 {events.length}건이 실시간 원장에 보존된다.
               </>
             ) : (
               <>
@@ -187,13 +186,13 @@ export default function DisclosureReport() {
           <p className="dr-lead">
             {lang === 'ko' ? (
               <>
-                전략은 이중 중대성 평가에 뿌리를 둡니다. 어떤 이슈든 재무 점수나 영향 점수 가운데 하나가
-                중대성 기준선 <strong>{threshold.toFixed(1)}</strong>(1–5 척도)을 넘으면 중대 항목으로
-                판정됩니다. 그 기준으로 IRO 등록부에서{' '}
+                전략은 이중 중대성 평가에 뿌리를 둔다. 재무 점수나 영향 점수 중 하나라도 중대성 기준선{' '}
+                <strong>{threshold.toFixed(1)}</strong>(1–5 척도)을 넘으면 중대 항목으로 판정된다. 그 기준으로
+                IRO 등록부{' '}
                 <strong>
                   {IRO_ITEMS.length}개 중 {material.length}개
                 </strong>{' '}
-                이슈가 중대 항목입니다.
+                이슈가 중대 항목이다.
               </>
             ) : (
               <>
@@ -222,9 +221,9 @@ export default function DisclosureReport() {
           <p className="dr-body">
             {lang === 'ko' ? (
               <>
-                중대 리스크는 설문 점수로 남지 않습니다. 의사결정 층에 익스포저 파라미터로 투입되어 목표 공시
-                강도 <strong>d* = {spine.dStar.toFixed(2)}</strong>를 결정합니다. 공시와 헤지는 함께 풀립니다:
-                기업이 더 많이 공시하도록 요구받을수록, 최적 헤지 비율도 그만큼 함께 움직입니다.
+                중대 리스크는 설문 점수로 남지 않는다. 의사결정 레이어에 익스포저 파라미터로 투입되어 목표
+                공시 강도 <strong>d* = {spine.dStar.toFixed(2)}</strong>를 정한다. 공시와 헤지는 함께 풀린다.
+                기업이 더 많이 공시하도록 요구받을수록 최적 헤지비율도 그만큼 함께 움직인다.
               </>
             ) : (
               <>
@@ -246,8 +245,8 @@ export default function DisclosureReport() {
           <p className="dr-lead">
             {lang === 'ko' ? (
               <>
-                수입 대금에 실린 상품·통화 가격 리스크는 {trades.length}개의 라이브 구조로 이루어진 헤지
-                북으로 관리되며, 트레저리 데스크가 기표하고 CFO 오피스가 IFRS 9에 따라 지정합니다.
+                수입 대금에 실린 상품·통화 가격 리스크는 라이브 구조 {trades.length}개로 이루어진 헤지
+                북으로 관리된다. 자금부 데스크가 부킹하고 CFO 오피스가 IFRS 9에 따라 지정한다.
               </>
             ) : (
               <>
@@ -311,14 +310,13 @@ export default function DisclosureReport() {
           <p className="dr-body">
             {lang === 'ko' ? (
               <>
-                배리어 구조는 WTI 기준 현물 <strong>${spine.exoticSpot.toFixed(2)}</strong>에서 라이브 녹아웃
-                확률 <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong>를 가집니다. 배리어를 넘어서면
-                녹아웃된 다리는 손익을 통한 공정가치(FVTPL)로 되돌아갑니다. 고정 헤지 예산은 WTI와 FX
-                커버리지에{' '}
+                배리어 구조는 WTI 기준 스팟 <strong>${spine.exoticSpot.toFixed(2)}</strong>에서 라이브 녹아웃
+                확률 <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong>를 가진다. 배리어를 넘어서면 녹아웃된
+                다리는 당기손익-공정가치(FVTPL)로 되돌아간다. 고정 헤지 예산은 WTI/FX 커버리지에{' '}
                 <strong>
                   {(spine.budgetW1 * 100).toFixed(1)}% / {(spine.budgetW2 * 100).toFixed(1)}%
                 </strong>{' '}
-                로 배분됩니다.
+                로 배분된다.
               </>
             ) : (
               <>
@@ -344,9 +342,8 @@ export default function DisclosureReport() {
           <p className="dr-lead">
             {lang === 'ko' ? (
               <>
-                아래 정량 공시는 검토를 통과한 {approvedSorted.length}개 지표이며, 최신순으로 정렬되어
-                있습니다. 각 지표에는 데이터포인트 코드가 GRI · KSSB · KCGS · MSCI 프레임워크에 매핑된
-                정보가 함께 담겨 있습니다.
+                아래 정량 공시는 검토를 통과한 지표 {approvedSorted.length}개이며 최신순 정렬. 각 지표에는
+                데이터포인트 코드의 GRI · KSSB · KCGS · MSCI 프레임워크 매핑이 함께 담긴다.
               </>
             ) : (
               <>
