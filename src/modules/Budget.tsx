@@ -254,7 +254,7 @@ export default function Budget() {
                 <>
                   이 비대칭은 예산이 아니라 구조에서 온다. σ₁²/σ₂² ≈{' '}
                   {((regime === 'european' ? P1_INPUTS.sigma1EU : P1_INPUTS.sigma1AM) ** 2 / P1_INPUTS.sigma2 ** 2).toFixed(0)}
-                  ×이고 ρ ≈ 0.09이므로, 최소분산 배분은 예산을 없애도 FX 다리를 거의
+                  ×이고 ρ ≈ 0.09이므로, 최소분산 배분은 예산을 없애도 FX 레그를 거의
                   전부 열어 둔다 (논문 §6.2).
                 </>
               ) : (

@@ -48,36 +48,36 @@ export const KO_DECISION: Record<string, string> = {
   'Open the app': '앱 열기',
   'go to the Decision Dashboard': '의사결정 대시보드로 이동',
   'Take a tour': '투어 시작',
-  'guided · no finance needed': '가이드 진행 · 금융 지식 불필요',
-  'or follow the chain': '또는 흐름 따라가기',
+  'guided · no finance needed': '가이드 제공 · 금융 지식 없어도 됩니다',
+  'or follow the chain': '아니면, 흐름을 따라 내려가 보세요',
   'One position, four papers, one chain.': '하나의 포지션, 네 편의 논문, 하나의 흐름.',
-  'The sidebar is a data flow, not a menu.': '사이드바는 메뉴가 아니라 데이터 흐름이다.',
-  'And it all moves.': '그리고 전부 실시간으로 움직인다.',
+  'The sidebar is a data flow, not a menu.': '사이드바는 메뉴가 아니라 데이터의 흐름입니다.',
+  'And it all moves.': '그리고 이 모든 것이 실시간으로 움직입니다.',
   'Drag a dial, the equilibrium recomputes. Flip through, or let them play.':
-    '다이얼을 끌면 균형이 다시 계산된다. 직접 넘겨 보거나 자동 재생으로 지켜보라.',
-  'See where the decision gets made.': '결정이 내려지는 지점을 확인하라.',
-  'Take a look': '살펴보기',
+    '다이얼을 움직이면 균형이 그 자리에서 다시 계산됩니다. 직접 넘겨 봐도, 자동 재생으로 둬도 됩니다.',
+  'See where the decision gets made.': '결정이 만들어지는 과정을 확인해 보세요.',
+  'Take a look': '직접 살펴보기',
   'Start': '시작',
   'open the Decision Dashboard': '의사결정 대시보드 열기',
   'Source on GitHub →': 'GitHub 소스 →',
   'Optimal WTI–FX hedge ratios under a fixed budget': '고정 예산 하 최적 WTI–FX 헤지비율',
   'Given a fixed premium budget, how much of the oil leg and the currency leg should a Korean importer actually cover?':
-    '프리미엄 예산이 고정됐을 때, 한국 수입사는 원유 다리와 환 다리를 실제로 얼마나 커버해야 하는가?',
+    '프리미엄 예산이 정해져 있을 때, 원유 레그와 FX 레그를 각각 얼마나 커버해야 할까요?',
   'Vertex optimum 97.0% / 2.9% reproduced live, budget-exact at ₩45bn':
     '꼭짓점 최적해 97.0% / 2.9% 실시간 재현, ₩45bn 예산 정확',
   'Covariance-aware delta hedging of a double-KO quanto': '더블 녹아웃 퀀토의 공분산 반영 델타 헤지',
   'Run a dynamic hedge on an exotic barrier option written on that same exposure, then watch where textbook deltas break.':
-    '같은 익스포저에 걸린 이그저틱 배리어 옵션을 동적 헤지로 돌리고, 교과서 델타가 무너지는 지점을 본다.',
+    '같은 익스포저에 걸린 배리어 옵션을 동적으로 헤지하면서, 교과서 델타가 무너지는 지점을 보여 줍니다.',
   'Paper engine surfaces, KO probability anchored 43.5% vs 43.7%':
     '논문 엔진 표면, 녹아웃 확률 43.5% vs 43.7%로 고정',
   'IFRS 9 cash-flow-hedge accounting: combined vs split': 'IFRS 9 현금흐름위험회피 회계: 통합 vs 분리',
   'Book the resulting hedge two legal ways. Same economics, very different earnings.':
-    '같은 헤지를 두 가지 회계 방식으로 기표한다. 경제적 실질은 같지만 이익은 크게 다르다.',
+    '같은 헤지를 두 가지 회계 방식으로 부킹합니다. 경제적 실질은 같지만 이익은 크게 달라집니다.',
   'Designation ledgers verbatim: ineffectiveness ₩23.4bn vs ₩6.4bn':
     '지정 원장 그대로: 비유효 부분 ₩23.4bn vs ₩6.4bn',
   'ESG disclosure mandates and corporate hedging': 'ESG 공시 의무와 기업 헤지',
   'Ask what sets the decision to hedge in the first place, and prove disclosure moves it only through the price of risk.':
-    '헤지 결정을 애초에 무엇이 정하는지 묻고, 공시는 오직 리스크 가격을 통해서만 그것을 움직인다는 것을 증명한다.',
+    '애초에 헤지 결정을 무엇이 정하는지 묻고, 공시가 오직 리스크 가격을 통해서만 그 결정을 움직인다는 것을 증명합니다.',
   'Closed form certified vs independent minimizer, 200 draws, gap ≤3×10⁻⁶':
     '독립 최소화기 대비 닫힌 해 검증, 200회 추출, 격차 ≤3×10⁻⁶',
   'Materiality': '중대성 평가',
@@ -112,8 +112,8 @@ export const KO_DECISION: Record<string, string> = {
   'Climate hedge h_c*': '기후 헤지 h_c*',
   'Risk price Λ(d*)': '리스크 가격 Λ(d*)',
   'The hedge, at a glance': '헤지 한눈에 보기',
-  'Financial leg': '재무 다리',
-  'Climate leg': '기후 다리',
+  'Financial leg': '재무 레그',
+  'Climate leg': '기후 레그',
   'Hedge ratios as disclosure varies — h(d)': '공시에 따른 헤지비율 — h(d)',
   'Hedge ratios as a function of disclosure intensity': '공시 강도별 헤지비율',
   'financial': '재무',
@@ -144,8 +144,8 @@ export const KO_DECISION: Record<string, string> = {
   'Feasible corner & the optimum': '실행가능 꼭짓점 & 최적해',
   'Feasible region and optimum': '실행가능 영역과 최적해',
   'The split': '배분',
-  'WTI leg': 'WTI 다리',
-  'FX leg': 'FX 다리',
+  'WTI leg': 'WTI 레그',
+  'FX leg': 'FX 레그',
 
   // ── Instruments ──
   'Swap / forward': '스왑 / 선도',
@@ -276,6 +276,6 @@ export const KO_DECISION: Record<string, string> = {
   'A combined': 'A 통합',
   'B split (WTI)': 'B 분리 (WTI)',
   'Structure A — one combined quanto CFH line': '구조 A — 통합 퀀토 CFH 라인 1개',
-  'Structure B — split WTI leg (of two lines)': '구조 B — 분리 WTI 다리 (두 라인 중 하나)',
+  'Structure B — split WTI leg (of two lines)': '구조 B — 분리 WTI 레그 (두 라인 중 하나)',
   'Where this connects': '어디로 이어지는가',
 }
