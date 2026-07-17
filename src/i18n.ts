@@ -67,7 +67,7 @@ export const KO_DESC: Record<string, string> = {
   decision: '고정 엔진에서 실시간 산출하는 최적 공시 강도 d*와 헤지비율 h*',
   budget: '고정 예산 → 최적 WTI/환 커버리지 배분 (제약 최소분산)',
   instruments:
-    '바닐라 라이브러리 — 스왑·캡·칼라·3-way·시걸 (Black-76) + 크랙 스프레드·환 벤치마크·더블 녹아웃 퀀토 (리서치)',
+    '실무 표준 헤지 구조부터 리서치용 배리어 데스크까지, 실제로 운용하는 방식 그대로',
   accounting: 'IFRS 9 현금흐름위험회피 지정: 통합 vs 분리 — OCI, 비유효 부분, 녹아웃 이후',
   cosa: '지속가능성 계정 트리 → 프레임워크 데이터포인트 매핑',
   materiality: '리스크·기회(IRO) 등록부 → 이중 중대성 매트릭스 (인터랙티브)',
@@ -137,7 +137,7 @@ export const KO_COPY: Record<string, string> = {
   'Buy protection outright, keep all the downside. Costs premium in cash.':
     '보호를 직접 매수하고 하방 이익은 모두 유지한다. 대신 프리미엄을 현금으로 지불한다.',
   'Cap financed by a sold floor. No cash out; you give up participation below the floor.':
-    '매도 플로어로 캡 비용을 충당한다. 현금 지출은 없지만, 플로어 아래 이익 참여를 포기한다.',
+    '플로어를 팔아 캡 프리미엄을 상쇄합니다. 들어가는 비용은 없지만, 유가가 플로어 아래로 내려갔을 때의 이익은 포기하는 구조입니다.',
   'Collar + a second sold put funds a lower floor, but a crash below it tears the protection back open.':
     '칼라에 풋을 하나 더 매도해 더 낮은 플로어를 만든다. 다만 그 아래로 급락하면 보호막이 다시 찢어진다.',
   'Collar whose upside cap ends at a ceiling. Cheaper strikes, but a spike past the ceiling re-exposes you.':
