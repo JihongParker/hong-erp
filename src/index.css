@@ -65,6 +65,16 @@ body {
   word-break: keep-all;
 }
 
+/* running prose never strands a single word on its last line; progressive
+   enhancement — browsers without text-wrap: pretty keep today's behaviour */
+p,
+li,
+figcaption,
+.bt-banner,
+.ex-contingency {
+  text-wrap: pretty;
+}
+
 /* custom scrollbars — thin, theme-aware, unobtrusive */
 * {
   scrollbar-width: thin;
