@@ -154,7 +154,7 @@ export default function Dashboard() {
       <div className="spine-row">
         <Chip from="Materiality">
           {lang === 'ko' ? (
-            <><strong>{spine.materialCount}</strong>개 중대 리스크 (≥{spine.materialityThreshold.toFixed(1)})가 익스포저 파라미터로 투입</>
+            <>중대 리스크 <strong>{spine.materialCount}</strong>개(기준 ≥{spine.materialityThreshold.toFixed(1)}) → 익스포저 파라미터로 투입</>
           ) : (
             <><strong>{spine.materialCount}</strong> material risks (≥{spine.materialityThreshold.toFixed(1)}) feed the exposure parameters</>
           )}
@@ -248,10 +248,10 @@ export default function Dashboard() {
               <p className="db-callout">
                 {lang === 'ko' ? (
                   <>
-                    의무 하한 d̲ = {p.dFloor.toFixed(1)}가 바인딩 상태입니다 (자율 최적은{' '}
-                    {eq.dVoluntary.toFixed(2)}). 강제된 공시가 페널티를 덜어 잔여 리스크를
-                    싸게 만들고, 그만큼 헤지를 <em>밀어냅니다</em>. 하한 슬라이더를
-                    올리면 두 막대가 같이 줄어듭니다.
+                    지금은 의무 하한이 바인딩 상태입니다 (d̲ = {p.dFloor.toFixed(1)},
+                    자율 최적 {eq.dVoluntary.toFixed(2)}). 강제된 공시가 페널티를 덜어
+                    잔여 리스크가 싸지고, 그만큼 헤지가 <em>밀려납니다</em>. 하한
+                    슬라이더를 올려 보세요. 두 막대가 같이 줄어듭니다.
                   </>
                 ) : (
                   <>

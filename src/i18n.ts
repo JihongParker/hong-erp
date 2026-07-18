@@ -64,7 +64,7 @@ export function useT(): (en: string) => string {
 // Korean sidebar blurbs, keyed by module id. Any id absent here falls back to
 // the English desc defined in App.tsx.
 export const KO_DESC: Record<string, string> = {
-  decision: '고정 엔진에서 실시간 산출하는 최적 공시 강도 d*와 헤지비율 h*',
+  decision: '동결 엔진에서 실시간 산출하는 최적 공시 강도 d*와 헤지비율 h*',
   budget: '고정 예산 → 최적 WTI/환 커버리지 배분 (제약 최소분산)',
   instruments:
     '실무 표준 헤지 구조부터 리서치용 배리어 데스크까지, 실제로 운용하는 방식 그대로',
@@ -75,7 +75,7 @@ export const KO_DESC: Record<string, string> = {
   report: 'ISSB/KSSB 4대 축 초안 — 승인 지표·헤지 북·의사결정 레이어에서 실시간 조립',
   scenario: '사업부 단위 파라미터 → 전략 비교',
   backtest: 'FRED 40년 데이터 워크포워드 헤지 백테스트 — 알파가 아니라 실현 변동성 축소',
-  audittrail: '추가 전용 이벤트 원장 — 모든 상신·승인·체결·지정 기록',
+  audittrail: '한 번 쓰면 지울 수 없는 이벤트 원장 — 모든 상신·승인·체결·지정을 기록',
 }
 
 // Korean guided-tour copy, in the same order as TOUR in App.tsx (8 steps). Kept
@@ -135,7 +135,7 @@ export const KO_COPY: Record<string, string> = {
   'Lock the price. Zero premium, zero optionality — the corporate default.':
     '선도 가격에 그대로 고정합니다. 프리미엄도 옵셔널리티도 없는, 기업 헤지의 기본값입니다.',
   'Buy protection outright, keep all the downside. Costs premium in cash.':
-    '보호를 통째로 사 오고, 유가가 내릴 때의 이익은 전부 남깁니다. 대신 프리미엄이 현금으로 나갑니다.',
+    '보호를 통째로 사고, 유가가 내릴 때의 이익은 전부 남깁니다. 대신 프리미엄이 현금으로 나갑니다.',
   'Cap financed by a sold floor. No cash out; you give up participation below the floor.':
     '플로어를 팔아 캡 프리미엄을 상쇄합니다. 들어가는 비용은 없지만, 유가가 플로어 아래로 내려갔을 때의 이익은 포기하는 구조입니다.',
   'Collar + a second sold put funds a lower floor, but a crash below it tears the protection back open.':
@@ -145,7 +145,7 @@ export const KO_COPY: Record<string, string> = {
 
   // ── Hedge Instruments: the "zero cost" caveat banner ──
   [`"Zero cost" is not "no cost" — every sold leg is short optionality, paid for in scenarios rather than cash. Push it one step further and the sold wing becomes a barrier: the three-way and seagull are one calibration away from the knock-in/knock-out structures that devastated Korean SMEs in 2008. Barrier analytics for exactly that risk are the Exotic Desk's job (research tab).`]:
-    "'제로 코스트'는 공짜라는 뜻이 아닙니다. 매도한 레그는 전부 옵션을 판 포지션이고, 그 값은 현금 대신 불리한 시나리오에서 치르게 됩니다. 여기서 한 발만 더 나가면 매도 윙이 배리어로 변합니다. 3-way와 시걸은 2008년 한국 중소기업들을 무너뜨린 녹인/녹아웃 구조와 캘리브레이션 한 끗 차이입니다. 바로 그 리스크를 뜯어보는 배리어 분석은 이그저틱 데스크(리서치 탭)에서 다룹니다.",
+    "'제로 코스트'는 공짜라는 뜻이 아닙니다. 매도한 레그는 전부 옵션을 판 포지션이고, 그 값은 현금 대신 불리한 시나리오에서 치르게 됩니다. 여기서 한 발만 더 나가면 매도 윙이 배리어로 변하는데, 3-way와 시걸은 2008년 한국 중소기업들을 무너뜨린 녹인/녹아웃 구조와 캘리브레이션 한 끗 차이입니다. 바로 그 리스크를 뜯어보는 배리어 분석은 퀀토 데스크(리서치 탭)에서 다룹니다.",
 
   // ── Exotic Desk: structure-selector blurb ──
   'The paper structure: a double knock-out quanto priced from the jump-diffusion MC surface. Watch the value collapse and the delta reverse as spot nears a barrier.':
@@ -163,7 +163,7 @@ export const KO_COPY: Record<string, string> = {
 
   // ── Backtest: control caption ──
   'Rolling window sets how much past data estimates Σ; budget caps total coverage (<2 binds); cost is charged on rebalancing turnover. The walk-forward result stays ~14pp above naive across the whole slider range — the edge is not a tuned artifact.':
-    '롤링 윈도는 Σ를 추정할 때 과거 데이터를 몇 달치 쓸지 정합니다. 예산은 총 커버리지의 상한이고(2 밑에서 바인딩), 비용은 리밸런싱 회전량에 붙습니다. 워크포워드 결과는 슬라이더를 어디에 두든 나이브 대비 14pp 안팎 앞서 있어, 파라미터를 잘 골라 만든 우위가 아님을 보여 줍니다.',
+    '롤링 윈도는 Σ를 추정할 때 과거 데이터를 몇 달치 쓸지 정합니다. 예산은 총 커버리지의 상한이고(2 밑에서 바인딩), 비용은 리밸런싱 회전량에 붙습니다. 워크포워드 결과는 슬라이더를 어디에 두든 단순 분할보다 14pp 안팎 앞서 있어, 파라미터를 잘 골라 만든 우위가 아님을 보여 줍니다.',
 }
 
 // master lookup: base copy + the two layer dictionaries (later wins on dupes)
