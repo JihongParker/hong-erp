@@ -631,14 +631,14 @@
   opacity: 0.82;
 }
 
-/* whole sentences wrap as units — no mid-phrase line breaks in the lede */
-.ov-sent {
-  display: inline-block;
+/* display copy: one sentence per line — Korean sentences are short and
+   self-contained, so the lede reads as a stanza, never a wrapped paragraph */
+.ov-line {
+  display: block;
 }
 
-/* emphasised phrase + its particle stay on one line */
-.ov-nb {
-  white-space: nowrap;
+.ov-sent {
+  display: block;
 }
 
 /* ── 4 · data-flow map ── */
