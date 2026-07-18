@@ -136,9 +136,11 @@ export default function Overview({
             {lang === 'ko' ? (
               <>
                 ESG 플랫폼은 공시 내용을 기록하는 데서 <strong>멈춥니다</strong>.
-                HongERP는 같은 리스크를 트레이딩 데스크처럼 다뤄 <strong>얼마나 헤지할지</strong>와{' '}
-                <strong>얼마나 공시할지</strong>를 한 번에 계산합니다. 공시를 늘릴수록 남은
-                리스크를 안고 가는 비용이 싸지기 때문에, 두 결정은 사실 하나입니다.
+                HongERP는 같은 리스크를 트레이딩 데스크처럼 다뤄{' '}
+                <span className="ov-nb"><strong>얼마나 헤지할지</strong>와</span>{' '}
+                <span className="ov-nb"><strong>얼마나 공시할지</strong>를</span> 한 번에
+                계산합니다. 공시를 늘릴수록 남은 리스크를 안고 가는 비용이 싸지기
+                때문에, 두 결정은 사실 하나입니다.
               </>
             ) : (
               <>

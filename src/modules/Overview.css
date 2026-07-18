@@ -186,6 +186,8 @@
   color: var(--muted);
   max-width: 640px;
   margin: 0 auto 30px;
+  /* centred copy: even line lengths, never a one-word last line */
+  text-wrap: balance;
 }
 
 .ov-lede strong {
@@ -632,6 +634,11 @@
 /* whole sentences wrap as units — no mid-phrase line breaks in the lede */
 .ov-sent {
   display: inline-block;
+}
+
+/* emphasised phrase + its particle stay on one line */
+.ov-nb {
+  white-space: nowrap;
 }
 
 /* ── 4 · data-flow map ── */
