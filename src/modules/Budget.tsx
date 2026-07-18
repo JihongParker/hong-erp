@@ -150,7 +150,7 @@ export default function Budget() {
                 <strong>상품 규칙 (§7–8):</strong> 스트레스 KO 확률{' '}
                 {(P1_INPUTS.p_KO_stress * 100).toFixed(0)}% ≫ 손익분기{' '}
                 {(P1_INPUTS.p_KO_breakeven * 100).toFixed(1)}% — 스트레스 상황에서는
-                WTI 장부를 <em>바닐라</em>로 유지합니다. 실시간 확률은 이그저틱
+                WTI 장부를 <em>바닐라</em>로 유지합니다. 실시간 확률은 퀀토
                 데스크에서 볼 수 있습니다.
               </>
             ) : (

@@ -138,7 +138,7 @@ export default function Backtest() {
                 <>
                   공분산을 반영한 헤지는 <strong>과거</strong> 데이터만으로 추정해 매달 리밸런싱하는데도,
                   표본 밖에서 현금흐름 변동성의 <strong>{pct(wf.varReduction, 0)}</strong>를 지웁니다
-                  {' '}(나이브 균등 분할보다 {((wf.varReduction - naive.varReduction) * 100).toFixed(0)}pp 높음).
+                  {' '}(단순 균등 분할보다 {((wf.varReduction - naive.varReduction) * 100).toFixed(0)}pp 높음).
                   미래를 미리 본 오라클과의 격차도 {pct(oracle.varReduction - wf.varReduction, 1)} 이내입니다.
                 </>
               ) : (
@@ -161,7 +161,7 @@ export default function Backtest() {
       <ParabolaPanel />
 
       <div className="bt-method">
-        <h3>{lang === 'ko' ? '방법론 및 솔직한 유의점' : 'Method & honest caveats'}</h3>
+        <h3>{lang === 'ko' ? '방법론과 솔직한 한계' : 'Method & honest caveats'}</h3>
         <ul>
           {lang === 'ko' ? (
             <>

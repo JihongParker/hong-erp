@@ -165,7 +165,8 @@ export default function DisclosureReport() {
             {lang === 'ko' ? (
               <>
                 기록상 검토 책임자는 <strong>J. Kim (감사팀)</strong>이다. 모든 상신·승인·반려·체결·지정은
-                추가 전용 감사 추적에 기록되며, 최근 이벤트 {events.length}건이 실시간 원장에 보존된다.
+                한 번 쓰면 지울 수 없는 감사 추적에 남으며, 최근 이벤트 {events.length}건이 실시간 원장에
+                보존된다.
               </>
             ) : (
               <>
@@ -222,8 +223,8 @@ export default function DisclosureReport() {
             {lang === 'ko' ? (
               <>
                 중대 리스크는 설문 점수에 머물지 않는다. 의사결정 레이어에 익스포저 파라미터로 투입되어
-                목표 공시 강도 <strong>d* = {spine.dStar.toFixed(2)}</strong>를 정한다. 공시와 헤지는 하나의
-                문제로 함께 풀리므로, 공시 요구가 강해질수록 최적 헤지비율도 그에 맞춰 움직인다.
+                목표 공시 강도 d*를 정한다(현재 <strong>{spine.dStar.toFixed(2)}</strong>). 공시와 헤지는
+                하나의 문제로 함께 풀리므로, 공시 요구가 강해질수록 최적 헤지비율도 그에 맞춰 움직인다.
               </>
             ) : (
               <>

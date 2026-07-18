@@ -119,7 +119,7 @@ function EuroCompare({ euro, ko, spot }: { euro: number[]; ko: number[]; spot: n
   const euroSpot = atSpot(euro, spot)
   const koSpot = atSpot(ko, spot)
   return (
-    <svg viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label={lang === 'ko' ? '코리도 전반의 유러피언 vs 배리어 가치' : 'European vs barrier value across the corridor'}>
+    <svg viewBox={`0 0 ${CW} ${CH}`} role="img" aria-label={lang === 'ko' ? '두 배리어 사이의 유러피언 vs 배리어 가치' : 'European vs barrier value across the corridor'}>
       <path d={gap} fill="#b3610f" opacity={0.1} />
       {[L, K, U].map((val) => (
         <g key={val}>
@@ -174,12 +174,12 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
       <p className="ex-foil-sub">
         {lang === 'ko' ? (
           <>
-            같은 녹아웃을 두고 숫자가 셋입니다. 표준 이항 트리 도구도, 그 도구가 수렴해
-            가는 1-요인 GBM 정확해도 이 헤지가 세 번에 한 번꼴로 사라진다고 계산합니다.
-            반면 점프-확산 퀀토 엔진의 답은 거의 절반입니다. 이 격차가{' '}
+            같은 녹아웃인데 숫자는 셋. 표준 이항 트리 도구도, 그 도구가 수렴해 가는
+            1-요인 GBM 정확해도 이 헤지가 세 번에 한 번꼴로 사라진다고 봅니다. 점프-확산
+            퀀토 엔진의 답은 거의 절반. 이 격차가{' '}
             <strong>교과서 모델로는 표현할 수 없는 생존 리스크</strong>입니다. 가격
-            점프도 환율 상관도 1-요인 GBM에는 들어갈 자리가 없습니다. 2008년 배리어
-            장부들이 무너진 것도 바로 이 부분을 과소평가했기 때문입니다.
+            점프도 환율 상관도 1-요인 GBM에는 들어갈 자리가 없고, 2008년 배리어
+            장부들이 무너진 것도 바로 그 과소평가에서 시작됐습니다.
           </>
         ) : (
           <>
@@ -349,7 +349,7 @@ export default function ExoticDesk() {
         </Chip>
         <Chip from="Decision Dashboard">
           {lang === 'ko' ? (
-            <>공시 d* = <strong>{spine.dStar.toFixed(2)}</strong>가 이 헤지가 마주할 잔여 리스크의 가격을 정합니다</>
+            <>공시 강도 d* = <strong>{spine.dStar.toFixed(2)}</strong> — 이 헤지가 감당할 잔여 리스크 가격의 기준</>
           ) : (
             <>disclosure d* = <strong>{spine.dStar.toFixed(2)}</strong> sets the residual-risk price the hedge answers to</>
           )}
@@ -531,7 +531,7 @@ export default function ExoticDesk() {
                   <Curve values={row.ko} color="#b3610f" spot={spot} fmt={(v) => `${(v * 100).toFixed(0)}%`} yMaxHint={1.05} />
                   <figcaption className="ex-cap">
                     {lang === 'ko' ? (
-                      <>만기 전에 어느 한쪽 배리어에 닿을 Q-측도 확률입니다. 음영 가장자리는 데드존, 점선은 행사가 K={K}.</>
+                      <>만기 전에 어느 한쪽 배리어에 닿을 Q-측도 확률입니다. 음영 가장자리는 가치가 죽는 구간, 점선은 행사가 K={K}.</>
                     ) : (
                       <>Q-measure probability of hitting either barrier before maturity. Shaded edges are the dead zones; dashed line is the strike K={K}.</>
                     )}
@@ -572,13 +572,14 @@ export default function ExoticDesk() {
                 <figcaption className="ex-cap">
                   {lang === 'ko' ? (
                     <>
-                      유러피언 가치(파랑)는 스팟을 따라 매끄럽게 오르지만, Double-KO(주황)는
-                      정점을 지나면 배리어 쪽으로 주저앉습니다. 두 곡선 사이의 음영이
-                      배리어가 얹는 생존 리스크로, ${spot.toFixed(0)} 기준 가치의{' '}
-                      <strong>{(destroyed * 100).toFixed(0)}%</strong>에 이릅니다. 델타도 함께 일그러집니다.
-                      지금 유러피언 Δ는 +{euro.deltaWTI.toFixed(0)}인데 Double-KO는 {dWti.toFixed(0)}이고,
-                      스팟이 상단 배리어에 다가서면 아예 음수로 뒤집힙니다. 유러피언에서는
-                      절대 나타나지 않는 반전입니다.
+                      유러피언 가치(파랑)는 스팟을 따라 매끄럽게 오르는 반면,
+                      Double-KO(주황)는 정점을 지나면 배리어 쪽으로 주저앉습니다. 두 곡선
+                      사이의 음영이 배리어가 얹는 생존 리스크입니다. 지금 스팟
+                      ${spot.toFixed(0)} 기준으로 가치의{' '}
+                      <strong>{(destroyed * 100).toFixed(0)}%</strong>. 델타도 함께 일그러져서,
+                      이 지점의 델타는 유러피언 +{euro.deltaWTI.toFixed(0)} 대 Double-KO{' '}
+                      {dWti.toFixed(0)}. 스팟이 상단 배리어에 다가서면 Double-KO 쪽은 아예
+                      음수로 뒤집히는데, 유러피언에서는 절대 나타나지 않는 반전입니다.
                     </>
                   ) : (
                     <>

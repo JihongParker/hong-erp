@@ -55,7 +55,7 @@ export const KO_DECISION: Record<string, string> = {
   'And it all moves.': '그리고 이 모든 것이 실시간으로 움직입니다.',
   'Drag a dial, the equilibrium recomputes.': '다이얼을 움직이면 균형이 그 자리에서 다시 계산됩니다.',
   'Flip through, or let them play.': '직접 넘겨 봐도, 자동 재생으로 둬도 됩니다.',
-  'See where the decision gets made.': '결정이 만들어지는 과정을 확인해 보세요.',
+  'See where the decision gets made.': '결정이 내려지는 자리를 직접 확인해 보세요.',
   'Take a look': '직접 살펴보기',
   'Start': '시작',
   'open the Decision Dashboard': '의사결정 대시보드 열기',
@@ -69,7 +69,7 @@ export const KO_DECISION: Record<string, string> = {
   'Run a dynamic hedge on an exotic barrier option written on that same exposure, then watch where textbook deltas break.':
     '같은 익스포저에 걸린 배리어 옵션을 동적으로 헤지하면서, 교과서 델타가 무너지는 지점을 보여 줍니다.',
   'Paper engine surfaces, KO probability anchored 43.5% vs 43.7%':
-    '논문 엔진 표면 그대로 · 녹아웃 확률 43.5%가 논문 값 43.7%와 일치',
+    '논문 엔진 표면 그대로 · 녹아웃 확률 43.5% (논문 43.7%) 재현',
   'IFRS 9 cash-flow-hedge accounting: combined vs split': 'IFRS 9 현금흐름위험회피 회계: 통합 vs 분리',
   'Book the resulting hedge two legal ways. Same economics, very different earnings.':
     '같은 헤지를 두 가지 회계 방식으로 장부에 올립니다. 경제적 실질은 같지만 손익은 크게 달라집니다.',
@@ -79,13 +79,13 @@ export const KO_DECISION: Record<string, string> = {
   'Ask what sets the decision to hedge in the first place, and prove disclosure moves it only through the price of risk.':
     '애초에 헤지 결정을 무엇이 정하는지 묻고, 공시가 오직 리스크 가격을 통해서만 그 결정을 움직인다는 것을 증명합니다.',
   'Closed form certified vs independent minimizer, 200 draws, gap ≤3×10⁻⁶':
-    '독립 최소화기 대비 닫힌 해 검증, 200회 추출, 격차 ≤3×10⁻⁶',
+    '닫힌 해를 독립 최소화기와 200회 대조 검증, 격차 ≤3×10⁻⁶',
   'Materiality': '중대성 평가',
   'risks scored': '리스크 평가',
   'Budget': '예산',
   'coverage split': '커버리지 배분',
   'Instruments': '상품',
-  'collar · exotic': '칼라 · 이그저틱',
+  'collar · exotic': '칼라 · 퀀토',
   'Accounting': '회계',
   'IFRS 9 books': 'IFRS 9 장부',
   'Disclosure': '공시',
@@ -235,8 +235,8 @@ export const KO_DECISION: Record<string, string> = {
   'Δ WTI (regression-grid FD)': 'Δ WTI (회귀격자 FD)',
   'Δ FX = V/S₂ (homogeneity thm)': 'Δ FX = V/S₂ (동차성 정리)',
   'c* covariance multiplier': 'c* 공분산 승수',
-  'paper §c* — vs c=1 naive': '논문 §c* — c=1 나이브 대비',
-  'Value across the corridor — the barrier squeeze': '코리도 전 구간의 가치 — 배리어 스퀴즈',
+  'paper §c* — vs c=1 naive': '논문 §c* · 단순 c=1 대비',
+  'Value across the corridor — the barrier squeeze': '두 배리어 사이의 가치 — 배리어 스퀴즈',
   'Knock-out probability': '녹아웃 확률',
   'European value (KRW / unit)': '유러피언 가치 (KRW / 단위)',
   'Δ WTI — monotone': 'Δ WTI — 단조',

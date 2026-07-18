@@ -240,7 +240,7 @@ export default function Instruments() {
             </Chip>
             <Chip from="Decision Dashboard">
               {lang === 'ko' ? (
-                <>공시 d* = <strong>{spine.dStar.toFixed(2)}</strong>가 이 헤지가 마주할 잔여 리스크의 가격을 정합니다</>
+                <>공시 강도 d* = <strong>{spine.dStar.toFixed(2)}</strong> — 이 헤지가 감당할 잔여 리스크 가격의 기준</>
               ) : (
                 <>disclosure d* = <strong>{spine.dStar.toFixed(2)}</strong> sets the residual-risk price the hedge answers to</>
               )}
