@@ -13,6 +13,7 @@ export interface Spine {
   materialCount: number
   materialityThreshold: number
   dStar: number
+  lambdaStar: number // Λ(d*) — the risk price every layer answers to
   floorBinding: boolean
   budgetW1: number
   budgetW2: number
@@ -45,6 +46,7 @@ export function SpineProvider({ children }: { children: ReactNode }) {
     materialCount: initialMaterial,
     materialityThreshold: DEFAULT_MAT_THRESHOLD,
     dStar: eq0.dStar,
+    lambdaStar: eq0.lambdaAtD,
     floorBinding: false,
     budgetW1: budget0.w1,
     budgetW2: budget0.w2,

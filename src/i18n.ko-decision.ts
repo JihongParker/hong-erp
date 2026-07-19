@@ -82,6 +82,12 @@ export const KO_DECISION: Record<string, string> = {
     '답이 맞는지 다른 방법으로 200번 다시 풀어 봤습니다. 차이는 3×10⁻⁶ 이하',
   'Materiality': '중대성 평가',
   'risks scored': '리스크 평가',
+  'material risks → Σ': '중대 리스크 → 익스포저 Σ',
+  'risk price d*·Λ': '위험의 가격 d*·Λ',
+  'split w₁ / w₂': '예산 배분 w₁ / w₂',
+  'trades · KO odds': '체결 · 녹아웃 확률',
+  'the designation mix returns as the disclosure outcome (H2)':
+    '지정 결과는 공시 문제의 결과변수(H2)로 되돌아갑니다',
   'Budget': '예산',
   'coverage split': '커버리지 배분',
   'Instruments': '상품',

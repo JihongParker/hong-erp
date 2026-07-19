@@ -112,7 +112,7 @@ export const KO_TOUR: { title: string; body: string }[] = [
   },
   {
     title: '표본 밖에서 증명하기',
-    body: '지금까지는 한 장의 스냅샷이었습니다. 여기서는 같은 헤지를 실제 원유·환율 데이터 40년에 걸쳐 매달 다시 돌리되, 매 결정에 과거 데이터만 씁니다. 슬라이더를 조금만 건드려도 전체 이력이 다시 계산되는데, 그래도 헤지는 수입 대금의 출렁임을 약 89% 지워 줍니다. 수익을 노리는 베팅이 아니라 흔들릴 때 버텨 주는 헤지, 그것이 핵심입니다.',
+    body: '지금까지는 한 장의 스냅샷이었습니다. 여기서는 같은 헤지를 실제 원유·환율 데이터 40년에 걸쳐 매달 다시 돌리되, 매 결정에 과거 데이터만 씁니다. 슬라이더를 조금만 건드려도 전체 이력이 다시 계산되는데, 그래도 헤지는 수입 대금의 출렁임을 약 89% 지워 줍니다. 수익을 노리는 베팅이 아니라 흔들릴 때 버텨 주는 헤지, 그것이 핵심입니다. 이로써 한 바퀴가 닫혔습니다 — 방금 지나온 화면들이 논문 네 편을 하나의 시스템으로 돌린 결과입니다.',
   },
 ]
 
@@ -126,8 +126,8 @@ export const KO_COPY: Record<string, string> = {
   // ── Overview ──
   "Four papers, one Korean oil importer's WTI × USD/KRW exposure. Each picks up where the last leaves off.":
     '논문 네 편이 한국 원유 수입사의 WTI × USD/KRW 익스포저 하나를 릴레이로 다룹니다. 앞 논문이 끝난 자리에서 다음 논문이 이어집니다.',
-  "Risks set the exposure, the budget hits the desks, the desks' knock-out odds drive the books, and disclosure closes the loop.":
-    '리스크 평가가 익스포저를 정하면 예산이 데스크로 내려가고, 데스크에서 산출된 녹아웃 확률이 장부에 반영되며, 마지막에 공시가 전체 흐름을 마무리합니다.',
+  'Risks price the exposure, disclosure prices the risk of carrying it, the budget and the desks trade at that price, and the books hand the answer back.':
+    '리스크 평가가 익스포저를 정하고, 공시 문제가 그 위험을 안고 갈 값을 매깁니다. 예산과 데스크는 그 값에 맞춰 움직이고, 장부의 지정 결과는 다시 공시 문제로 되돌아옵니다.',
   '+ two applied notes: KIKO forensics (P5) · the benign vs. the lethal barrier (P6)':
     '+ 응용 노트 두 편: KIKO 포렌식 (P5) · 무해한 배리어 vs. 치명적 배리어 (P6)',
 
