@@ -30,6 +30,42 @@ export const P1_INPUTS = {
   p_KO_breakeven: 0.0616, // p̄ above which vanilla dominates KO
 } as const
 
+// §7–8 — the survival haircut and the instrument switch. The knock-out
+// discount is a loan against the states in which the hedge is needed: worth
+// taking only while the probability of the protection being dead when needed
+// (p) stays below the paper's break-even p̄ = 6.16%. The per-unit economics
+// are linear in the mix, so the optimum is bang-bang: below p̄ the WTI book
+// holds the knock-out, above it the optimizer walks the book to all-vanilla.
+// KRW anchors from the frozen inputs: full-book stress loss ≈ ₩105.6bn, so
+// the discount is worth p̄ × 105.6 ≈ ₩6.5bn — and measured stress mortality
+// 89.25% ≈ 14× the break-even (§7).
+export interface SurvivalSwitch {
+  pBar: number // break-even mortality p̄
+  koShare: 0 | 1 // optimal KO fraction of the WTI book at mortality p (bang-bang)
+  allVanilla: boolean
+  fullBookStressLoss: number // KRW lost on a fully unprotected WTI book in the stress state
+  discountValue: number // KRW value of the KO discount = p̄ × fullBookStressLoss
+  expectedMortalityCost: number // KRW expected cost of dead protection = p × fullBookStressLoss
+  marginRatio: number // p / p̄ — how far past (or under) the switch the book sits
+}
+
+export function survivalSwitch(p: number): SurvivalSwitch {
+  const I = P1_INPUTS
+  const pBar = I.p_KO_breakeven
+  const fullBookStressLoss =
+    I.Q_oil * Math.max(0, I.stressWTI - I.S_WTI) * I.stressKRW
+  const allVanilla = p > pBar
+  return {
+    pBar,
+    koShare: allVanilla ? 0 : 1,
+    allVanilla,
+    fullBookStressLoss,
+    discountValue: pBar * fullBookStressLoss,
+    expectedMortalityCost: p * fullBookStressLoss,
+    marginRatio: p / pBar,
+  }
+}
+
 export interface BudgetParams {
   regime: Regime
   B: number

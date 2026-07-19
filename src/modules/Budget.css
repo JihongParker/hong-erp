@@ -180,3 +180,116 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ── §7–8 survival-haircut switch panel ── */
+.bg-switch {
+  margin-top: 16px;
+}
+
+.bg-switch-tag {
+  font-size: 10px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 7px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  vertical-align: 2px;
+}
+
+.bg-switch-lede {
+  max-width: 760px;
+  margin-bottom: 14px;
+}
+
+.bg-switch-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.bg-switch-grid svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.bg-switch-presets {
+  display: flex;
+  gap: 8px;
+  margin: 6px 0 14px;
+  flex-wrap: wrap;
+}
+
+.bg-switch-presets button {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--panel);
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.bg-switch-presets button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.bg-verdict {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 7px;
+}
+
+.bg-verdict-head {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.bg-verdict-bar {
+  height: 14px;
+  border-radius: 7px;
+  background: #2e7d52; /* vanilla base */
+  overflow: hidden;
+}
+
+.bg-verdict-ko {
+  height: 100%;
+  background: #b3610f;
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bg-verdict-label {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.bg-verdict.vanilla {
+  border-color: color-mix(in srgb, #2e7d52 45%, var(--line));
+}
+
+.bg-verdict.ko {
+  border-color: color-mix(in srgb, #b3610f 45%, var(--line));
+}
+
+.bg-sw-lbl {
+  font-size: 10.5px;
+  font-weight: 650;
+}
+
+@media (max-width: 860px) {
+  .bg-switch-grid {
+    grid-template-columns: 1fr;
+  }
+}
