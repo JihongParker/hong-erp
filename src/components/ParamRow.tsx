@@ -53,6 +53,8 @@ const HELP: Record<string, string> = {
   예산: '쓸 수 있는 총 프리미엄',
   'stress WTI': 'Oil price in the stress scenario',
   '스트레스 WTI': '스트레스 시나리오에서의 유가',
+  'mortality when needed': 'Probability the protection is already dead in the states where it is needed',
+  '소멸 확률': '보호가 필요한 바로 그 상황에서 이미 죽어 있을 확률',
   window: 'How many months of past data estimate Σ',
   윈도: 'Σ 추정에 쓰는 과거 데이터 개월 수',
   'per turnover': 'Trading cost charged on each rebalance',
