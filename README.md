@@ -4,7 +4,7 @@
 
 ### The decision layer that ESG platforms leave empty.
 
-Most ESG software records what a company discloses and stops there. **HongERP treats that risk like a trading desk** — give it a company's exposures and it computes two answers at once: *how much to hedge* and *how much to disclose*. It runs entirely in the browser, with the financial models solving live as you drag a dial.
+Most ESG software records what a company discloses and stops there. **HongERP treats that risk like a trading desk** — give it a company's exposures and it computes two answers at once: *how much to hedge* and *how much to disclose*. Four research papers were reduced to frozen computational engines; an ERP-grade governance shell (roles, ledgers, approvals, an audit trail) runs on top of them, entirely in the browser.
 
 **[▶ Open the live app](https://jihongparker.github.io/hong-erp/)**  ·  no login, no finance background needed
 
@@ -14,15 +14,32 @@ Most ESG software records what a company discloses and stops there. **HongERP tr
 
 ---
 
-## Why this is worth a look
+## What kind of project this is
 
-This is a **single-page product**, built end to end — design, front-end engineering, financial modelling, live data, and CI — with no backend and no UI framework beyond React. Everything you see is computed on the client from first principles.
+Not a web app with finance-flavoured labels, and not a slide deck with a demo attached: **a finance-literate system design**. The hard part is neither the React nor the math in isolation — it is that the accounting semantics (segregation of duties, append-only audit trail, period locks, IFRS 9 designation) and the quantitative engines (constrained optimization, barrier-option surfaces, a disclosure–hedging equilibrium) are one connected state machine, and every number on screen can name where it came from.
 
-- **Real models, running live.** Nine modules, each solving an actual optimization in the browser: constrained minimum-variance hedge allocation, a Black-76 zero-cost collar solver, an IFRS 9 hedge-accounting ledger, and a disclosure–hedging equilibrium. Move a slider and the answer recomputes at 60 fps.
-- **One connected system.** A shared position state (the "spine") links every screen, so the sidebar is a genuine data flow: material risks feed the exposure parameters, the budget split lands on the instrument desk, the exotic desk's knock-out odds drive the accounting module. Each screen shows *where every number came from*.
-- **Live market data, zero backend.** A scheduled GitHub Action pulls WTI and USD/KRW from the U.S. Federal Reserve (FRED) each weekday and commits a snapshot; the app opens on the latest close. No server, no exposed keys.
-- **Verified numerics.** Every headline figure is checked against an independent solver in the build — the equilibrium engine agrees with a multi-start minimizer to 1e-8; the exotic-option surfaces reproduce the reference knock-out rate to 0.5%.
-- **Designed, not just built.** A hand-drawn animated hero (HTML-canvas surf, a working port, scroll-driven colour), a guided tour, full light/dark theming, responsive down to mobile, and `prefers-reduced-motion` support throughout.
+| Proof, not adjectives | |
+| --- | --- |
+| Equilibrium engine vs independent minimizer | gap ≤ 3×10⁻⁶ over 200 draws (in CI) |
+| Zero-cost collar solver | put–call parity to 1×10⁻¹⁴ |
+| Exotic barrier surface | knock-out rate 43.5% vs 43.7% paper anchor |
+| Hedge backtest | 486 months of FRED data, walk-forward, past-only |
+| Governance flows | submit → approve → book → designate, Playwright-tested end to end |
+
+## The system in one diagram
+
+The sidebar is not a menu; it is this graph. One firm-level position is shared by every screen, and the loop closes: the disclosure problem prices residual risk (Λ), everything downstream trades at that price, and the hedge-accounting election flows back as the outcome the disclosure research measures.
+
+```mermaid
+flowchart LR
+    MAT["Materiality<br/>risks scored"] -- "material risks → Σ" --> DEC["Disclosure<br/>d* · Λ"]
+    DEC -- "risk price d*·Λ" --> BUD["Budget<br/>coverage split"]
+    BUD -- "w₁ / w₂" --> DESK["Desks<br/>collar · quanto"]
+    DESK -- "trades · KO odds" --> ACC["Accounting<br/>IFRS 9 books"]
+    ACC -. "designation mix (H2)" .-> DEC
+```
+
+Architecture in depth — layer map, permission matrix, ledger schema, verification chain: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
 
 ## What's inside
 
@@ -33,9 +50,9 @@ This is a **single-page product**, built end to end — design, front-end engine
 | **Hedge Instruments** | Zero-cost collar desk (Black-76) and a double-knock-out quanto barrier monitor |
 | **Hedge Accounting** | IFRS 9 cash-flow-hedge designation: combined vs split, with OCI and ineffectiveness ledgers |
 | **Materiality** | Interactive double-materiality matrix from an IRO register |
-| **Metrics Entry** | Submit → validate → approval queue → ledger, with an audit trail |
-| **Chart of Accounts** | Sustainability account tree mapped to reporting-framework datapoints |
-| **Scenarios** | Division-level parameters and side-by-side strategy comparison |
+| **Metrics Entry** | Submit → validate → approval queue → ledger, with an audit trail and FY close |
+| **Chart of Accounts** | Sustainability account tree mapped to GRI / KSSB / KCGS / MSCI datapoints |
+| **Scenarios · Backtest** | Division-level parameters; 40-year walk-forward hedge backtest on real data |
 
 <div align="center">
 
@@ -43,16 +60,22 @@ This is a **single-page product**, built end to end — design, front-end engine
 
 </div>
 
-## Tech stack
-
-**React 18** · **TypeScript** · **Vite** · SVG + HTML **Canvas** for the visuals · React Context for state · `localStorage` persistence · **GitHub Actions** for the market-data pipeline and Pages deploy · **Playwright** for render checks. No chart library, no state library, no CSS framework — the visualizations, animations, and layout are all hand-built.
-
 ## Engineering notes
 
-- **Client-only architecture.** All computation lives in `src/engine/*`; the UI is a thin, reactive layer over pure functions.
-- **Numerical trust.** `scripts/verify-engine.mjs` re-solves the equilibrium against an independent optimizer; precomputed option surfaces carry their calibration and anchor checks in-file.
-- **Automated market data.** `.github/workflows/market.yml` runs on a weekday cron, fetches FRED series, commits the snapshot, and triggers the Pages deploy — a small, real data pipeline with the secret held server-side.
-- **Accessibility & polish.** Semantic markup, keyboard-reachable controls, theme-aware colour with validated contrast, and reduced-motion fallbacks for every animation.
+- **Client-only architecture.** All computation lives in `src/engine/*`; the UI is a thin, reactive layer over pure functions. Governance (role gates, append-only trail, period locks) is enforced in the reducers — a design property, not an infrastructure purchase.
+- **Numerical trust.** `scripts/verify-engine.mjs` re-solves the equilibrium against an independent optimizer on every CI run; precomputed option surfaces carry their calibration and anchor checks in-file.
+- **Live data, zero backend.** A scheduled GitHub Action pulls WTI and USD/KRW from FRED each weekday and commits a snapshot; the app opens on the latest close, with the secret held server-side.
+- **Designed, not just built.** Hand-drawn animated hero, guided tour, EN/KO bilingual copy, full light/dark theming, responsive to mobile, `prefers-reduced-motion` support throughout. No chart library, no state library, no CSS framework.
+
+**Stack** — React 18 · TypeScript · Vite · hand-built SVG/Canvas · React Context · GitHub Actions (data pipeline, CI, Pages) · Playwright.
+
+## 한국어 소개
+
+HongERP는 ESG 플랫폼이 비워 둔 **의사결정 층**을 채우는 프로토타입입니다. 기존 도구가 "무엇을 공시했는가"를 기록하는 데서 멈춘다면, 이 시스템은 회사의 위험 노출을 입력받아 **얼마나 헤지하고 얼마나 공시할지**를 함께 계산합니다.
+
+겉모습은 ERP지만 속은 두 겹입니다. 아래층에는 연구 논문 네 편의 결과를 그대로 옮겨 고정한 계산 엔진(예산 배분, 배리어 옵션 가격 산정, 현금흐름위험회피 원장, 공시-헤지 균형)이 있고, 위층에는 실제 결재선을 본뜬 통제 구조가 있습니다 — 사업부장이 지표를 **상신**하면 감사팀이 **승인·반려**하고, 자금부가 파생상품을 **체결**하며, CFO가 회계 **지정**과 **기말 마감**을 맡습니다. 모든 처리 내역은 지울 수 없는 감사 기록으로 남고, 수치를 올린 사람이 그 수치를 승인할 수 없도록 권한이 분리되어 있습니다.
+
+화면 아홉 개는 하나의 포지션을 공유합니다. 중대성 평가에서 확정된 위험이 공시 문제로 넘어가 **위험의 가격(Λ)** 을 정하고, 예산과 데스크가 그 가격에 맞춰 움직이며, 장부의 지정 결과는 다시 공시 문제의 결과변수로 되돌아옵니다. 모든 핵심 수치는 독립 검증을 거칩니다 — 균형 엔진은 별도 최적화기와 200회 대조(오차 3×10⁻⁶ 이하), 옵션 가격은 풋-콜 패리티 10⁻¹⁴ 수준, 백테스트는 실제 유가·환율 40년치로 매달 재계산됩니다.
 
 ## Run it locally
 
