@@ -133,7 +133,7 @@ const TOUR: { module: string; title: string; body: string; target: string; lift?
     scrollSel: '.bt-controls',
     scrollBlock: 'start',
     title: 'Prove it out of sample',
-    body: 'Everything so far was one snapshot. Here the same hedge is replayed across 40 years of real oil and currency data, month by month, deciding each move using only the past. Nudge any slider and the whole history recomputes, and the hedge still erases about 89% of the swings in the import bill. That is the point: not a bet that makes money, just a hedge that holds up.',
+    body: 'Everything so far was one snapshot. Here the same hedge is replayed across 40 years of real oil and currency data, month by month, deciding each move using only the past. Nudge any slider and the whole history recomputes, and the hedge still erases about 89% of the swings in the import bill. That is the point: not a bet that makes money, just a hedge that holds up. And that closes the loop -- the screens you just crossed are four research papers, running as one system.',
   },
 ]
 

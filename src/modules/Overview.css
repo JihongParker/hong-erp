@@ -656,6 +656,62 @@
   margin-right: auto;
 }
 
+/* flow nodes: names wrap instead of truncating (중대성 평가 needs two lines) */
+.ov-flow-row .ov-node-label {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.2;
+}
+
+/* per-edge label: the state variable that actually travels the arrow.
+   Narrow and wrapping, so the arrow column never squeezes the nodes. */
+.ov-arrow .ov-edge {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  color: var(--muted);
+  max-width: 88px;
+  margin: 2px auto 0;
+  text-align: center;
+}
+
+/* the H2 return arc: designation mix flows back into the disclosure problem */
+.ov-flow-return {
+  position: relative;
+  max-width: 980px;
+  margin: 2px auto 18px;
+  color: var(--muted);
+}
+
+.ov-flow-return svg {
+  display: block;
+  width: 100%;
+  height: 46px;
+}
+
+.ov-return-label {
+  display: inline-block;
+  font-size: 11.5px;
+  color: var(--muted);
+  background: var(--bg);
+  padding: 0 10px;
+  position: relative;
+  top: -14px;
+}
+
+@media (max-width: 720px) {
+  /* nodes stack vertically on mobile; the arc geometry no longer applies */
+  .ov-flow-return svg {
+    display: none;
+  }
+  .ov-return-label {
+    top: 0;
+  }
+}
+
 .ov-flow-row {
   display: flex;
   align-items: stretch;

@@ -112,7 +112,7 @@ export default function Dashboard() {
   )
 
   useEffect(() => {
-    spine.publish({ dStar: eq.dStar, floorBinding: eq.floorBinding })
+    spine.publish({ dStar: eq.dStar, lambdaStar: eq.lambdaAtD, floorBinding: eq.floorBinding })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eq.dStar, eq.floorBinding])
 
@@ -165,6 +165,18 @@ export default function Dashboard() {
           ) : (
             <>allocator split <strong>{(spine.budgetW1 * 100).toFixed(1)}% / {(spine.budgetW2 * 100).toFixed(1)}%</strong> WTI/FX</>
           )}
+        </Chip>
+        <Chip from="Hedge Accounting">
+          {(() => {
+            const nA = erp.trades.filter((tr) => tr.designation === 'CFH-A').length
+            const nB = erp.trades.filter((tr) => tr.designation === 'CFH-B').length
+            const nF = erp.trades.filter((tr) => tr.designation === 'FVTPL').length
+            return lang === 'ko' ? (
+              <>지정 구성 A {nA} · B {nB} · FVTPL {nF} — 위험회피회계 채택이 이 공시 문제의 결과변수(H2)</>
+            ) : (
+              <>designation mix A {nA} · B {nB} · FVTPL {nF} — adoption is this problem's outcome variable (H2)</>
+            )
+          })()}
         </Chip>
       </div>
       <div className="db-grid">

@@ -53,12 +53,24 @@ const nodeColor = (i: number, n: number) => {
   return `rgb(${c[0]},${c[1]},${c[2]})`
 }
 
+// causal order, not sidebar order: risks price the exposure, the disclosure
+// problem sets the risk price, the budget allocates at that price, the desks
+// trade it, the books record it -- and the designation mix returns as the
+// disclosure problem's outcome variable (the H2 loop).
 const FLOW = [
   { id: 'materiality', label: 'Materiality', sub: 'risks scored' },
+  { id: 'decision', label: 'Disclosure', sub: 'd* · Λ' },
   { id: 'budget', label: 'Budget', sub: 'coverage split' },
   { id: 'instruments', label: 'Instruments', sub: 'collar · exotic' },
   { id: 'accounting', label: 'Accounting', sub: 'IFRS 9 books' },
-  { id: 'decision', label: 'Disclosure', sub: 'd* × h*' },
+]
+
+// what actually travels down each edge (shared position state)
+const FLOW_EDGES = [
+  'material risks → Σ',
+  'risk price d*·Λ',
+  'split w₁ / w₂',
+  'trades · KO odds',
 ]
 
 export default function Overview({
@@ -233,12 +245,34 @@ export default function Overview({
                 <span className="ov-node-sub">{t(f.sub)}</span>
               </button>
               <span className="ice-bubbles" aria-hidden />
-              {i < FLOW.length - 1 && <span className="ov-arrow">→</span>}
+              {i < FLOW.length - 1 && (
+                <span className="ov-arrow">
+                  →<span className="ov-edge">{t(FLOW_EDGES[i])}</span>
+                </span>
+              )}
             </div>
           ))}
         </div>
+        <div className="ov-flow-return">
+          <svg viewBox="0 0 1000 64" preserveAspectRatio="none" aria-hidden>
+            <defs>
+              <marker id="ov-ret-arrow" viewBox="0 0 10 10" refX="8" refY="5"
+                markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+              </marker>
+            </defs>
+            <path
+              d="M 900 4 C 900 56, 300 56, 300 8"
+              fill="none" stroke="currentColor" strokeWidth="1.6"
+              strokeDasharray="6 5" markerEnd="url(#ov-ret-arrow)"
+            />
+          </svg>
+          <span className="ov-return-label">
+            {t('the designation mix returns as the disclosure outcome (H2)')}
+          </span>
+        </div>
         <p className="ov-flow-note">
-          {t("Risks set the exposure, the budget hits the desks, the desks' knock-out odds drive the books, and disclosure closes the loop.")}
+          {t('Risks price the exposure, disclosure prices the risk of carrying it, the budget and the desks trade at that price, and the books hand the answer back.')}
         </p>
       </section>
 
