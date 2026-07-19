@@ -138,8 +138,7 @@ export default function Overview({
                 <span className="ov-line">ESG 플랫폼은 공시를 기록하는 데서 <strong>멈춥니다</strong>.</span>
                 <span className="ov-line">HongERP는 같은 리스크를 트레이딩 데스크처럼 다룹니다.</span>
                 <span className="ov-line"><strong>얼마나 헤지할지</strong>, <strong>얼마나 공시할지</strong>를 한 번에 계산합니다.</span>
-                <span className="ov-line">공시를 늘리면 남은 리스크를 안는 비용이 싸집니다.</span>
-                <span className="ov-line">그래서 두 결정은 사실 하나입니다.</span>
+                <span className="ov-line"><strong>공시를 늘리면 남은 리스크를 안는 비용이 싸집니다.</strong></span>
               </>
             ) : (
               <>

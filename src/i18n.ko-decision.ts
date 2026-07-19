@@ -64,22 +64,22 @@ export const KO_DECISION: Record<string, string> = {
   'Given a fixed premium budget, how much of the oil leg and the currency leg should a Korean importer actually cover?':
     '프리미엄 예산이 정해져 있을 때, 원유 레그와 FX 레그를 각각 얼마나 커버해야 할까요?',
   'Vertex optimum 97.0% / 2.9% reproduced live, budget-exact at ₩45bn':
-    '꼭짓점 최적해 97.0% / 2.9%를 실시간 재현 · ₩45bn 예산을 정확히 소진',
+    '논문의 97.0 / 2.9 배분이 눈앞에서 그대로 나옵니다. ₩45bn 예산도 딱 맞게 씁니다',
   'Covariance-aware delta hedging of a double-KO quanto': '더블 녹아웃 퀀토의 공분산 반영 델타 헤지',
   'Run a dynamic hedge on an exotic barrier option written on that same exposure, then watch where textbook deltas break.':
     '같은 익스포저에 걸린 배리어 옵션을 동적으로 헤지하면서, 교과서 델타가 무너지는 지점을 보여 줍니다.',
   'Paper engine surfaces, KO probability anchored 43.5% vs 43.7%':
-    '논문 엔진 표면 그대로 · 녹아웃 확률 43.5% (논문 43.7%) 재현',
+    '논문 엔진 표면을 그대로 올렸습니다. 녹아웃 확률 43.5%, 논문의 43.7%와 거의 일치',
   'IFRS 9 cash-flow-hedge accounting: combined vs split': 'IFRS 9 현금흐름위험회피 회계: 통합 vs 분리',
   'Book the resulting hedge two legal ways. Same economics, very different earnings.':
     '같은 헤지를 두 가지 회계 방식으로 장부에 올립니다. 경제적 실질은 같지만 손익은 크게 달라집니다.',
   'Designation ledgers verbatim: ineffectiveness ₩23.4bn vs ₩6.4bn':
-    '지정 원장 그대로: 비유효 부분 ₩23.4bn vs ₩6.4bn',
+    '장부도 논문 그대로입니다. 비유효 부분이 ₩23.4bn vs ₩6.4bn으로 갈립니다',
   'ESG disclosure mandates and corporate hedging': 'ESG 공시 의무와 기업 헤지',
   'Ask what sets the decision to hedge in the first place, and prove disclosure moves it only through the price of risk.':
     '애초에 헤지 결정을 무엇이 정하는지 묻고, 공시가 오직 리스크 가격을 통해서만 그 결정을 움직인다는 것을 증명합니다.',
   'Closed form certified vs independent minimizer, 200 draws, gap ≤3×10⁻⁶':
-    '닫힌 해를 독립 최소화기와 200회 대조 검증, 격차 ≤3×10⁻⁶',
+    '답이 맞는지 다른 방법으로 200번 다시 풀어 봤습니다. 차이는 3×10⁻⁶ 이하',
   'Materiality': '중대성 평가',
   'risks scored': '리스크 평가',
   'Budget': '예산',
