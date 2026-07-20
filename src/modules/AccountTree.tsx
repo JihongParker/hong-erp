@@ -34,10 +34,12 @@ export default function AccountTree() {
           accounts: c.accounts.filter(
             (a) =>
               a.name.toLowerCase().includes(q) ||
+              t(a.name).toLowerCase().includes(q) ||
               a.code.toLowerCase().includes(q) ||
               a.datapoints.some(
                 (d) =>
                   d.name.toLowerCase().includes(q) ||
+                  t(d.name).toLowerCase().includes(q) ||
                   d.code.toLowerCase().includes(q),
               ),
           ),
@@ -78,14 +80,14 @@ export default function AccountTree() {
             <button className="tree-row pillar" onClick={() => toggle(pillar.code)}>
               <span className="chev">{isOpen(pillar.code) ? '▾' : '▸'}</span>
               <span className={`pillar-tag p-${pillar.code}`}>{pillar.code}</span>
-              {pillar.name}
+              {t(pillar.name)}
             </button>
             {isOpen(pillar.code) &&
               pillar.categories.map((cat) => (
                 <div key={cat.code}>
                   <button className="tree-row category" onClick={() => toggle(cat.code)}>
                     <span className="chev">{isOpen(cat.code) ? '▾' : '▸'}</span>
-                    <code>{cat.code}</code> {cat.name}
+                    <code>{cat.code}</code> {t(cat.name)}
                   </button>
                   {isOpen(cat.code) &&
                     cat.accounts.map((acc) => (
@@ -98,7 +100,7 @@ export default function AccountTree() {
                         }
                         onClick={() => setSelected(acc)}
                       >
-                        <code>{acc.code}</code> {acc.name}
+                        <code>{acc.code}</code> {t(acc.name)}
                         <span className="dp-count">{acc.datapoints.length}</span>
                       </button>
                     ))}
@@ -112,7 +114,7 @@ export default function AccountTree() {
         {selected ? (
           <>
             <h2>
-              <code>{selected.code}</code> {selected.name}
+              <code>{selected.code}</code> {t(selected.name)}
             </h2>
             <div className="dp-table-wrap">
               <table>
@@ -130,7 +132,7 @@ export default function AccountTree() {
                       <td>
                         <code>{d.code}</code>
                       </td>
-                      <td>{d.name}</td>
+                      <td>{t(d.name)}</td>
                       <td className="cosa-unit">{d.unit ? t(d.unit) : '—'}</td>
                       <td>
                         <div className="fw-chips">

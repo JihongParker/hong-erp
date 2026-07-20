@@ -124,7 +124,7 @@ export const KO_REPORTING: Record<string, string> = {
   'Strategy': '전략',
   'Risk management': '리스크 관리',
   'Metrics & targets': '지표 및 목표',
-  'Climate & Sustainability Disclosure — Draft': '기후·지속가능성 공시 — 초안',
+  'Climate & Sustainability Disclosure — Draft': '기후·지속가능성 공시 초안',
   'HongERP Demo Corp, integrated refiner': 'HongERP 데모 코퍼레이션 · 통합 정유사',
   'Print / Save as PDF': 'PDF로 인쇄·저장',
   'Metrics approved': '승인된 지표',
