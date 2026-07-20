@@ -23,7 +23,7 @@ Not a web app with finance-flavoured labels, and not a slide deck with a demo at
 | Equilibrium engine vs independent minimizer | gap ≤ 3×10⁻⁶ over 200 draws (in CI) |
 | Zero-cost collar solver | put–call parity to 1×10⁻¹⁴ |
 | Exotic barrier surface | knock-out rate 43.5% vs 43.7% paper anchor |
-| Hedge backtest | 486 months of FRED data, walk-forward, past-only |
+| Hedge backtest | 486 months of FRED data (60-month warm-up, 426 evaluated), walk-forward, past-only |
 | Governance flows | submit → approve → book → designate, Playwright-tested end to end |
 
 ## The system in one diagram

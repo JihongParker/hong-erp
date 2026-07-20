@@ -2,7 +2,7 @@
 // src/data/cfh_summary.json still reproduces the certified accounting anchors
 // that the Accounting module (src/modules/Accounting.tsx) renders:
 //   mean |ineffectiveness| A ~= 23.4bn KRW, B ~= 6.4bn KRW,
-//   post-KO FVTPL noise (sigma) ~= 71.9bn KRW,
+//   post-KO FVTPL noise (sigma) ~= 5.14bn KRW (paper §H4 200k jump-adapted re-estimate),
 //   combined-quanto option premium ~= 34,264,941,589 KRW.
 // Tolerance: 1% relative. Exit 1 on any breach.
 // Run: npx tsx scripts/verify-cfh.mjs  (or node scripts/verify-cfh.mjs)
@@ -18,7 +18,7 @@ const S = cfh.stats
 const anchors = [
   ['ineffA', 'mean |ineffectiveness| A', 23.4e9, 0.01],
   ['ineffB', 'mean |ineffectiveness| B', 6.4e9, 0.01],
-  ['postKoFvtplStdB', 'post-KO FVTPL noise (sigma) B', 71.9e9, 0.01],
+  ['postKoFvtplStdB', 'post-KO FVTPL noise (sigma) B', 5.14e9, 0.01],
   ['premium', 'combined-quanto option premium', 34264941589, 0.01],
 ]
 
