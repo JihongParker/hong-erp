@@ -61,6 +61,23 @@ const NOTES = [
   },
 ]
 
+// prose renders one sentence per line: line breaks land on sentence ends, never
+// mid-sentence to satisfy a column width. Split after ./!/? + space when the
+// next char starts a sentence (uppercase, Hangul, digit, quote, ₩, arrow) —
+// decimals like 97.0 never match because they carry no space after the dot.
+const SENT_SPLIT = /(?<=[.!?])\s+(?=[A-Z가-힣₩'"‘“0-9→(])/
+function Sent({ children }: { children: string }) {
+  return (
+    <>
+      {children.split(SENT_SPLIT).map((s, i) => (
+        <span className="ov-sent" key={i}>
+          {s}
+        </span>
+      ))}
+    </>
+  )
+}
+
 // nodes step from blue (first paper) to sea-green (last), matching the descent
 const nodeColor = (i: number, n: number) => {
   const t = n > 1 ? i / (n - 1) : 0
@@ -201,7 +218,7 @@ export default function Overview({
         <div className="ov-chain-head reveal">
           <h3>{t('One position, four papers, one chain.')}</h3>
           <p>
-            {t("Four papers, one Korean oil importer's WTI × USD/KRW exposure. Each picks up where the last leaves off.")}
+            <Sent>{t("Four papers, one Korean oil importer's WTI × USD/KRW exposure. Each picks up where the last leaves off.")}</Sent>
           </p>
         </div>
 
@@ -220,7 +237,7 @@ export default function Overview({
               <span className="chain-node">{p.n}</span>
               <button className="chain-card" onClick={() => onNavigate(p.module)}>
                 <span className="chain-title">{t(p.title)}</span>
-                <span className="chain-plain">{t(p.plain)}</span>
+                <span className="chain-plain"><Sent>{t(p.plain)}</Sent></span>
                 <span className="chain-result">{t(p.result)}</span>
                 <span className="chain-link">{p.moduleName} →</span>
               </button>
@@ -240,7 +257,7 @@ export default function Overview({
               <span className="chain-node">{p.n}</span>
               <div className="chain-card chain-card-note">
                 <span className="chain-title">{t(p.title)}</span>
-                <span className="chain-plain">{t(p.plain)}</span>
+                <span className="chain-plain"><Sent>{t(p.plain)}</Sent></span>
                 <span className="chain-result">{t(p.result)}</span>
                 <span className="chain-link chain-link-note">{t('applied note')}</span>
               </div>
@@ -305,7 +322,7 @@ export default function Overview({
           </span>
         </div>
         <p className="ov-flow-note">
-          {t('Risks price the exposure, disclosure prices the risk of carrying it, the budget and the desks trade at that price, and the books hand the answer back.')}
+          <Sent>{t('Risks price the exposure, disclosure prices the risk of carrying it, the budget and the desks trade at that price, and the books hand the answer back.')}</Sent>
         </p>
       </section>
 

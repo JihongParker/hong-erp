@@ -79,7 +79,7 @@ export const TAXONOMY: Pillar[] = [
             code: 'E-02-01',
             name: 'Water',
             datapoints: [
-              { code: 'E-02-01-01', name: 'Total water withdrawal', unit: '1,000㎥', frameworks: { gri: '303-3', msci: 'Water Stress' } },
+              { code: 'E-02-01-01', name: 'Total water withdrawal', unit: '1,000 m³', frameworks: { gri: '303-3', msci: 'Water Stress' } },
               { code: 'E-02-01-02', name: 'Withdrawal in water-stressed areas', unit: '%', frameworks: { gri: '303-3', msci: 'Water Stress' } },
               { code: 'E-02-01-03', name: 'Water reuse rate', unit: '%', frameworks: { gri: '303-4' } },
             ],

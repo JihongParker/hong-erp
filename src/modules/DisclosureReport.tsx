@@ -377,7 +377,7 @@ export default function DisclosureReport() {
                     <td>{m.name}</td>
                     <td className="num">{m.year}</td>
                     <td className="num">
-                      {m.value.toLocaleString()} <span className="dr-unit">{m.unit}</span>
+                      {m.value.toLocaleString()} <span className="dr-unit">{t(m.unit)}</span>
                     </td>
                     <td>
                       <FrameworkChips code={m.datapoint} />

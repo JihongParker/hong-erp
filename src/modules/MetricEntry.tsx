@@ -258,7 +258,7 @@ export default function MetricEntry() {
             </select>
           </label>
           <p className="me-path">
-            {sel.path} {sel.dp.unit && <span className="me-unit">{lang === 'ko' ? '단위: ' : 'Unit: '}{sel.dp.unit}</span>}
+            {sel.path} {sel.dp.unit && <span className="me-unit">{lang === 'ko' ? '단위: ' : 'Unit: '}{t(sel.dp.unit)}</span>}
           </p>
           <div className="me-formrow">
             <label className="me-inline">
@@ -361,7 +361,7 @@ export default function MetricEntry() {
                   <div className="me-qbody">
                     <strong>{t(state.divisions.find((d) => d.id === m.division)?.name ?? '')}</strong> · {m.name} FY{m.year}
                     <span className="me-qval">
-                      {m.value.toLocaleString()} {m.unit}
+                      {m.value.toLocaleString()} {t(m.unit)}
                     </span>
                     <span className="me-qmeta">
                       {lang === 'ko' ? `상신: ${m.by}` : `by ${m.by}`} · {agoKo(m.ts, lang)}
@@ -415,7 +415,7 @@ export default function MetricEntry() {
                 </div>
                 <div className="me-lmeta">
                   <span className="me-lval">
-                    {m.value.toLocaleString()} {m.unit}
+                    {m.value.toLocaleString()} {t(m.unit)}
                   </span>
                   <span>FY{m.year} · {m.by} · {agoKo(m.ts, lang)}</span>
                 </div>
