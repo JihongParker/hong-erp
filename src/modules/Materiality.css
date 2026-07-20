@@ -48,6 +48,7 @@
 .mat-plot {
   position: relative;
   margin: 0;
+  max-width: 584px;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--panel);
@@ -226,5 +227,10 @@
 @media (max-width: 1000px) {
   .mat-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mat-plot {
+    margin: 0 auto;
+    width: 100%;
   }
 }
