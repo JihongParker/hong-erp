@@ -16,6 +16,20 @@ export const KO_REPORTING: Record<string, string> = {
     '데모용 분류체계입니다. 매핑은 실무 검증을 거치지 않았습니다. 보여 드리려는 것은 구조 그 자체로, 계층형 계정 코드가 데이터포인트 단위에서 여러 프레임워크로 매핑되는 방식입니다.',
   'Select an account on the left': '왼쪽에서 계정 선택',
 
+  // ── datapoint units (CoA, Metrics Entry, Disclosure report) — international
+  // symbols (tCO₂eq, TJ, %, t, m³) stay as-is; word-like units go native ──
+  'cases': '건',
+  'persons': '명',
+  'hours': '시간',
+  'sites': '개소',
+  'ratio': '비율',
+  'per 1M hrs': '백만 시간당',
+  '₩10K': '만원',
+  '₩100M': '억원',
+  'TJ/₩100M': 'TJ/억원',
+  'tCO₂eq/₩100M': 'tCO₂eq/억원',
+  '1,000 m³': '천 m³',
+
   // ── Materiality ──
   'Materiality threshold': '중대성 기준선',
   'Double materiality matrix': '이중 중대성 매트릭스',

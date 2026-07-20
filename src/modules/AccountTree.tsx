@@ -131,7 +131,7 @@ export default function AccountTree() {
                         <code>{d.code}</code>
                       </td>
                       <td>{d.name}</td>
-                      <td>{d.unit ?? '—'}</td>
+                      <td className="cosa-unit">{d.unit ? t(d.unit) : '—'}</td>
                       <td>
                         <div className="fw-chips">
                           {(

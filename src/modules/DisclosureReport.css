@@ -230,6 +230,7 @@
 .dr-unit {
   color: var(--muted);
   font-size: 11px;
+  white-space: nowrap;
 }
 
 .dr-nomap {

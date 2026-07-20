@@ -291,9 +291,9 @@
   line-height: 1.6;
   color: var(--text);
   opacity: 0.82;
-  max-width: 600px;
+  max-width: 640px;
   margin: 0 auto;
-  text-wrap: balance;
+  /* no balance here: prose breaks per sentence (.ov-sent), never mid-sentence */
 }
 
 /* the whole timeline is centred: the paper cards sit in the middle of the

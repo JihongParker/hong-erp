@@ -41,6 +41,7 @@
   border: 1px solid var(--line);
   border-radius: 99px;
   font-size: 11px;
+  white-space: nowrap;
 }
 
 /* three columns — submit, queue, ledger — so the whole operations flow sits
