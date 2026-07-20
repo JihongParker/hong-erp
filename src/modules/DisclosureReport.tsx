@@ -164,9 +164,8 @@ export default function DisclosureReport() {
           <p className="dr-body">
             {lang === 'ko' ? (
               <>
-                기록상 검토 책임자는 <strong>J. Kim (감사팀)</strong>이다. 모든 상신·승인·반려·체결·지정은
-                한 번 쓰면 지울 수 없는 감사 추적에 남으며, 최근 이벤트 {events.length}건이 실시간 원장에
-                보존된다.
+                검토 책임자는 감사팀 <strong>J. Kim</strong>이다. 상신, 승인, 반려, 체결, 지정의 전 과정은
+                수정할 수 없는 감사 기록으로 남는다. 최근 이벤트 {events.length}건이 원장에 보존되어 있다.
               </>
             ) : (
               <>
@@ -187,13 +186,13 @@ export default function DisclosureReport() {
           <p className="dr-lead">
             {lang === 'ko' ? (
               <>
-                전략은 이중 중대성 평가에서 출발한다. 재무 점수와 영향 점수 중 하나라도 중대성 기준선{' '}
-                <strong>{threshold.toFixed(1)}</strong>(1–5 척도)을 넘으면 중대 항목으로 판정된다. 그 기준으로
-                IRO 등록부{' '}
+                전략의 출발점은 이중 중대성 평가다. 재무 점수와 영향 점수 중 하나라도 기준선{' '}
+                <strong>{threshold.toFixed(1)}</strong>(1~5점)을 넘으면 중대 이슈로 분류한다. 이 기준으로
+                IRO 등록부의{' '}
                 <strong>
-                  {IRO_ITEMS.length}개 중 {material.length}개
-                </strong>{' '}
-                이슈가 중대 항목이다.
+                  {IRO_ITEMS.length}개 이슈 가운데 {material.length}개
+                </strong>
+                가 중대 이슈로 판정되었다.
               </>
             ) : (
               <>
@@ -222,9 +221,9 @@ export default function DisclosureReport() {
           <p className="dr-body">
             {lang === 'ko' ? (
               <>
-                중대 리스크는 설문 점수에 머물지 않는다. 의사결정 레이어에 익스포저 파라미터로 투입되어
-                목표 공시 강도 d*를 정한다(현재 <strong>{spine.dStar.toFixed(2)}</strong>). 공시와 헤지는
-                하나의 문제로 함께 풀리므로, 공시 요구가 강해질수록 최적 헤지비율도 그에 맞춰 움직인다.
+                중대 이슈는 평가 점수로 끝나지 않는다. 각 이슈의 익스포저는 의사결정 계층의 파라미터로
+                이어져 목표 공시 강도 d*를 결정한다(현재 <strong>{spine.dStar.toFixed(2)}</strong>). 공시와
+                헤지는 한 문제의 두 답이므로, 공시 요구가 강해지면 최적 헤지비율도 함께 움직인다.
               </>
             ) : (
               <>
@@ -246,8 +245,8 @@ export default function DisclosureReport() {
           <p className="dr-lead">
             {lang === 'ko' ? (
               <>
-                수입 대금에 실린 상품·통화 가격 리스크는 라이브 구조 {trades.length}개로 이루어진 헤지
-                북으로 관리된다. 자금부 데스크가 체결하고 CFO 오피스가 IFRS 9에 따라 지정한다.
+                수입 대금에서 발생하는 원자재·환율 리스크는 {trades.length}건의 파생상품으로 구성된 헤지
+                북으로 관리한다. 체결은 자금부 데스크가, IFRS 9 회계 지정은 CFO 오피스가 맡는다.
               </>
             ) : (
               <>
@@ -311,13 +310,11 @@ export default function DisclosureReport() {
           <p className="dr-body">
             {lang === 'ko' ? (
               <>
-                배리어 구조의 실시간 녹아웃 확률은 WTI 기준 스팟 <strong>${spine.exoticSpot.toFixed(2)}</strong>에서{' '}
-                <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong>로 산출된다. 배리어가 발동되면 해당
-                레그는 당기손익-공정가치(FVTPL)로 재분류된다. 고정 헤지 예산은 WTI/FX 커버리지에{' '}
-                <strong>
-                  {(spine.budgetW1 * 100).toFixed(1)}% / {(spine.budgetW2 * 100).toFixed(1)}%
-                </strong>{' '}
-                로 배분된다.
+                현재 WTI 스팟 <strong>${spine.exoticSpot.toFixed(2)}</strong> 기준으로 배리어 구조의
+                녹아웃 확률은 <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong>다. 배리어가 발동된
+                레그는 당기손익-공정가치(FVTPL)로 재분류한다. 고정 헤지 예산은 WTI에{' '}
+                <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong>, 환율에{' '}
+                <strong>{(spine.budgetW2 * 100).toFixed(1)}%</strong>를 배분하고 있다.
               </>
             ) : (
               <>
@@ -343,8 +340,8 @@ export default function DisclosureReport() {
           <p className="dr-lead">
             {lang === 'ko' ? (
               <>
-                아래 정량 공시에는 검토를 통과한 지표 {approvedSorted.length}개를 최신순으로 담았다. 각
-                지표에는 데이터포인트 코드에 연결된 GRI · KSSB · KCGS · MSCI 프레임워크 매핑을 함께 표기한다.
+                아래 표는 검토를 통과한 정량 지표 {approvedSorted.length}개를 최신순으로 정리한 것이다. 각
+                지표에는 해당 데이터포인트 코드의 GRI, KSSB, KCGS, MSCI 매핑을 함께 표기하였다.
               </>
             ) : (
               <>

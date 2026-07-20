@@ -87,7 +87,7 @@ export default function MetricEntry() {
     setEvidence(false)
     toast(
       lang === 'ko'
-        ? `상신 완료 — ${sel.dp.name} FY${year} 결재함 등록`
+        ? `상신 완료 — ${t(sel.dp.name)} FY${year} 결재함 등록`
         : `Submitted — ${sel.dp.name} FY${year} is now in the approval queue`,
     )
   }
@@ -252,13 +252,14 @@ export default function MetricEntry() {
             <select value={dpCode} onChange={(e) => setDpCode(e.target.value)}>
               {ALL_DPS.map(({ dp }) => (
                 <option key={dp.code} value={dp.code}>
-                  {dp.code} · {dp.name}
+                  {dp.code} · {t(dp.name)}
                 </option>
               ))}
             </select>
           </label>
           <p className="me-path">
-            {sel.path} {sel.dp.unit && <span className="me-unit">{lang === 'ko' ? '단위: ' : 'Unit: '}{t(sel.dp.unit)}</span>}
+            {sel.path.split(' › ').map(t).join(' › ')}{' '}
+            {sel.dp.unit && <span className="me-unit">{lang === 'ko' ? '단위: ' : 'Unit: '}{t(sel.dp.unit)}</span>}
           </p>
           <div className="me-formrow">
             <label className="me-inline">

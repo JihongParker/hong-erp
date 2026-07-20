@@ -1,5 +1,6 @@
 import { KO_DECISION } from './i18n.ko-decision'
 import { KO_REPORTING } from './i18n.ko-reporting'
+import { KO_TAXONOMY } from './i18n.ko-taxonomy'
 import { useEffect, useState } from 'react'
 
 // Guide-language layer. Scope is deliberately narrow: only the explanatory copy
@@ -164,7 +165,7 @@ export const KO_COPY: Record<string, string> = {
 
   // ── Disclosure report: header subtitle + footer ──
   'Prepared on the ISSB/KSSB four-pillar structure · demo document assembled live from the ERP ledgers':
-    'ISSB/KSSB 4대 축 구조로 작성 · ERP 원장에서 실시간 조립한 데모 문서',
+    'ISSB/KSSB 공시 구조에 따라 작성한 데모 문서 · 수치는 ERP 원장 기준',
   'Sustainability data reaches this report only through a segregated approval workflow. Submission, review, booking and designation are held in four separate hands: division heads submit metrics, Audit (J. Kim) approves or rejects them, the Treasury desk books hedges, and the CFO office designates them. No single actor can both file a figure and sign it off.':
     '지속가능성 데이터는 분리된 승인 워크플로를 거쳐야만 본 보고서에 반영된다. 상신·검토·체결·지정의 권한은 네 주체에 분리되어 있다. 사업부장이 지표를 상신하면 감사팀(J. Kim)이 승인 또는 반려하고, 자금부 데스크가 헤지를 체결하며, CFO 오피스가 회계 지정을 맡는다. 수치를 작성한 사람이 그 수치를 승인할 수 없도록 설계된 구조다.',
   'Draft assembled from live ERP state: figures are demo data; engines are frozen paper transcriptions.':
@@ -176,4 +177,4 @@ export const KO_COPY: Record<string, string> = {
 }
 
 // master lookup: base copy + the two layer dictionaries (later wins on dupes)
-const KO_ALL: Record<string, string> = { ...KO_COPY, ...KO_DECISION, ...KO_REPORTING }
+const KO_ALL: Record<string, string> = { ...KO_COPY, ...KO_DECISION, ...KO_REPORTING, ...KO_TAXONOMY }
