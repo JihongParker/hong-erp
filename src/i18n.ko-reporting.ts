@@ -118,7 +118,7 @@ export const KO_REPORTING: Record<string, string> = {
   "These are the divisions' live parameter records: edits persist and flow to the division book on the Decision Dashboard.":
     '사업부별 파라미터의 라이브 레코드입니다. 여기서 고친 값은 그대로 저장되어 의사결정 대시보드의 사업부 장부에 반영됩니다.',
   "How to read it: divisions with larger exposure (σf) and faster penalty attenuation (k) optimally disclose more, and because disclosure lowers the shadow price Λ of residual risk, their hedge ratios move with it — disclosure and hedging are two solutions of one problem. Try raising a division's mandated floor d̲ past its voluntary d* and watch the hedge fall: that is the crowding-out regime.":
-    '읽는 법: 익스포저(σf)가 크고 페널티 감쇠(k)가 빠른 사업부일수록 공시를 더 많이 하는 것이 최적입니다. 공시는 잔여 리스크의 잠재가격 Λ를 낮추기 때문에 헤지비율도 따라 움직입니다. 공시와 헤지는 결국 한 문제의 두 답인 셈입니다. 어느 사업부든 의무 하한 d̲를 자율 최적 d*보다 높여 보세요. 헤지가 내려갑니다. 이것이 구축(crowding-out) 국면입니다.',
+    '읽는 법: 익스포저(σf)가 크고 페널티 감쇠(k)가 빠른 사업부일수록 공시를 더 많이 하는 편이 유리합니다. 공시는 잔여 리스크의 잠재가격 Λ를 낮추기 때문에 헤지비율도 따라 움직입니다. 공시와 헤지는 결국 한 문제의 두 답인 셈입니다. 어느 사업부든 의무 하한 d̲를 자율 최적 d*보다 높여 보세요. 헤지가 내려갑니다. 이것이 구축(crowding-out) 국면입니다.',
 
   // ── Disclosure report ──
   'Strategy': '전략',

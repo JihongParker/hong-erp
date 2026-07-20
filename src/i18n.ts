@@ -72,7 +72,7 @@ export const KO_DESC: Record<string, string> = {
   cosa: '지속가능성 계정 트리 → 프레임워크 데이터포인트 매핑',
   materiality: '리스크·기회(IRO) 등록부 → 이중 중대성 매트릭스 (인터랙티브)',
   metrics: '정량 지표 → 검증 규칙 → 승인 (목업)',
-  report: 'ISSB/KSSB 4대 축 초안 — 승인 지표·헤지 북·의사결정 레이어에서 실시간 조립',
+  report: 'ISSB/KSSB 구조의 공시 보고서 초안',
   scenario: '사업부 단위 파라미터 → 전략 비교',
   backtest: 'FRED 40년 데이터 워크포워드 헤지 백테스트 — 알파가 아니라 실현 변동성 축소',
   audittrail: '한 번 쓰면 지울 수 없는 이벤트 원장 — 모든 상신·승인·체결·지정을 기록',
@@ -125,24 +125,24 @@ export const KO_TOUR: { title: string; body: string }[] = [
 export const KO_COPY: Record<string, string> = {
   // ── Overview ──
   "Four papers, one Korean oil importer's WTI × USD/KRW exposure. Each picks up where the last leaves off.":
-    '논문 네 편이 한국 원유 수입사의 WTI × USD/KRW 익스포저 하나를 릴레이로 다룹니다. 앞 논문이 끝난 자리에서 다음 논문이 이어집니다.',
+    '논문 네 편이 한국 원유 수입사의 WTI × USD/KRW 익스포저 하나를 차례로 다룹니다. 앞 논문이 끝난 자리에서 다음 논문이 이어집니다.',
   'Risks price the exposure, disclosure prices the risk of carrying it, the budget and the desks trade at that price, and the books hand the answer back.':
     '리스크 평가가 익스포저를 정하고, 공시 문제가 그 위험을 안고 갈 값을 매깁니다. 예산과 데스크는 그 값에 맞춰 움직이고, 장부의 지정 결과는 다시 공시 문제로 되돌아옵니다.',
   'applied note': '응용 노트',
-  'KIKO forensics: the 2008 contract, re-priced': 'KIKO 포렌식: 2008년 계약의 재가격',
+  'KIKO forensics: the 2008 contract, re-priced': 'KIKO 해부: 2008년 계약을 다시 계산하다',
   'The canonical 1-put-2-call KIKO, run through this series\' machinery: the "zero-cost" package carried a hidden transfer near 5% of notional.':
-    '전형적인 1풋-2콜 KIKO를 이 프로그램의 엔진으로 다시 계산합니다. \'제로 코스트\'로 팔린 패키지에는 명목금액의 5%에 가까운 숨은 이전이 실려 있었습니다.',
+    '전형적인 1풋-2콜 KIKO를 이 프로그램의 엔진으로 다시 계산합니다. \'제로 코스트\'로 팔린 상품에서 기업은 사실상 명목금액의 5%에 가까운 값을 지불하고 있었습니다.',
   'Protection dead in >95% of the scenarios it was needed; knock-in odds 97% on a 5% depreciation':
     '보호가 필요한 상황의 95% 이상에서 이미 소멸 · 5% 절하 시 녹인 발동 확률 97%',
   'The benign and the lethal barrier': '무해한 배리어, 치명적 배리어',
   "KIKO and this program's double knock-out under one calibration: near-twin barrier mortality, opposite balance sheets.":
-    'KIKO와 이 프로그램의 더블 녹아웃을 같은 캘리브레이션으로 나란히 세웁니다. 배리어 소멸률은 쌍둥이처럼 닮았는데, 재무제표에 남는 상처는 정반대입니다.',
+    'KIKO와 이 프로그램의 더블 녹아웃을 같은 캘리브레이션으로 나란히 세웁니다. 배리어 소멸률은 쌍둥이처럼 닮았는데, 재무제표에 남는 효과는 정반대입니다.',
   'What separates them is who owns the optionality, and a framework willing to reject its own trade':
-    '둘을 가르는 것은 옵션을 누가 보유했는가, 그리고 자기 상품도 탈락시키는 검증 체계의 유무',
+    '둘을 가르는 것은 기업이 그 옵션을 샀느냐 팔았느냐, 그리고 자기 상품도 기각하는 검증 관문이 있었느냐입니다',
 
   // ── Hedge Instruments: vanilla strategy blurbs ──
   'Lock the price. Zero premium, zero optionality — the corporate default.':
-    '선도 가격에 그대로 고정합니다. 프리미엄도 옵셔널리티도 없는, 기업 헤지의 기본값입니다.',
+    '선도 가격에 그대로 고정합니다. 프리미엄도 선택권도 없는, 기업 헤지의 기본값입니다.',
   'Buy protection outright, keep all the downside. Costs premium in cash.':
     '보호를 통째로 사고, 유가가 내릴 때의 이익은 전부 남깁니다. 대신 프리미엄이 현금으로 나갑니다.',
   'Cap financed by a sold floor. No cash out; you give up participation below the floor.':
@@ -168,7 +168,7 @@ export const KO_COPY: Record<string, string> = {
   'Sustainability data reaches this report only through a segregated approval workflow. Submission, review, booking and designation are held in four separate hands: division heads submit metrics, Audit (J. Kim) approves or rejects them, the Treasury desk books hedges, and the CFO office designates them. No single actor can both file a figure and sign it off.':
     '지속가능성 데이터는 분리된 승인 워크플로를 거쳐야만 본 보고서에 반영된다. 상신·검토·체결·지정의 권한은 네 주체에 분리되어 있다. 사업부장이 지표를 상신하면 감사팀(J. Kim)이 승인 또는 반려하고, 자금부 데스크가 헤지를 체결하며, CFO 오피스가 회계 지정을 맡는다. 수치를 작성한 사람이 그 수치를 승인할 수 없도록 설계된 구조다.',
   'Draft assembled from live ERP state: figures are demo data; engines are frozen paper transcriptions.':
-    '실시간 ERP 상태로부터 조립한 초안이다. 수치는 데모 데이터이며, 계산 엔진은 논문 수식을 그대로 옮겨 동결한 것이다.',
+    '실시간 ERP 상태에서 뽑아 조립한 초안이다. 수치는 데모 데이터이며, 계산 엔진은 논문 수식을 그대로 옮겨 동결한 것이다.',
 
   // ── Backtest: control caption ──
   'Rolling window sets how much past data estimates Σ; budget caps total coverage (<2 binds); cost is charged on rebalancing turnover. The walk-forward result stays ~14pp above naive across the whole slider range — the edge is not a tuned artifact.':

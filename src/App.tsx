@@ -47,7 +47,7 @@ const GROUPS: {
       { id: 'cosa', name: 'Chart of Accounts', desc: 'Sustainability account tree → framework datapoint mapping' },
       { id: 'materiality', name: 'Materiality', desc: 'IRO register → double materiality matrix (interactive)' },
       { id: 'metrics', name: 'Metrics Entry', desc: 'Quantitative metrics → validation rules → approval (mockup)' },
-      { id: 'report', name: 'Disclosure report', desc: 'ISSB/KSSB four-pillar draft assembled live from approved metrics, the hedge book, and the decision layer' },
+      { id: 'report', name: 'Disclosure report', desc: 'Draft disclosure report on the ISSB/KSSB structure' },
     ],
   },
   {
