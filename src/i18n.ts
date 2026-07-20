@@ -128,8 +128,17 @@ export const KO_COPY: Record<string, string> = {
     '논문 네 편이 한국 원유 수입사의 WTI × USD/KRW 익스포저 하나를 릴레이로 다룹니다. 앞 논문이 끝난 자리에서 다음 논문이 이어집니다.',
   'Risks price the exposure, disclosure prices the risk of carrying it, the budget and the desks trade at that price, and the books hand the answer back.':
     '리스크 평가가 익스포저를 정하고, 공시 문제가 그 위험을 안고 갈 값을 매깁니다. 예산과 데스크는 그 값에 맞춰 움직이고, 장부의 지정 결과는 다시 공시 문제로 되돌아옵니다.',
-  '+ two applied notes: KIKO forensics (P5) · the benign vs. the lethal barrier (P6)':
-    '+ 응용 노트 두 편: KIKO 포렌식 (P5) · 무해한 배리어 vs. 치명적 배리어 (P6)',
+  'applied note': '응용 노트',
+  'KIKO forensics: the 2008 contract, re-priced': 'KIKO 포렌식: 2008년 계약의 재가격',
+  'The canonical 1-put-2-call KIKO, run through this series\' machinery: the "zero-cost" package carried a hidden transfer near 5% of notional.':
+    '전형적인 1풋-2콜 KIKO를 이 프로그램의 엔진으로 다시 계산합니다. \'제로 코스트\'로 팔린 패키지에는 명목금액의 5%에 가까운 숨은 이전이 실려 있었습니다.',
+  'Protection dead in >95% of the scenarios it was needed; knock-in odds 97% on a 5% depreciation':
+    '보호가 필요한 상황의 95% 이상에서 이미 소멸 · 5% 절하 시 녹인 발동 확률 97%',
+  'The benign and the lethal barrier': '무해한 배리어, 치명적 배리어',
+  "KIKO and this program's double knock-out under one calibration: near-twin barrier mortality, opposite balance sheets.":
+    'KIKO와 이 프로그램의 더블 녹아웃을 같은 캘리브레이션으로 나란히 세웁니다. 배리어 소멸률은 쌍둥이처럼 닮았는데, 재무제표에 남는 상처는 정반대입니다.',
+  'What separates them is who owns the optionality, and a framework willing to reject its own trade':
+    '둘을 가르는 것은 옵션을 누가 보유했는가, 그리고 자기 상품도 탈락시키는 검증 체계의 유무',
 
   // ── Hedge Instruments: vanilla strategy blurbs ──
   'Lock the price. Zero premium, zero optionality — the corporate default.':

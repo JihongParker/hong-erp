@@ -109,8 +109,9 @@
 /* cumulative-path chart legend as toggles */
 .bt-legend { display: flex; flex-wrap: wrap; gap: 14px; padding-top: 10px; }
 .bt-lg {
-  display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted);
-  border: none; background: transparent; cursor: pointer; padding: 0; font: inherit;
+  display: inline-flex; align-items: center; gap: 4px; color: var(--muted);
+  border: none; background: transparent; cursor: pointer; padding: 0;
+  font: inherit; font-size: 12px; /* size must come after the font reset */
 }
 .bt-lg.off { opacity: 0.4; text-decoration: line-through; }
 .bt-slabel { font-size: 11px; font-weight: 650; }

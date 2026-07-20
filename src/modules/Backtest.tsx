@@ -165,10 +165,10 @@ export default function Backtest() {
         <ul>
           {lang === 'ko' ? (
             <>
-              <li><strong>엄격한 워크포워드.</strong> Σ는 <em>과거</em> 월간 수익률의 롤링 윈도로만 추정하고, 거기서 나온 배분을 다음 달 실현 수익률에 적용합니다. 미래 참조는 없습니다. 오라클 행 하나만 예외인데, 상한선이 어디인지 보여 주려고 일부러 넣은 것입니다.</li>
-              <li><strong>비용 포함.</strong> 매달 리밸런싱 회전량에 비용을 물립니다. 워크포워드의 비용({pct(wf.totalCost, 2)})은 그 대가로 더 지워지는 분산 {pct(wf.varReduction - naive.varReduction, 0)}에 비하면 미미합니다.</li>
-              <li><strong>알파가 아니라 분산.</strong> 모든 숫자는 헤지 후 비용 분포의 성질입니다. 수익률 곡선도 샤프 비율도 아닙니다.</li>
-              <li><strong>무엇이 확인되는가.</strong> 전체 표본 배분은 {out.oracleSplit.w1.toFixed(2)} / {out.oracleSplit.w2.toFixed(2)}(원유 / FX)로, 변동성이 큰 원유 레그에 커버리지가 몰립니다. 논문의 구조적 97/3 그대로입니다. ρ는 전체 기간의 {pct(out.negShare, 0)} 동안 음수라 FX 레그가 원유를 얼마간 자체 헤지하는데, 이는 논문의 반직관적인 c* &lt; 0과 맞아떨어지는 실데이터 결과입니다.</li>
+              <li><strong>철저한 워크포워드.</strong> Σ는 <em>과거</em> 월간 수익률만 담는 롤링 윈도로 추정하고, 거기서 나온 배분을 다음 달 실현 수익률에 적용합니다. 앞날의 데이터는 어디에도 쓰지 않습니다. 유일한 예외가 오라클인데, 도달 가능한 상한이 어디인지 보여 주려고 일부러 넣은 가상의 정책입니다.</li>
+              <li><strong>비용 반영.</strong> 매달 리밸런싱 회전량에 거래 비용을 물립니다. 워크포워드의 비용({pct(wf.totalCost, 2)})은 그 덕에 추가로 줄어드는 변동성 {pct(wf.varReduction - naive.varReduction, 0)}에 비하면 미미합니다.</li>
+              <li><strong>수익이 아니라 변동성 축소.</strong> 여기 있는 숫자는 전부, 헤지를 하고 난 뒤 수입 대금이 얼마나 덜 출렁이는지를 잰 것입니다. 수익률 곡선도 샤프 비율도 아닙니다.</li>
+              <li><strong>이 데이터가 확인해 주는 것.</strong> 전체 표본으로 계산한 배분은 {out.oracleSplit.w1.toFixed(2)} / {out.oracleSplit.w2.toFixed(2)}(원유 / FX) — 변동성이 큰 원유 쪽으로 커버리지가 몰리며, 논문의 구조적 97/3 그대로입니다. 상관계수 ρ는 전체 기간의 {pct(out.negShare, 0)} 동안 음수여서 환 포지션이 원유 손실을 얼마간 알아서 메워 주는데, 논문의 반직관적인 c* &lt; 0과 맞아떨어지는 실데이터 결과입니다.</li>
             </>
           ) : (
             <>
@@ -189,8 +189,8 @@ export default function Backtest() {
         </ul>
         <p className="bt-src">
           {lang === 'ko'
-            ? `출처: ${META.source}. 월간 수익률은 GitHub Actions가 FRED에서 매월 자동 갱신하고(최근 갱신 ${META.generated}), 워크포워드 엔진은 브라우저 안에서 매번 새로 돌아갑니다.`
-            : `Source: ${META.source}. Monthly returns auto-refreshed monthly from FRED by GitHub Actions (last: ${META.generated}); the walk-forward engine then re-runs live in the browser.`}
+            ? `출처: ${META.source} · 최근 갱신 ${META.generated}`
+            : `Source: ${META.source} · last refreshed ${META.generated}`}
         </p>
       </div>
     </div>

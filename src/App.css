@@ -89,6 +89,7 @@
    visual language; tucks just under the role selector */
 .lang-switch {
   display: inline-flex;
+  flex: none; /* the sidebar is a height-bound flex column — never let this squash */
   align-self: flex-start;
   margin-top: -10px;
   border: 1px solid var(--line);
@@ -97,13 +98,13 @@
 }
 
 .lang-btn {
-  padding: 4px 12px;
+  padding: 6px 14px;
   border: none;
   background: var(--panel);
   color: var(--muted);
   font: inherit;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 650;
   cursor: pointer;
 }
 
@@ -957,8 +958,8 @@ input[type='range'].fancy::-moz-range-thumb:hover {
 .sidebar-market {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 11.5px;
+  gap: 6px;
+  font-size: 13px;
   color: var(--muted);
   white-space: nowrap;
 }
@@ -995,7 +996,7 @@ input[type='range'].fancy::-moz-range-thumb:hover {
 }
 
 .market-date {
-  font-size: 10px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   opacity: 0.75;
@@ -1004,13 +1005,13 @@ input[type='range'].fancy::-moz-range-thumb:hover {
 
 .sidebar-reset {
   justify-self: start;
-  padding: 5px 12px;
+  padding: 7px 14px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: transparent;
   color: var(--muted);
   font: inherit;
-  font-size: 11.5px;
+  font-size: 13px;
   cursor: pointer;
 }
 

@@ -44,6 +44,23 @@ const PAPERS = [
   },
 ]
 
+// two applied notes ride the same spine after the four papers — same card, no
+// module behind them, so they render as cards with a badge instead of a link
+const NOTES = [
+  {
+    n: 'P5',
+    title: 'KIKO forensics: the 2008 contract, re-priced',
+    plain: "The canonical 1-put-2-call KIKO, run through this series' machinery: the \"zero-cost\" package carried a hidden transfer near 5% of notional.",
+    result: 'Protection dead in >95% of the scenarios it was needed; knock-in odds 97% on a 5% depreciation',
+  },
+  {
+    n: 'P6',
+    title: 'The benign and the lethal barrier',
+    plain: "KIKO and this program's double knock-out under one calibration: near-twin barrier mortality, opposite balance sheets.",
+    result: 'What separates them is who owns the optionality, and a framework willing to reject its own trade',
+  },
+]
+
 // nodes step from blue (first paper) to sea-green (last), matching the descent
 const nodeColor = (i: number, n: number) => {
   const t = n > 1 ? i / (n - 1) : 0
@@ -198,7 +215,7 @@ export default function Overview({
             <article
               key={p.n}
               className="chain-item reveal"
-              style={{ ['--node-c' as string]: nodeColor(i, PAPERS.length), ['--i' as string]: i }}
+              style={{ ['--node-c' as string]: nodeColor(i, PAPERS.length + NOTES.length), ['--i' as string]: i }}
             >
               <span className="chain-node">{p.n}</span>
               <button className="chain-card" onClick={() => onNavigate(p.module)}>
@@ -210,11 +227,27 @@ export default function Overview({
               <span className="ice-bubbles" aria-hidden />
             </article>
           ))}
-        </div>
 
-        <p className="chain-note reveal">
-          {t('+ two applied notes: KIKO forensics (P5) · the benign vs. the lethal barrier (P6)')}
-        </p>
+          {NOTES.map((p, i) => (
+            <article
+              key={p.n}
+              className="chain-item reveal"
+              style={{
+                ['--node-c' as string]: nodeColor(PAPERS.length + i, PAPERS.length + NOTES.length),
+                ['--i' as string]: PAPERS.length + i,
+              }}
+            >
+              <span className="chain-node">{p.n}</span>
+              <div className="chain-card chain-card-note">
+                <span className="chain-title">{t(p.title)}</span>
+                <span className="chain-plain">{t(p.plain)}</span>
+                <span className="chain-result">{t(p.result)}</span>
+                <span className="chain-link chain-link-note">{t('applied note')}</span>
+              </div>
+              <span className="ice-bubbles" aria-hidden />
+            </article>
+          ))}
+        </div>
       </section>
 
       <div className="ov-divider" aria-hidden />
