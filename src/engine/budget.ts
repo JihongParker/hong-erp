@@ -153,6 +153,29 @@ export function solveBudget(p: BudgetParams): BudgetSolution {
     }
     consider(lo, w2)
   }
+  // edge 2 refinement: the allocation line w1+w2=1 and the cost line C=B can
+  // cross between grid columns; bisect the crossing so the vertex is hit
+  // exactly (the American optimum sits there), not to grid precision
+  {
+    const f = (w2: number) => totalCost(1 - w2, w2, p) - p.B
+    let prev = f(0)
+    for (let j = 1; j <= N; j++) {
+      const w2 = j / N
+      const cur = f(w2)
+      if ((prev > 0) !== (cur > 0)) {
+        let lo = (j - 1) / N
+        let hi = w2
+        for (let it = 0; it < 80; it++) {
+          const mid = (lo + hi) / 2
+          if ((f(mid) > 0) === (prev > 0)) lo = mid
+          else hi = mid
+        }
+        const wx = (lo + hi) / 2
+        consider(1 - wx, wx)
+      }
+      prev = cur
+    }
+  }
   // corners of the box for completeness
   for (const [a, b] of [[1, 0], [0, 1], [0, 0]] as const) consider(a, b)
 
