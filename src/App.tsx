@@ -495,8 +495,7 @@ export default function App() {
             <span className="market-date">FRED {marketDate}</span>
           </div>
           <ResetDemo />
-          <div className="sidebar-cmdk"><kbd className="kbd">⌘K</kbd> {t('commands')}</div>
-          v1 · <a href="https://github.com/JihongParker/hong-erp" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://github.com/JihongParker/hong-erp" target="_blank" rel="noreferrer">GitHub</a>
         </footer>
       </aside>
 
