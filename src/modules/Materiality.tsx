@@ -212,19 +212,17 @@ export default function Materiality() {
           <>
             가상 제조사의 데모 IRO 등록부입니다. 재무 점수와 영향 점수 중 하나라도
             기준선을 넘으면 중대 항목으로 판정합니다(이중 중대성의 합집합 해석).
-            HongERP가 여기서 한 걸음 더 나아가는 부분은, 중대로 판정된{' '}
-            <em>리스크</em>가 설문 점수로 끝나지 않는다는 점입니다. 이 리스크는
-            의사결정 대시보드에 익스포저 파라미터(Σ)로 넘어가 최적 공시 d*와 헤지
-            h*의 계산에 쓰입니다.
+            여기서 확정된 중대 리스크 목록은 이후 모든 화면 상단에 표시되어, 의사결정
+            대시보드에서 최적 공시 d*와 헤지 h*를 계산할 때 어떤 위험을 관리
+            대상으로 두고 있는지를 보여 줍니다.
           </>
         ) : (
           <>
             Demo IRO register (hypothetical manufacturer). Verdict rule: material if
             either financial or impact score clears the threshold (the union reading
-            of double materiality). Where HongERP goes further: <em>risks</em> judged
-            material feed the Decision Dashboard as exposure parameters (Σ), entering
-            the computation of optimal disclosure d* and hedge h*, instead of ending
-            life as a survey score.
+            of double materiality). The register you settle on here rides the top of
+            every downstream screen, showing which risks the Decision Dashboard is
+            managing when it computes optimal disclosure d* and hedge h*.
           </>
         )}
       </p>
