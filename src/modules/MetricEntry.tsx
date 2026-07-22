@@ -182,9 +182,9 @@ export default function MetricEntry() {
       <div className="spine-row">
         <Chip from={lang === 'ko' ? '의사결정 대시보드' : 'Decision Dashboard'}>
           {lang === 'ko' ? (
-            <>승인 값이 공시 강도에 반영 — 현재 목표 d* = <strong>{spine.dStar.toFixed(2)}</strong></>
+            <>승인된 지표만 공시 보고서에 실립니다 — 현재 목표 d* = <strong>{spine.dStar.toFixed(2)}</strong></>
           ) : (
-            <>approved values feed disclosure intensity — current target d* = <strong>{spine.dStar.toFixed(2)}</strong></>
+            <>only approved metrics reach the disclosure report — current target d* = <strong>{spine.dStar.toFixed(2)}</strong></>
           )}
         </Chip>
         <Chip from={lang === 'ko' ? '감사 추적' : 'Audit trail'}>

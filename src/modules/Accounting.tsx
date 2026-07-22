@@ -112,9 +112,9 @@ export default function Accounting() {
       <div className="spine-row" data-tour="chips">
         <Chip from="Exotic Desk">
           {lang === 'ko' ? (
-            <>실시간 배리어 확률 <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong> — B의 KO 이후 FVTPL 익스포저를 좌우</>
+            <>실시간 배리어 확률 <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong> — KO가 발동되면 B는 FVTPL로 전환됩니다</>
           ) : (
-            <>live barrier odds <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong> — drives B's post-KO FVTPL exposure</>
+            <>live barrier odds <strong>{(spine.exoticKo * 100).toFixed(1)}%</strong> — past KO, structure B reverts to FVTPL</>
           )}
         </Chip>
         <Chip from="Budget">

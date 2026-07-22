@@ -221,17 +221,17 @@ export default function DisclosureReport() {
           <p className="dr-body">
             {lang === 'ko' ? (
               <>
-                중대 이슈는 평가 점수로 끝나지 않는다. 각 이슈의 익스포저는 의사결정 계층의 파라미터로
-                이어져 목표 공시 강도 d*를 결정한다(현재 <strong>{spine.dStar.toFixed(2)}</strong>). 공시와
-                헤지는 한 문제의 두 답이므로, 공시 요구가 강해지면 최적 헤지비율도 함께 움직인다.
+                중대 이슈로 판정된 위험은 의사결정 계층의 관리 대상이 된다. 전사 목표 공시 강도는
+                현재 <strong>d* = {spine.dStar.toFixed(2)}</strong>이다. 모형에서 공시와 헤지는 한 문제의
+                두 답이므로, 공시 요구가 강해지면 최적 헤지비율도 함께 움직인다.
               </>
             ) : (
               <>
-                Material risks are not left as survey scores: they feed the decision
-                layer as exposure parameters, which sets the target disclosure
-                intensity <strong>d* = {spine.dStar.toFixed(2)}</strong>. Disclosure
-                and hedging are solved jointly: the more the firm is required to
-                disclose, the more its optimal hedge ratios move with it.
+                Risks judged material become the risk register the decision layer
+                manages. The firm-level target disclosure intensity currently stands
+                at <strong>d* = {spine.dStar.toFixed(2)}</strong>. In the model,
+                disclosure and hedging are solved jointly: the more the firm is
+                required to disclose, the more its optimal hedge ratios move with it.
               </>
             )}
           </p>
