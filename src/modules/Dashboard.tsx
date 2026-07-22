@@ -154,9 +154,9 @@ export default function Dashboard() {
       <div className="spine-row">
         <Chip from="Materiality">
           {lang === 'ko' ? (
-            <>중대 리스크 <strong>{spine.materialCount}</strong>개(기준 ≥{spine.materialityThreshold.toFixed(1)}) → 익스포저 파라미터로 투입</>
+            <>중대 리스크 <strong>{spine.materialCount}</strong>개(기준 ≥{spine.materialityThreshold.toFixed(1)}) — 이 계층이 관리하는 위험 목록</>
           ) : (
-            <><strong>{spine.materialCount}</strong> material risks (≥{spine.materialityThreshold.toFixed(1)}) feed the exposure parameters</>
+            <><strong>{spine.materialCount}</strong> material risks (≥{spine.materialityThreshold.toFixed(1)}) — the risk register this layer manages</>
           )}
         </Chip>
         <Chip from="Budget">

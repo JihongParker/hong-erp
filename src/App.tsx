@@ -77,7 +77,7 @@ const TOUR: { module: string; title: string; body: string; target: string; lift?
     target: '.mat-controls',
     lift: '.mat-grid',
     title: 'Decide what counts',
-    body: 'Slide the materiality threshold. Every risk that clears it turns material and lights up the matrix, and the count you land on rides the top of every downstream screen as the exposure the model hedges. This is where the ERP starts.',
+    body: 'Slide the materiality threshold. Every risk that clears it turns material and lights up the matrix, and the count you land on rides the top of every downstream screen as the risk register the firm has chosen to manage. This is where the ERP starts.',
   },
   {
     module: 'metrics',

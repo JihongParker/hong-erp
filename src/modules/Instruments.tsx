@@ -233,16 +233,16 @@ export default function Instruments() {
             <MarketChip />
             <Chip from="Budget">
               {lang === 'ko' ? (
-                <>예산 배분기 지시: WTI 레그의 <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong>를 커버 — 이 데스크 몫 {(spine.budgetW1 * 2.0).toFixed(2)}M bbl</>
+                <>예산 배분기의 배분: WTI 레그의 <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong>를 커버 — 이 데스크 몫 {(spine.budgetW1 * 2.0).toFixed(2)}M bbl</>
               ) : (
-                <>allocator says cover <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> of the WTI leg — {(spine.budgetW1 * 2.0).toFixed(2)}M bbl through this desk</>
+                <>allocator's split: cover <strong>{(spine.budgetW1 * 100).toFixed(1)}%</strong> of the WTI leg — {(spine.budgetW1 * 2.0).toFixed(2)}M bbl through this desk</>
               )}
             </Chip>
             <Chip from="Decision Dashboard">
               {lang === 'ko' ? (
-                <>공시 d* = <strong>{spine.dStar.toFixed(2)}</strong> · 위험의 가격 Λ = <strong>{spine.lambdaStar.toFixed(2)}</strong> — 이 가격에 맞춰 헤지 수준이 정해집니다</>
+                <>공시 d* = <strong>{spine.dStar.toFixed(2)}</strong> · 위험의 가격 Λ = <strong>{spine.lambdaStar.toFixed(2)}</strong> — 모형에서 헤지 수준은 이 가격에 반응합니다</>
               ) : (
-                <>disclosure d* = <strong>{spine.dStar.toFixed(2)}</strong> · risk price Λ = <strong>{spine.lambdaStar.toFixed(2)}</strong> — the price the hedge answers to</>
+                <>disclosure d* = <strong>{spine.dStar.toFixed(2)}</strong> · risk price Λ = <strong>{spine.lambdaStar.toFixed(2)}</strong> — the price hedging responds to in the model</>
               )}
             </Chip>
           </div>
