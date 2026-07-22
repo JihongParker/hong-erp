@@ -239,6 +239,14 @@
   }
 }
 
+@media (max-width: 720px) {
+  /* the scroll parallax shifts the stack visually without moving its layout
+     box, so on tight mobile spacing it slides over the next section. Off. */
+  .ap {
+    transform: none;
+  }
+}
+
 @media (max-width: 560px) {
   /* mobile compaction: fit the frame to its content (height:auto never clips)
      and tighten the mock body so the whole preview reads shorter on a phone. */
