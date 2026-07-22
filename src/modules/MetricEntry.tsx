@@ -316,13 +316,13 @@ export default function MetricEntry() {
           <p className="me-note">
             {lang === 'ko' ? (
               <>
-                {div.head}({t(div.name)}) 명의로 상신합니다. 승인된 값은 해당
-                사업부의 익스포저 파라미터와 전사 공시 강도에 반영됩니다.
+                {div.head}({t(div.name)}) 명의로 상신합니다. 승인된 값만
+                감사 추적에 기록되고 공시 보고서에 실립니다.
               </>
             ) : (
               <>
-                Submitted as {div.head} ({div.name}). Approved values feed the
-                division's exposure parameters and the firm's disclosure intensity.
+                Submitted as {div.head} ({div.name}). Only approved values are
+                written to the audit trail and published in the disclosure report.
               </>
             )}
           </p>
