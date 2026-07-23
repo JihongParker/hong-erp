@@ -1,5 +1,5 @@
 // P3 CFH anchor test — asserts the frozen paper-engine output in
-// src/data/cfh_summary.json still reproduces the certified accounting anchors
+// src/data/cfh_summary.json still reproduces the paper's accounting anchors
 // that the Accounting module (src/modules/Accounting.tsx) renders:
 //   mean |ineffectiveness| A ~= 23.4bn KRW, B ~= 6.4bn KRW,
 //   post-KO FVTPL noise (sigma) ~= 5.14bn KRW (paper §H4 200k jump-adapted re-estimate),
@@ -17,7 +17,8 @@ const S = cfh.stats
 // [field, human label, expected, relative tolerance]
 const anchors = [
   ['ineffA', 'mean |ineffectiveness| A', 23.4e9, 0.01],
-  ['ineffB', 'mean |ineffectiveness| B', 6.4e9, 0.01],
+  ['ineffB', 'mean |ineffectiveness| B (total, B1+B2 signed)', 6.4e9, 0.01],
+  ['ineffB1', 'mean |ineffectiveness| B1 leg (paper headline ratio)', 6.57e9, 0.01],
   ['postKoFvtplStdB', 'post-KO FVTPL noise (sigma) B', 5.14e9, 0.01],
   ['premium', 'combined-quanto option premium', 34264941589, 0.01],
 ]

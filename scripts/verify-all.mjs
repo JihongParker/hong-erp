@@ -1,9 +1,9 @@
-// Engine certification suite — runs every frozen-numerics guard in sequence and
+// Engine numerical-check suite — runs every frozen-numerics guard in sequence and
 // returns a single verdict (exit 1 if ANY check fails). Wired into CI by
 // .github/workflows/verify.yml. Run locally: npx tsx scripts/verify-all.mjs
 //
 // Checks:
-//   (a) ESG dual-solver certification      — scripts/verify-engine.mjs
+//   (a) ESG dual-solver cross-check       — scripts/verify-engine.mjs
 //   (b) collar zero-cost parity smoke      — solveZeroCostFloor, |netPremium|<1e-10
 //   (c) walk-forward backtest parity smoke — runBacktest vs backtest.json summary
 //   (d) P3 CFH accounting anchors          — scripts/verify-cfh.mjs
@@ -71,11 +71,13 @@ process.stdout.write('\n=== c. walk-forward backtest parity ===\n')
 runScript('d. CFH anchors', 'scripts/verify-cfh.mjs')
 
 // ── verdict ─────────────────────────────────────────────────────────────────
-console.log('\n=== certification summary ===')
+console.log('\n=== numerical-check summary ===')
 let allPass = true
 for (const [label, ok] of results) {
   console.log(`  ${ok ? 'PASS' : 'FAIL'}  ${label}`)
   if (!ok) allPass = false
 }
-console.log(allPass ? '\nALL CHECKS PASSED — engine certified' : '\nCERTIFICATION FAILED')
+console.log(allPass
+  ? '\nALL CHECKS PASSED — engines reproduce the papers at the frozen parameter vector.\n(Numerical agreement only; input-estimation uncertainty is documented per screen.)'
+  : '\nCHECKS FAILED')
 process.exit(allPass ? 0 : 1)

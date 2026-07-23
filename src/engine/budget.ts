@@ -1,10 +1,23 @@
-// FROZEN — Park, "Optimal WTI–FX hedge ratios under a fixed budget" (P1).
+// FROZEN — Park, "Optimal WTI–FX hedge ratios under a fixed budget" (P1),
+// revision 2026-07-23.
 // Equations transcribed verbatim from §3 (eq. gmvp, costeu, costam, constraints)
 // and Table 1 inputs. Anchors: European risk-min optimum (0.970486, 0.029514),
 // European: sigma_res 0.09160, budget binds at KRW 45bn -> (0.9705, 0.0295).
 // American: (0.9660, 0.0340), budget slack ~KRW 8.9bn -> the simplex w1+w2<=1
 // binds, not the cash budget. Both regimes share one unconstrained optimum and
 // separate only through the budget.
+//
+// §Limitations (2026-07-23 revision) — CORRELATION IS THE BINDING UNCERTAINTY.
+// The 0.97/0.03 split is a closed-form consequence of the variance ratio and a
+// single unconditional rho = 0.0876 estimated over 1,299 daily observations of
+// a largely calm sample. The paper is explicit that the §6.5 invariance result
+// (a 10% inflation of both volatilities leaves the split unchanged) is NOT
+// robustness to correlation risk: proportional inflation preserves the variance
+// ratio and hence the split, a change in rho does not. Under the correlation
+// breakdown characteristic of stressed regimes — the joint WTI-spike /
+// KRW-depreciation event this hedge is bought against — the same closed form
+// returns a different split. sigmaRes therefore takes rho as a parameter so the
+// desk can price that scenario rather than assume it away.
 
 export type Regime = 'european' | 'american'
 
@@ -74,15 +87,29 @@ export interface BudgetParams {
   B: number
   stressWTI: number
   stressKRW: number
+  /** WTI–FX correlation. Defaults to the calm-sample estimate rho = 0.0876;
+   *  stress it toward +-1 to price the correlation-breakdown case. */
+  rho?: number
 }
 
-export function sigmaRes(w1: number, w2: number, _regime: Regime): number {
+export function sigmaRes(w1: number, w2: number, _regime: Regime, rho: number = P1_INPUTS.rho): number {
   // the uncovered exposure carries the jumps whichever instrument was priced
   const s1 = P1_INPUTS.sigma1EU
   const s2 = P1_INPUTS.sigma2
   const u = 1 - w1
   const v = 1 - w2
-  return Math.sqrt(u * u * s1 * s1 + v * v * s2 * s2 + 2 * u * v * s1 * s2 * P1_INPUTS.rho)
+  return Math.sqrt(u * u * s1 * s1 + v * v * s2 * s2 + 2 * u * v * s1 * s2 * rho)
+}
+
+// The minimum-variance split with the budget deleted (paper eq. linegmvp).
+// Exposed so the desk can show how far the reported allocation travels when the
+// correlation input moves, which the §6.5 volatility-inflation check cannot show.
+export function unconstrainedSplit(rho: number = P1_INPUTS.rho): { w1: number; w2: number } {
+  const s1 = P1_INPUTS.sigma1EU
+  const s2 = P1_INPUTS.sigma2
+  const den = s1 * s1 + s2 * s2 - 2 * rho * s1 * s2
+  const w1 = (s1 * s1 - rho * s1 * s2) / den
+  return { w1, w2: 1 - w1 }
 }
 
 export function premiumCost(w1: number, w2: number, regime: Regime): number {
@@ -135,7 +162,7 @@ export function solveBudget(p: BudgetParams): BudgetSolution {
   let best: { w1: number; w2: number; sigma: number } | null = null
   const consider = (w1: number, w2: number) => {
     if (!feasible(w1, w2)) return
-    const s = sigmaRes(w1, w2, p.regime)
+    const s = sigmaRes(w1, w2, p.regime, p.rho)
     if (!best || s < best.sigma) best = { w1, w2, sigma: s }
   }
 
@@ -187,7 +214,7 @@ export function solveBudget(p: BudgetParams): BudgetSolution {
   for (const [a, b] of [[1, 0], [0, 1], [0, 0]] as const) consider(a, b)
 
   if (!best) {
-    const sigma = sigmaRes(0, 0, p.regime)
+    const sigma = sigmaRes(0, 0, p.regime, p.rho)
     return {
       w1: 0, w2: 0, sigma,
       cost: totalCost(0, 0, p),

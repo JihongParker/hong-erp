@@ -1,17 +1,26 @@
 // FROZEN ENGINE — Park, "ESG Disclosure Mandates and Corporate Hedging" §3
-// (final theory revision, 2026-07-14, 37pp). Equations transcribed verbatim:
+// (revision 2026-07-23). Equations transcribed verbatim:
 //
 //   Σ = [[σf², ρσfσc], [ρσfσc, σc²]],  u ≡ 1 − h,  R = uᵀΣu
 //   Λ(d) = φ + λe^(−kd)                          (eq. Λ)
 //   2Λ(d)·Σ·u = p        ⇒  u* = Σ⁻¹p / 2Λ(d*)   (eq. usol)
 //   κ = pᵀΣ⁻¹p,  R* = κ / 4Λ²                    (eq. Rstar)
-//   voluntary d*: 8a·d·Λ(d)² = kλκ·e^(−kd)       (eq. dfixed, unique root for λ>0)
+//   voluntary d*: 8a·d·Λ(d)² = kλκ·e^(−kd)       (eq. dfixed; interior root unique
+//                                                  under the maintained forms, λ>0)
 //   mandate floor: d** = max(d̲, d*_v)            (eq. floor, KKT)
 //   hedge ratios are clamped to [0,1] (corner solutions, §3 corner subsection)
 //
+// Uniqueness here is a property of the assumed quadratic-cost /
+// exponential-attenuation specification, not a general feature of joint
+// disclosure-hedging problems (paper, Appendix on second-order conditions).
+// These are comparative statics of a structural model: they follow from the
+// functional forms above, and are not estimates. The paper's executed test on
+// Korea's two realized mandates returns tightly bounded nulls; the fiscal-2027
+// climate mandate is the informative forward test.
+//
 // Any change to these formulas must come from a new frozen paper revision.
 
-export const ENGINE_VERSION = 'frozen-1.0 · paper §3 (2026-07-14)'
+export const ENGINE_VERSION = 'frozen-1.1 · paper §3 (2026-07-23)'
 
 export interface ModelParams {
   sigmaF: number // σf: financial exposure volatility
@@ -63,17 +72,17 @@ export function residualR(hF: number, hC: number, p: ModelParams): number {
   return u * u * p.sigmaF ** 2 + v * v * p.sigmaC ** 2 + 2 * p.rho * p.sigmaF * p.sigmaC * u * v
 }
 
-// Hedge ratios given d — exact KKT solution of the box-constrained convex QP
+// Hedge ratios given d — KKT solution of the box-constrained convex QP
 // min_{h∈[0,1]²} pᵀh + Λ(d)·uᵀΣu (paper's corner subsection: clamp a leg, then
-// re-optimize the other). Σ is positive definite, so exact coordinate descent
-// with projection converges; interior draws recover eq. usol to machine precision.
+// re-optimize the other). Σ is positive definite, so projected coordinate
+// descent converges; interior draws reproduce eq. usol to numerical tolerance.
 export function hedgeAt(d: number, p: ModelParams): { hF: number; hC: number; hFInterior: number; hCInterior: number } {
   const lam = lambdaOf(d, p)
   const [x, y] = sigmaInvP(p)
   const hFInterior = 1 - x / (2 * lam)
   const hCInterior = 1 - y / (2 * lam)
   const clamp = (v: number) => Math.min(1, Math.max(0, v))
-  // start from clamped interior; exact per-coordinate minimizers, projected
+  // start from clamped interior; per-coordinate minimizers, projected
   let u = clamp(1 - hFInterior) // unhedged fractions u, v ∈ [0,1]
   let v = clamp(1 - hCInterior)
   for (let i = 0; i < 100; i++) {
@@ -90,8 +99,8 @@ export function hedgeAt(d: number, p: ModelParams): { hF: number; hC: number; hF
   return { hF: 1 - u, hC: 1 - v, hFInterior, hCInterior }
 }
 
-// Reduced objective F(d) = pᵀh(d) + a·d² + Λ(d)·R(h(d)) with h(d) the exact
-// KKT hedge above. In the interior regime its unique stationary point is the
+// Reduced objective F(d) = pᵀh(d) + a·d² + Λ(d)·R(h(d)) with h(d) the KKT
+// hedge above. In the interior regime its stationary point is the
 // fixed point 8adΛ² = kλκe^(−kd) (eq. dfixed); at corners the KKT hedge keeps
 // F continuous and the minimizer well-defined. Solved by scan + ternary refine.
 function reducedCost(d: number, p: ModelParams): number {
@@ -161,7 +170,7 @@ export function solveEquilibrium(p: ModelParams): Equilibrium {
 }
 
 // Total objective Π — exported so an independent numerical minimizer can
-// cross-check the closed form (dual-solver certification, as in the paper).
+// cross-check the closed form, as the paper checks its solver against one.
 export function objective(hF: number, hC: number, d: number, p: ModelParams): number {
   return p.pF * hF + p.pC * hC + p.a * d * d + lambdaOf(d, p) * residualR(hF, hC, p)
 }

@@ -160,7 +160,7 @@ export const KO_COPY: Record<string, string> = {
   // ── Exotic Desk: structure-selector blurb ──
   'The paper structure: a double knock-out quanto priced from the jump-diffusion MC surface. Watch the value collapse and the delta reverse as spot nears a barrier.':
     '논문에서 다루는 바로 그 구조입니다. 점프-확산 몬테카를로 표면으로 가격을 매긴 더블 녹아웃 퀀토로, 스팟이 배리어에 가까워질수록 가치가 급락하고 델타의 부호가 뒤집힙니다.',
-  'The same jump-diffusion calibration with both barriers removed, priced in closed form. Subtract it from the Double-KO and what is left is exactly the survival risk the barriers inject.':
+  'The same jump-diffusion calibration with both barriers removed, priced in closed form. Subtract it from the Double-KO and what is left is the survival risk the barriers inject.':
     '같은 점프-확산 캘리브레이션에서 배리어만 둘 다 걷어내고 닫힌 해로 가격을 구합니다. 더블 녹아웃 값에서 이 값을 빼면, 배리어가 얹는 생존 리스크만 정확히 남습니다.',
 
   // ── Disclosure report: header subtitle + footer ──

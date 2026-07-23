@@ -1,7 +1,7 @@
 // European quanto call — the barrier-free ablation baseline for the Double-KO
 // quanto. Same jump-diffusion calibration as the paper's surface, priced in
 // closed form (Merton jump series over a quanto-adjusted Black-Scholes), so the
-// difference Double-KO − European is exactly what the two knock-out barriers
+// difference Double-KO − European isolates what the two knock-out barriers
 // take away. The quanto drift carries the −ρσ₁σ₂ correction — the covariance
 // term the paper's c* normalises — so this desk shows where c* ≠ 1 comes from.
 //

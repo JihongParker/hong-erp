@@ -235,9 +235,9 @@ function CumChart({ paths }: { paths: Record<string, { month: string; cum: numbe
 }
 
 // P2 dynamic-hedging result: the exact hedge-cost parabola in the coupling c,
-// reconstructed from the paper's own 200k-path exact-engine certified numbers
+// reconstructed from the paper's own 200k-path exact-engine numbers
 // (c* = -0.548, std 51.90bn at c=1, 48.76bn at c*). Var(c) = VarA + 2c·Cov +
-// c²·VarB. Solving those three certified numbers gives the moments below.
+// c²·VarB. Solving those three reported numbers gives the moments below.
 const P2 = (() => {
   const cstar = -0.548, s1 = 51.90, sc = 48.76, k = -cstar
   const VarB = (s1 * s1 - sc * sc) / (2 * k + 1 + k * k)
@@ -279,7 +279,7 @@ function ParabolaPanel() {
         ) : (
           <>
             Coupling the FX hedge to the WTI delta as δ<sub>FX</sub> = c · δ<sub>WTI</sub> makes per-path hedge
-            cost exactly affine in c, so its variance is an exact parabola with closed-form vertex
+            cost affine in c, so its variance is a parabola with closed-form vertex
             c* = −Cov(A,B)/Var(B). On the paper's 200k-path exact engine Cov(A,B) is <strong>positive</strong>,
             so the vertex is <strong>negative (c* = −0.548)</strong>: a positively-coupled FX leg adds cost
             variance rather than offsetting it, and naive one-for-one pass-through (c = 1) sits well up the
@@ -338,7 +338,7 @@ function ParabolaPanel() {
           </>
         ) : (
           <>
-            Parabola reconstructed exactly from the paper's certified moments (Park_quanto §c*: c* = −0.548,
+            Parabola reconstructed from the paper's reported moments (Park_quanto §c*: c* = −0.548,
             std 51.90bn at c = 1, 48.76bn at c*, 200k jump-adapted exact paths, affine identity to 6×10⁻¹⁶).
             An independent frozen-engine delta-hedge here confirms the direction: c = 1 sits on the expensive
             arm, so the naive "c = 1 is optimal" reading is wrong.

@@ -78,7 +78,7 @@ export const KO_DECISION: Record<string, string> = {
   'ESG disclosure mandates and corporate hedging': 'ESG 공시 의무와 기업 헤지',
   'Ask what sets the decision to hedge in the first place, and prove disclosure moves it only through the price of risk.':
     '애초에 헤지 결정을 무엇이 정하는지 묻고, 공시는 오직 리스크 가격을 움직여서만 그 결정에 닿는다는 점을 보입니다.',
-  'Closed form certified vs independent minimizer, 200 draws, gap ≤3×10⁻⁶':
+  'Closed form cross-checked vs independent minimizer, 200 draws, gap ≤3×10⁻⁶':
     '답이 맞는지 다른 방법으로 200번 다시 풀어 봤습니다. 차이는 3×10⁻⁶ 이하',
   'Materiality': '중대성 평가',
   'risks scored': '리스크 평가',

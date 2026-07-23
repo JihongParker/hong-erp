@@ -38,7 +38,7 @@ const PAPERS = [
     n: 'P4',
     title: 'ESG disclosure mandates and corporate hedging',
     plain: 'Ask what sets the decision to hedge in the first place, and prove disclosure moves it only through the price of risk.',
-    result: 'Closed form certified vs independent minimizer, 200 draws, gap ≤3×10⁻⁶',
+    result: 'Closed form cross-checked vs independent minimizer, 200 draws, gap ≤3×10⁻⁶',
     module: 'decision',
     moduleName: 'Decision Dashboard',
   },
