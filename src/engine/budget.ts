@@ -1,7 +1,9 @@
 // FROZEN — Park, "Optimal WTI–FX hedge ratios under a fixed budget" (P1).
 // Equations transcribed verbatim from §3 (eq. gmvp, costeu, costam, constraints)
 // and Table 1 inputs. Anchors: European risk-min optimum (0.970486, 0.029514),
-// sigma_res = 0.0916021, budget-exact at KRW 45bn; American (0.971581, 0.028419).
+// European: sigma_res 0.09160, budget binds at KRW 45bn -> (0.9705, 0.0295).
+// American (FX share scaled by Q_oil, corrected): (0.9453, 0.0547), budget
+// slack ~KRW 7bn -> the simplex w1+w2<=1 binds, not the cash budget.
 
 export type Regime = 'european' | 'american'
 
@@ -24,7 +26,7 @@ export const P1_INPUTS = {
   P_B76: 12.6524, // USD/bbl
   P_GK: 84.667, // KRW/USD
   P_Sh_WTI: 15_093.75, // KRW/bbl
-  P_Sh_FX: 2_038.72, // KRW/USD
+  P_Sh_FX: 2_038.72, // KRW/bbl (Shapley share of the per-barrel joint premium — Paper 2 §8.1)
   // §7-8: stress-conditional KO survival analysis
   p_KO_stress: 0.8925, // measured stress KO probability (200k paths)
   p_KO_breakeven: 0.0616, // p̄ above which vanilla dominates KO
@@ -89,8 +91,11 @@ export function premiumCost(w1: number, w2: number, regime: Regime): number {
       w2 * I.Q_USD * I.P_GK * (1 + I.r_w * I.T2)
     )
   return (
+    // American: both Shapley shares are KRW/barrel (Paper 2 §8.1), so both
+    // scale by Q_oil. Earlier code multiplied the FX share by Q_USD, inflating
+    // it by spot (78.94x) — the units bug this fix corrects.
     w1 * I.Q_oil * I.P_Sh_WTI * Math.exp(I.r_w * I.T1) +
-    w2 * I.Q_USD * I.P_Sh_FX * Math.exp(I.r_w * I.T2)
+    w2 * I.Q_oil * I.P_Sh_FX * Math.exp(I.r_w * I.T2)
   )
 }
 
