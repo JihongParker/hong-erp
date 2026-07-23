@@ -16,15 +16,17 @@ Most ESG software records what a company discloses and stops there. **HongERP tr
 
 ## What kind of project this is
 
-Not a web app with finance-flavoured labels, and not a slide deck with a demo attached: **a finance-literate system design**. The hard part is neither the React nor the math in isolation — it is that the accounting semantics (segregation of duties, append-only audit trail, period locks, IFRS 9 designation) and the quantitative engines (constrained optimization, barrier-option surfaces, a disclosure–hedging equilibrium) are one connected state machine, and every number on screen can name where it came from.
+This is a finance-literate system design rather than a web app with finance-flavoured labels or a slide deck with a demo attached. The hard part is neither the React nor the math in isolation: it is that the accounting semantics (segregation of duties, append-only audit trail, period locks, IFRS 9 designation) and the quantitative engines (constrained optimization, barrier-option surfaces, a disclosure–hedging equilibrium) are one connected state machine, and every number on screen can name where it came from.
 
-| Proof, not adjectives | |
+| What is checked, and how | |
 | --- | --- |
 | Equilibrium engine vs independent minimizer | gap ≤ 3×10⁻⁶ over 200 draws (in CI) |
 | Zero-cost collar solver | put–call parity to 1×10⁻¹⁴ |
 | Exotic barrier surface | knock-out rate 43.5% vs 43.7% paper anchor |
 | Hedge backtest | 486 months of FRED data (60-month warm-up, 426 evaluated), walk-forward, past-only |
 | Governance flows | submit → approve → book → designate, Playwright-tested end to end |
+
+These are numerical checks: they establish that the engines compute what the papers specify, at a fixed parameter vector. They say nothing about how well those parameters are known. The papers are explicit that the larger uncertainties sit in the inputs — the WTI–FX correlation behind the 97/3 budget split, the jump parameters (λ, θ_J, δ_J) behind the barrier surface, and greenwashing, measurement error and endogeneity behind the ESG panel. Each screen carries the relevant caveat; see §Limitations in the corresponding paper.
 
 ## The system in one diagram
 

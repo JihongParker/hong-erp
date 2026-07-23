@@ -4,6 +4,7 @@ import {
   solveBudget,
   survivalSwitch,
   totalCost,
+  unconstrainedSplit,
   type Regime,
 } from '../engine/budget'
 import { Chip, useSpine } from '../state/spine'
@@ -30,9 +31,14 @@ export default function Budget() {
   const [regime, setRegime] = usePersistentState<Regime>('budget.regime', 'european')
   const [B, setB] = usePersistentState<number>('budget.B', P1_INPUTS.B)
   const [stressWTI, setStressWTI] = usePersistentState('budget.stressWTI', 113)
+  const [rho, setRho] = usePersistentState<number>('budget.rho', P1_INPUTS.rho)
 
-  const p = { regime, B, stressWTI, stressKRW: 1550 }
-  const sol = useMemo(() => solveBudget(p), [regime, B, stressWTI])
+  const p = { regime, B, stressWTI, stressKRW: 1550, rho }
+  const sol = useMemo(() => solveBudget(p), [regime, B, stressWTI, rho])
+  // how far the budget-free minimum-variance split travels with the correlation
+  // input — the sensitivity the volatility-inflation check of §6.5 cannot show
+  const freeSplit = useMemo(() => unconstrainedSplit(rho), [rho])
+  const rhoStressed = Math.abs(rho - P1_INPUTS.rho) > 1e-9
   const spine = useSpine()
   // settle-only pulses for the four result tiles
   const pulseW1 = usePulse(sol.w1)
@@ -68,7 +74,7 @@ export default function Budget() {
       pts.push({ w1: lo, w2 })
     }
     return pts
-  }, [regime, B, stressWTI])
+  }, [regime, B, stressWTI, rho])
 
   const path = boundary
     .filter((q) => q.w1 >= W1_MIN)
@@ -128,19 +134,58 @@ export default function Budget() {
               onChange={setStressWTI}
               fmt={(v) => `$${v.toFixed(0)}`}
             />
+            <ParamRow
+              label={t('ρ correlation')}
+              min={-0.9}
+              max={0.9}
+              step={0.01}
+              value={rho}
+              onChange={setRho}
+              fmt={(v) => v.toFixed(3)}
+            />
           </div>
+          {rhoStressed && (
+            <p className="bg-muted bg-rho-warn">
+              {lang === 'ko' ? (
+                <>
+                  <strong>상관계수 스트레스 적용 중</strong> (평상시 추정치 ρ =
+                  {' '}{P1_INPUTS.rho.toFixed(4)}). 논문 §6.5의 불변성은 두 변동성을
+                  동시에 부풀렸을 때 분산비가 보존되기 때문이며, ρ가 움직이면
+                  성립하지 않습니다. 예산을 없앤 최소분산 배분은 지금 ρ에서{' '}
+                  {(freeSplit.w1 * 100).toFixed(1)} / {(freeSplit.w2 * 100).toFixed(1)}
+                  이고 (박스 제약 0≤w≤1 적용 전 값이므로 범위를 벗어날 수 있습니다),
+                  평상시 ρ에서는{' '}
+                  {(unconstrainedSplit(P1_INPUTS.rho).w1 * 100).toFixed(1)} /{' '}
+                  {(unconstrainedSplit(P1_INPUTS.rho).w2 * 100).toFixed(1)} 입니다.
+                </>
+              ) : (
+                <>
+                  <strong>Correlation stressed</strong> (calm-sample estimate ρ ={' '}
+                  {P1_INPUTS.rho.toFixed(4)}). The §6.5 invariance holds because
+                  inflating both volatilities preserves the variance ratio; it does
+                  not survive a move in ρ. The budget-free minimum-variance split is{' '}
+                  {(freeSplit.w1 * 100).toFixed(1)} / {(freeSplit.w2 * 100).toFixed(1)}{' '}
+                  at this ρ (before the box constraint 0≤w≤1, so it can leave the
+                  range), against{' '}
+                  {(unconstrainedSplit(P1_INPUTS.rho).w1 * 100).toFixed(1)} /{' '}
+                  {(unconstrainedSplit(P1_INPUTS.rho).w2 * 100).toFixed(1)} at the
+                  calm-sample value.
+                </>
+              )}
+            </p>
+          )}
           <p className="bg-muted">
             {lang === 'ko' ? (
               <>
                 고정값 (논문 Table 1): 2.0M bbl/월, $157.88M/월, 스팟 78.94 / 1540.64,
                 스트레스 FX 1550, σ₁ {regime === 'european' ? '0.395 (원값)' : '0.324 (확산)'},
-                σ₂ 0.093, ρ 0.088.
+                σ₂ 0.093. ρ는 위 슬라이더로 스트레스할 수 있습니다 (평상시 추정치 0.088).
               </>
             ) : (
               <>
                 Fixed (paper Table 1): 2.0M bbl/mo, $157.88M/mo, spot 78.94 /
                 1540.64, stress FX 1550, σ₁ {regime === 'european' ? '0.395 (raw)' : '0.324 (diffusive)'},
-                σ₂ 0.093, ρ 0.088.
+                σ₂ 0.093. ρ is stressable above (calm-sample estimate 0.088).
               </>
             )}
           </p>
@@ -221,16 +266,20 @@ export default function Budget() {
               {lang === 'ko' ? (
                 <>
                   빨간 곡선은 총비용 경계 C = B, 점선은 배분 포락선입니다. 최적해(점)는
-                  제약에 붙들려 꼭짓점에 고정되어 있습니다. 그래서 변동성을 10% 잘못
-                  재더라도 배분이 <em>가져다주는 결과</em>가 달라질 뿐, 배분{' '}
-                  <em>자체</em>는 그대로입니다 (논문 §6.5).
+                  제약에 붙들려 꼭짓점에 고정되어 있습니다. 그래서 두 변동성을 함께 10%
+                  잘못 재더라도 분산비가 보존되어 배분{' '}<em>자체</em>는 그대로이고,
+                  배분이 <em>가져다주는 결과</em>만 달라집니다 (논문 §6.5). 이 불변성은
+                  상관계수 위험에 대한 견고함이 아닙니다: ρ가 움직이면 꼭짓점도
+                  움직입니다.
                 </>
               ) : (
                 <>
                   Red curve: total-cost boundary C = B. Dashed: allocation envelope.
-                  The optimum (dot) sits at the vertex, constraint-pinned, which is
-                  why a 10% volatility mis-estimate moves what the allocation{' '}
-                  <em>delivers</em>, not what it <em>is</em> (paper §6.5).
+                  The optimum (dot) sits at the vertex, constraint-pinned, so
+                  inflating both volatilities by 10% preserves the variance ratio and
+                  leaves the allocation <em>itself</em> unchanged while re-pricing
+                  what it <em>delivers</em> (paper §6.5). That invariance is not
+                  robustness to correlation risk: move ρ and the vertex moves.
                 </>
               )}
             </figcaption>
@@ -255,17 +304,26 @@ export default function Budget() {
             <p className="bg-muted">
               {lang === 'ko' ? (
                 <>
-                  이 비대칭은 예산이 아니라 구조에서 옵니다. σ₁²/σ₂² ≈{' '}
+                  이 비대칭은 예산 제약이 아니라 위험 목표에서 나옵니다. σ₁²/σ₂² ≈{' '}
                   {((regime === 'european' ? P1_INPUTS.sigma1EU : P1_INPUTS.sigma1AM) ** 2 / P1_INPUTS.sigma2 ** 2).toFixed(0)}
-                  ×에 ρ ≈ 0.09이므로, 예산 제약을 없애도 최소분산 배분은 FX 레그를
-                  거의 통째로 열어 둡니다 (논문 §6.2).
+                  ×에 ρ = {rho.toFixed(3)}이므로, 예산 제약을 없애도 최소분산 배분은 FX
+                  레그를 {(Math.min(1, Math.max(0, freeSplit.w2)) * 100).toFixed(0)}%만
+                  덮습니다 (논문 §6.2). 다만 ρ는 평상시 표본에서
+                  추정한 값이고, 이 배분은 그 추정치에 크게 의존합니다. 스트레스 국면의
+                  상관관계 붕괴에서는 같은 닫힌 해가 다른 배분을 돌려줍니다 — 위
+                  슬라이더로 직접 확인해 보십시오 (논문 §한계).
                 </>
               ) : (
                 <>
-                  The asymmetry is structural, not budgetary: σ₁²/σ₂² ≈{' '}
+                  The asymmetry follows from the risk objective rather than from
+                  the budget: σ₁²/σ₂² ≈{' '}
                   {((regime === 'european' ? P1_INPUTS.sigma1EU : P1_INPUTS.sigma1AM) ** 2 / P1_INPUTS.sigma2 ** 2).toFixed(0)}
-                  × and ρ ≈ 0.09 mean the minimum-variance split leaves the FX leg
-                  almost entirely open even with the budget deleted (paper §6.2).
+                  × and ρ = {rho.toFixed(3)} leave the minimum-variance split covering
+                  only {(Math.min(1, Math.max(0, freeSplit.w2)) * 100).toFixed(0)}% of
+                  the FX leg even with the budget deleted (paper §6.2). But ρ is estimated on a calm sample and the split depends
+                  heavily on it: under the correlation breakdown of a stressed regime
+                  the same closed form returns a different answer. Move the slider
+                  above to price that case (paper §Limitations).
                 </>
               )}
             </p>
@@ -307,7 +365,7 @@ function SurvivalSwitchPanel({ liveKo }: { liveKo: number }) {
         {lang === 'ko' ? (
           <>
             낙아웃 할인은 공짜가 아니라 <em>필요할 때 보호가 죽어 있을 확률</em>을
-            담보로 잡은 대출입니다. 할인의 가치는 ₩6.5bn으로 고정인데, 보호가 죽는
+            담보로 잡은 대출입니다. 할인의 가치는 {bnv(sw.discountValue)}로 고정인데, 보호가 죽는
             비용은 소멸 확률에 비례해 자랍니다. 두 선이 만나는 손익분기{' '}
             {(sw.pBar * 100).toFixed(1)}%를 넘는 순간, 최적화기는 장부를 전량
             바닐라로 옮깁니다.
@@ -316,7 +374,7 @@ function SurvivalSwitchPanel({ liveKo }: { liveKo: number }) {
           <>
             The knock-out discount is not free money — it is a loan against the
             probability that protection is <em>dead when needed</em>. The discount
-            is worth a fixed ₩6.5bn; the cost of dead protection grows with
+            is worth a fixed {bnv(sw.discountValue)}; the cost of dead protection grows with
             mortality. Past the {(sw.pBar * 100).toFixed(1)}% break-even, the
             optimizer walks the book to all-vanilla.
           </>
@@ -402,7 +460,7 @@ function SurvivalSwitchPanel({ liveKo }: { liveKo: number }) {
           {/* the discount: flat */}
           <line x1={SP.left} y1={y(sw.discountValue)} x2={SW - SP.right} y2={y(sw.discountValue)} stroke={C_FX} strokeWidth={2} />
           <text x={SW - SP.right + 6} y={y(sw.discountValue) + 4} className="bg-sw-lbl" fill={C_FX}>
-            {lang === 'ko' ? '낙아웃 할인 ₩6.5bn' : 'KO discount ₩6.5bn'}
+            {lang === 'ko' ? `낙아웃 할인 ${bnv(sw.discountValue)}` : `KO discount ${bnv(sw.discountValue)}`}
           </text>
           {/* expected mortality cost: p × full-book stress loss */}
           <line x1={x(0)} y1={y(0)} x2={x(1)} y2={y(yMax)} stroke="#b3610f" strokeWidth={2} />

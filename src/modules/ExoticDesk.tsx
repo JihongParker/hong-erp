@@ -256,13 +256,13 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
       <ul className="ex-foil-why">
         {lang === 'ko' ? (
           <>
-            <li><strong>교과서 값은 높은 쪽이 아니라 낮은 쪽으로 틀렸습니다.</strong> 녹아웃이 터지는 순간 헤지는 사라지고 익스포저만 고스란히 남습니다. KO 확률을 낮게 잡는 도구는, 이 구조가 막으라고 존재하는 바로 그 재앙을 과소평가하는 셈입니다.</li>
+            <li><strong>교과서 값은 낮은 쪽으로 틀립니다.</strong> 녹아웃이 터지는 순간 헤지는 사라지고 익스포저만 고스란히 남습니다. KO 확률을 낮게 잡는 도구는, 이 구조가 막으라고 존재하는 바로 그 재앙을 과소평가하는 셈입니다. 다만 두 엔진의 차이는 <em>같은 모수</em>를 놓고 잰 것입니다. 점프 모수 (λ, θ_J, δ_J) 자체의 추정 오차는 별도이고 더 큽니다.</li>
             <li><strong>수치 오차는 곁가지입니다.</strong> 톱니 모양 선(래티스)과 회색 선(GBM 정확해)의 차이는 1pp 남짓으로, 노드 스트래들링(Boyle–Lau) 때문이며 N을 키우면 사라집니다. 정작 문제가 되는 {Math.abs(modelGap).toFixed(0)}pp 격차는 계산이 아니라 모델 선택에서 나옵니다.</li>
             <li><strong>1-요인 모델로는 퀀토를 다룰 수 없습니다.</strong> 교과서 모델에는 FX 레그 자체가 없어서, 논문의 퀀토 델타 Δ_FX = V/S₂도 공분산 승수 c* = {C_STAR}도 정의되지 않습니다. 그 숫자로 헤지하면 상관 익스포저가 고스란히 열려 있게 됩니다.</li>
           </>
         ) : (
           <>
-            <li><strong>The textbook is too low, not too high.</strong> A knock-out turns your hedge into naked exposure the instant it fires, so a desk tool that lowballs the KO odds underprices the exact disaster the structure exists to survive. Our engine is the one telling the truth.</li>
+            <li><strong>The textbook errs low.</strong> A knock-out turns your hedge into naked exposure the instant it fires, so a desk tool that lowballs the KO odds underprices the disaster the structure exists to survive. The comparison is made at a <em>fixed</em> parameter vector, though: it separates model choice from arithmetic, and says nothing about how well the jump parameters themselves are known.</li>
             <li><strong>And the math error is the small part.</strong> The jittery line (lattice) vs the grey line (exact GBM) differ by ~1pp: pure node straddling (Boyle–Lau), and it shrinks as you crank N. The {Math.abs(modelGap).toFixed(0)}pp that matters is model, not arithmetic.</li>
             <li><strong>One factor can&rsquo;t carry a quanto.</strong> There is no FX leg in the textbook world, so the paper&rsquo;s quanto delta Δ_FX = V/S₂ and covariance multiplier c* = {C_STAR} do not exist at all. Hedge off the textbook number and the correlation exposure stays wide open.</li>
           </>
@@ -368,7 +368,7 @@ export default function ExoticDesk() {
         <button role="tab" aria-selected={mode === 'euro'} className={mode === 'euro' ? 'ins-strat-btn active' : 'ins-strat-btn'} onClick={() => setMode('euro')}>
           <span className="ins-strat-name">
             {t('European quanto')}
-            <HelpDot text={t('The same jump-diffusion calibration with both barriers removed, priced in closed form. Subtract it from the Double-KO and what is left is exactly the survival risk the barriers inject.')} subject={t('European quanto')} />
+            <HelpDot text={t('The same jump-diffusion calibration with both barriers removed, priced in closed form. Subtract it from the Double-KO and what is left is the survival risk the barriers inject.')} subject={t('European quanto')} />
           </span>
           <span className="ins-strat-tag">{t('ablation · no barrier')}</span>
         </button>
@@ -376,7 +376,30 @@ export default function ExoticDesk() {
       <p className="ins-strat-blurb">
         {mode === 'ko'
           ? t('The paper structure: a double knock-out quanto priced from the jump-diffusion MC surface. Watch the value collapse and the delta reverse as spot nears a barrier.')
-          : t('The same jump-diffusion calibration with both barriers removed, priced in closed form. Subtract it from the Double-KO and what is left is exactly the survival risk the barriers inject.')}
+          : t('The same jump-diffusion calibration with both barriers removed, priced in closed form. Subtract it from the Double-KO and what is left is the survival risk the barriers inject.')}
+      </p>
+      <p className="ins-strat-blurb ex-estnote">
+        {lang === 'ko' ? (
+          <>
+            <strong>추정 위험.</strong> 이 화면의 수치는 고정된 모수 벡터를 조건으로 한
+            것입니다. 점프는 드물기 때문에 (λ, θ_J, δ_J)는 약 1,300일 수익률 중 극히
+            일부에서만 식별되고, 표준오차가 넓으며, 저빈도·대진폭과 고빈도·소진폭
+            조합이 비슷한 적률을 만들어 우도면이 평평합니다. 시뮬레이션 엔진의 정밀도와
+            헤지의 실무적 신뢰도는 별개의 주장입니다. 헤지 비용 수준은 점추정이 아니라
+            넓은 입력 구간의 중심값으로 읽으십시오 (논문 §한계).
+          </>
+        ) : (
+          <>
+            <strong>Estimation risk.</strong> Everything on this screen is conditional
+            on a fixed parameter vector. Jumps are rare, so (λ, θ_J, δ_J) are
+            identified from a small subset of ~1,300 daily returns, carry wide
+            standard errors, and sit on a flat likelihood ridge where low-intensity /
+            large-amplitude and high-intensity / small-amplitude fits generate similar
+            moments. Engine precision and practical hedge reliability are different
+            claims: read the hedge-cost levels as central estimates inside a wide
+            input-driven band (paper §Limitations).
+          </>
+        )}
       </p>
 
       <div className="ex-grid">

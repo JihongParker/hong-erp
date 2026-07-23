@@ -53,7 +53,7 @@ export interface CollarSolution {
 
 // Given the cap strike Kc (≥ F usually), find the floor Kp < Kc whose written
 // put finances the purchased call. Put value is strictly increasing in K,
-// so bisection on (εF, Kc) is exact.
+// so bisection on (εF, Kc) converges monotonically.
 export function solveZeroCostFloor(capK: number, m: MarketParams): CollarSolution {
   const target = black76Call(capK, m)
   let lo = 0.01 * m.F
@@ -75,9 +75,9 @@ export function solveZeroCostFloor(capK: number, m: MarketParams): CollarSolutio
 
 // ── zero-cost multi-leg extensions (three-way collar, seagull) ──────────────
 // Both cheapen or improve the plain collar by SELLING an extra wing, and both
-// reintroduce a tail the collar had removed — the same "sold barrier/wing pays
-// for the strikes" mechanism that turns a collar into a KIKO. Solved for exact
-// zero cost by bisection on the one free strike; the sold wing's strike is a
+// reintroduce a tail the collar had removed: the same "sold barrier/wing pays
+// for the strikes" mechanism that turns a collar into a KIKO. Solved for zero
+// cost by bisection on the one free strike; the sold wing's strike is a
 // user choice (how far out you push the torn protection).
 
 export interface ThreeWaySolution {

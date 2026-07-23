@@ -425,14 +425,41 @@ export default function Dashboard() {
                 <sup>−kd</sup>R에서 나옵니다. 규제는 하한 d ≥ d̲로 들어옵니다. 기존
                 ESG 플랫폼은 입력값을 보고하는 데서 멈춥니다. 이 화면이 바로 그들이
                 비워 둔 의사결정 레이어입니다.
+                <br />
+                <strong>근거의 지위.</strong> 위 결과는 모형의 비교정학이며, 가정한
+                함수형에서 따라 나온 것이지 데이터에서 추정된 것이 아닙니다. 한국에서
+                실제로 시행된 두 공시 규제(지배구조보고서·환경정보공개)에 대해 논문의
+                실증 검정은 두 헤지 마진 모두에서 좁게 추정된 영(null)을 보고합니다.
+                이는 두 규제가 시장위험 마진의 λ·k·R을 움직이지 않기 때문이라는
+                모형의 예측과 부합하지만, 영 결과 자체는 특정 구조에 대한 강한 증거가
+                아닙니다. 또한 ESG 공시 데이터에는 그린워싱, 비고전적 측정오차,
+                내생성이 내재하므로 이론과 데이터의 일치를 두고도 누락변수와
+                역인과관계를 신중히 따져야 합니다. 모형이 <em>움직일 것</em>이라
+                예측하는 2027 회계연도 기후공시 의무가 정보량 있는 검정이며, 그때까지
+                이 화면의 해석은 잠정적입니다 (논문 §한계).
               </>
             ) : (
               <>
                 The model: Λ(d) = φ + λe<sup>−kd</sup> prices residual risk; hedges
                 solve 2Λ(d)Σu = p with corner (KKT) handling; voluntary d* solves
                 2ad = kλe<sup>−kd</sup>R; a mandate is a floor d ≥ d̲. Incumbent ESG
-                platforms stop at reporting the inputs — this screen is the decision
+                platforms stop at reporting the inputs; this screen is the decision
                 layer they leave empty.
+                <br />
+                <strong>Status of the evidence.</strong> These are the model&rsquo;s
+                comparative statics, which follow from its assumed functional forms
+                rather than from data. On Korea&rsquo;s two <em>realized</em>
+                {' '}mandates (the governance report and the environmental-information
+                requirement) the paper&rsquo;s executed test returns tightly bounded
+                nulls on both hedging margins — consistent with the model, since
+                neither mandate moves λ, k or R on the market-risk margin, but weak
+                evidence for any particular structure. ESG disclosure data also carry
+                greenwashing, non-classical measurement error, and endogeneity, so
+                agreement between theory and panel warrants caution about omitted
+                variables and reverse causality. The fiscal-2027 climate mandate,
+                which the model predicts <em>should</em> move hedging, is the
+                informative test; treat what follows as provisional until it runs
+                (paper §Limitations).
               </>
             )}
           </p>
