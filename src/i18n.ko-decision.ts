@@ -258,7 +258,7 @@ export const KO_DECISION: Record<string, string> = {
   'European vanilla structure selected upstream': '앞 단계에서 유러피언 바닐라 구조 선택됨',
   'Mean |ineffectiveness| — A combined': '평균 |비유효| — A 통합',
   'Mean |ineffectiveness| — B split': '평균 |비유효| — B 분리',
-  '3.7× cleaner in P&L': '손익 노이즈 3.7배 감소',
+  'vs the B1 leg (paper headline)': 'B1 레그 대비 (논문 헤드라인)',
   'Economic σ — A vs B': '경제적 σ — A vs B',
   '≈ same economics': '경제 실질은 사실상 동일',
   'KO probability (engine)': '녹아웃 확률 (엔진)',
