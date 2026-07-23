@@ -112,7 +112,7 @@ oracle_h = mv_split(Sig_full)
 results = {"unhedged": [], "naive": [], "oracle": [], "walkforward": []}
 hprev = {"naive": (0, 0), "oracle": (0, 0), "walkforward": (0, 0), "unhedged": (0, 0)}
 tc = {k: 0.0 for k in results}
-wf_track = []   # rolling estimated split + correlation, for the c* story
+wf_track = []   # rolling estimated split + correlation (static MV: neg rho -> small FX cover)
 
 for t in range(WINDOW, T):
     past = R[t - WINDOW:t]                       # STRICTLY past -> no look-ahead
@@ -203,5 +203,5 @@ for s in summary:
           f"{s['cvar95']*100:>8.2f}%{s['mdd']*100:>8.1f}%{s['total_cost']*100:>8.2f}%")
 neg = sum(1 for w in wf_track if w["rho"] < 0)
 print(f"rolling rho<0 in {neg}/{len(wf_track)} months ({100*neg/len(wf_track):.0f}%) "
-      f"-> the c*<0 regime (FX leg partially self-hedges)")
+      f"-> negative-correlation regime keeps optimal FX coverage small (Paper 1 w2)")
 print(f"wrote {OUT.relative_to(ROOT)}")

@@ -9,9 +9,12 @@
 // appear: the structure factorizes and is not a quanto in the technical sense
 // of carrying a correlation-dependent drift adjustment. The −ρσ₁σ₂ term below
 // is the KRW-numeraire drift correction that makes the joint simulation agree
-// with that factorization; it is not a price effect of correlation. The
-// correlation remains economically real on the HEDGING side, which is where
-// the paper's c* lives.
+// with that factorization; it is not a price effect of correlation. (Paper
+// revision 2026-07-24: the variance-minimizing coupling multiplier once read as
+// a covariance-aware "c*" was found to be a netting artifact — the WTI futures
+// leg already carries the dollars — collapsing to ~0 once netted. The FX leg is
+// sized to the structure's own carrying value V/S₂, not to any multiple of the
+// WTI delta.)
 //
 // Convention: the asset (WTI, USD) pays max(S_T − K, 0) converted to KRW at the
 // fixed quanto rate S₂₀; value is "KRW per quanto unit at S₂₀", matching the

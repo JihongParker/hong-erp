@@ -28,8 +28,12 @@ const { U, L, K, S2_0, sigma1, lambda, thetaJ, deltaJ, sigma2, rho, rUS, rKRW } 
 // same calibration as the paper's surface — used by the European ablation engine
 const CALIB: QuantoCalib = { sigma1, lambda, thetaJ, deltaJ, sigma2, rho, rUS, rKRW, S2_0 }
 
-// paper constant (Park_quanto): covariance-aware FX multiplier
-const C_STAR = -0.548
+// Park_quanto §struct-δ: the naive one-for-one coupling δ_FX = c·δ_WTI at c = 1
+// over-hedges the FX leg by a median ~4.6× versus the structural delta V/S₂. The
+// paper's variance-minimising "c*" turned out to be a netting artifact — the WTI
+// futures leg is already carrying the dollars — not a covariance-aware ratio, so
+// it is no longer shown as one.
+const FX_OVERHEDGE = 4.6
 
 // textbook-foil vols: the lattice can only take one number. σ_diff is the bare
 // diffusion vol a desk would read off; σ_total also folds in the jump variance
@@ -258,13 +262,13 @@ function LatticeFoil({ spot, paperKo, baseT }: { spot: number; paperKo: number; 
           <>
             <li><strong>교과서 값은 낮은 쪽으로 틀립니다.</strong> 녹아웃이 터지는 순간 헤지는 사라지고 익스포저만 고스란히 남습니다. KO 확률을 낮게 잡는 도구는, 이 구조가 막으라고 존재하는 바로 그 재앙을 과소평가하는 셈입니다. 다만 두 엔진의 차이는 <em>같은 모수</em>를 놓고 잰 것입니다. 점프 모수 (λ, θ_J, δ_J) 자체의 추정 오차는 별도이고 더 큽니다.</li>
             <li><strong>수치 오차는 곁가지입니다.</strong> 톱니 모양 선(래티스)과 회색 선(GBM 정확해)의 차이는 1pp 남짓으로, 노드 스트래들링(Boyle–Lau) 때문이며 N을 키우면 사라집니다. 정작 문제가 되는 {Math.abs(modelGap).toFixed(0)}pp 격차는 계산이 아니라 모델 선택에서 나옵니다.</li>
-            <li><strong>1-요인 모델로는 퀀토를 다룰 수 없습니다.</strong> 교과서 모델에는 FX 레그 자체가 없어서, 논문의 퀀토 델타 Δ_FX = V/S₂도 공분산 승수 c* = {C_STAR}도 정의되지 않습니다. 그 숫자로 헤지하면 상관 익스포저가 고스란히 열려 있게 됩니다.</li>
+            <li><strong>1-요인 모델로는 퀀토를 다룰 수 없습니다.</strong> 교과서 모델에는 FX 레그 자체가 없어서, 논문의 구조적 퀀토 델타 Δ_FX = V/S₂가 아예 정의되지 않습니다. 그 숫자로 헤지하면 환 익스포저가 고스란히 열려 있게 됩니다.</li>
           </>
         ) : (
           <>
             <li><strong>The textbook errs low.</strong> A knock-out turns your hedge into naked exposure the instant it fires, so a desk tool that lowballs the KO odds underprices the disaster the structure exists to survive. The comparison is made at a <em>fixed</em> parameter vector, though: it separates model choice from arithmetic, and says nothing about how well the jump parameters themselves are known.</li>
             <li><strong>And the math error is the small part.</strong> The jittery line (lattice) vs the grey line (exact GBM) differ by ~1pp: pure node straddling (Boyle–Lau), and it shrinks as you crank N. The {Math.abs(modelGap).toFixed(0)}pp that matters is model, not arithmetic.</li>
-            <li><strong>One factor can&rsquo;t carry a quanto.</strong> There is no FX leg in the textbook world, so the paper&rsquo;s quanto delta Δ_FX = V/S₂ and covariance multiplier c* = {C_STAR} do not exist at all. Hedge off the textbook number and the correlation exposure stays wide open.</li>
+            <li><strong>One factor can&rsquo;t carry a quanto.</strong> There is no FX leg in the textbook world, so the paper&rsquo;s structural quanto delta Δ_FX = V/S₂ does not exist at all. Hedge off the textbook number and the currency exposure stays wide open.</li>
           </>
         )}
       </ul>
@@ -540,9 +544,9 @@ export default function ExoticDesk() {
                   <span className="tile-value">{dFx.toFixed(2)}</span>
                 </div>
                 <div className="tile">
-                  <span className="tile-label">{t('c* covariance multiplier')}</span>
-                  <span className="tile-value">{C_STAR}</span>
-                  <span className="tile-badge">{t('paper §c* — vs c=1 naive')}</span>
+                  <span className="tile-label">{lang === 'ko' ? 'c=1 전가 시 FX 과잉헤지' : 'FX over-hedge at c = 1'}</span>
+                  <span className="tile-value">{FX_OVERHEDGE}×</span>
+                  <span className="tile-badge">{lang === 'ko' ? 'V/S₂로 잡아야 (논문 §구조델타)' : 'size to V/S₂ instead (paper §struct-δ)'}</span>
                 </div>
               </div>
 
@@ -552,9 +556,9 @@ export default function ExoticDesk() {
                   <Curve values={row.price} color="#2f6db4" spot={spot} fmt={(v) => `${(v / 1000).toFixed(0)}k`} />
                   <figcaption className="ex-cap">
                     {lang === 'ko' ? (
-                      <>가치는 S₁을 따라 오르다가 상단 배리어 앞에서 꺾여 내려갑니다. 이 비단조성이 자산별 델타 추정을 무너뜨리고, 논문에서 공분산을 반영한 c*가 1이 아닌 이유이기도 합니다.</>
+                      <>가치는 S₁을 따라 오르다가 상단 배리어 앞에서 꺾여 내려갑니다. 이 비단조성 때문에 자산별 델타 추정이 무너지고, 하나의 WTI 델타를 FX 레그에 1대1로 전가(c = 1)하는 방식이 성립하지 않습니다.</>
                     ) : (
-                      <>Value rises with S₁ then collapses toward the upper barrier: the non-monotonicity that makes per-asset delta estimation break, and the reason the paper's covariance-aware c* ≠ 1.</>
+                      <>Value rises with S₁ then collapses toward the upper barrier: the non-monotonicity that makes per-asset delta estimation break, and the reason a single WTI delta coupled one-for-one into the FX leg (c = 1) does not hold up.</>
                     )}
                   </figcaption>
                 </figure>
@@ -593,9 +597,9 @@ export default function ExoticDesk() {
                   <span className="tile-badge">{lang === 'ko' ? `유러피언 가치 대비 · 스팟 $${spot.toFixed(0)} 기준` : `of European value, at $${spot.toFixed(0)}`}</span>
                 </div>
                 <div className="tile">
-                  <span className="tile-label">{t('c* covariance multiplier')}</span>
-                  <span className="tile-value">{C_STAR}</span>
-                  <span className="tile-badge">{lang === 'ko' ? '아래 −ρσ₁σ₂ 드리프트에서 나온 값' : 'from the −ρσ₁σ₂ drift below'}</span>
+                  <span className="tile-label">{lang === 'ko' ? 'c=1 전가 시 FX 과잉헤지' : 'FX over-hedge at c = 1'}</span>
+                  <span className="tile-value">{FX_OVERHEDGE}×</span>
+                  <span className="tile-badge">{lang === 'ko' ? 'V/S₂로 잡아야 · 아래 설명' : 'size to V/S₂ instead · see below'}</span>
                 </div>
               </div>
 
@@ -627,24 +631,37 @@ export default function ExoticDesk() {
               </figure>
 
               <div className="ex-panel">
-                <h3>{t('Where c* comes from')}</h3>
+                <h3>{lang === 'ko' ? 'c = 1 전가가 FX 레그를 잘못 잡는 이유' : 'Why c = 1 mis-sizes the FX leg'}</h3>
                 <p className="ex-cap" style={{ paddingTop: 0 }}>
                   {lang === 'ko' ? (
                     <>
-                      유러피언 드리프트는 r<sub>US</sub> − <strong>ρσ₁σ₂</strong>입니다.
-                      이 −ρσ₁σ₂ 항(ρ = {rho}, σ₁ = {sigma1.toFixed(3)}, σ₂ = {sigma2.toFixed(3)})이
-                      바로 c = 1로 계산하는 데스크가 빠뜨리는 퀀토 공분산 보정입니다.
-                      논문은 이를 공분산 승수 <strong>c* = {C_STAR}</strong>로 정규화합니다.
-                      배리어가 있든 없든, c = 1로 두는 순간 퀀토 레그의 가격은 이미
-                      어긋나 있습니다.
+                      흔한 오해부터 짚자면, 여기엔 되찾을 상관 보정이 없습니다. 뉴메레르
+                      변경(논문 명제 1)을 하면 이 페이오프는 <strong>현물환율 × 순수 달러
+                      옵션</strong>으로 분해되고, ρ(= {rho})는 가격에도 두 델타 어디에도
+                      들어가지 않습니다. Q<sup>KRW</sup> 아래 나타나는 −ρσ₁σ₂ 드리프트
+                      항은 올바른 뉴메레르에서 정확히 상쇄됩니다. 진짜 문제는 <em>크기</em>입니다.
+                      구조의 실제 환 익스포저는 옵션 자신의 가치 <strong>Δ_FX = V/S₂</strong>인데,
+                      c = 1 규칙은 훨씬 큰 WTI 헤지 노셔널에 FX 레그를 얹어 중앙값 기준
+                      약 <strong>{FX_OVERHEDGE}배</strong> 과잉 헤지합니다. 원장에서 분산을
+                      최소화하는 승수가 음수로 나오는 건 WTI 선물 레그가 이미 달러를 들고
+                      있기 때문이며(회계적 잔재), 그 부분을 상계하면 승수는 정확히 1만큼
+                      움직여 사실상 0이 됩니다. FX 레그는 WTI 델타의 배수가 아니라 V/S₂로
+                      잡으십시오.
                     </>
                   ) : (
                     <>
-                      The European drift is r<sub>US</sub> − <strong>ρσ₁σ₂</strong>: the −ρσ₁σ₂ term
-                      (ρ = {rho}, σ₁ = {sigma1.toFixed(3)}, σ₂ = {sigma2.toFixed(3)}) is the quanto covariance
-                      correction the naive c = 1 desk drops. The paper normalises it to the covariance
-                      multiplier <strong>c* = {C_STAR}</strong>. Barrier or not, the quanto leg is already
-                      mispriced the moment you set c = 1.
+                      Start with the misconception: there is no correlation correction to recover
+                      here. A change of numeraire (paper Proposition 1) factorises this payoff into
+                      the <strong>spot rate × a pure dollar option</strong>, so ρ (= {rho}) enters
+                      neither the price nor either delta — the −ρσ₁σ₂ drift that appears under
+                      Q<sup>KRW</sup> is cancelled exactly by the correct numeraire. The real problem is
+                      <em> size</em>. The structure&rsquo;s true currency exposure is the option&rsquo;s own
+                      carrying value, <strong>Δ_FX = V/S₂</strong>; a c = 1 rule instead sizes the FX leg
+                      off the far larger WTI hedge notional, a median <strong>~{FX_OVERHEDGE}×</strong>
+                      over-hedge. The variance-minimising multiplier a raw ledger reports comes out
+                      negative only because the WTI futures leg is already holding the dollars — net that
+                      out and the multiplier moves by exactly one unit to essentially zero. Size the FX leg
+                      to V/S₂, not to a multiple of the WTI delta.
                     </>
                   )}
                 </p>

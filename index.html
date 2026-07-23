@@ -55,7 +55,7 @@
         <p><em>What-if &amp; validation:</em></p>
         <ul>
           <li><strong>Scenarios</strong> — division-level parameters through the same frozen engine.</li>
-          <li><strong>Out-of-sample</strong> — a walk-forward hedge backtest on 40 years of FRED data (WTI × USD/KRW, 486 monthly returns). The covariance-aware optimum, estimated only on strictly past data and rebalanced monthly after costs, removes ≈89% of out-of-sample cash-flow variance versus ≈75% for a naive even split — this is a <em>hedging</em> result (variance reduction), never alpha or a Sharpe ratio. Includes the paper's dynamic hedge-cost parabola in the coupling c, whose closed-form vertex is the paper-certified c* = −0.548, honestly flagged as a second-order lever (std falls only ~6%, from 51.90 to 48.76 bn KRW, because the oil leg dominates).</li>
+          <li><strong>Out-of-sample</strong> — a walk-forward hedge backtest on 40 years of FRED data (WTI × USD/KRW, 486 monthly returns). The covariance-aware optimum, estimated only on strictly past data and rebalanced monthly after costs, removes ≈89% of out-of-sample cash-flow variance versus ≈75% for a naive even split — this is a <em>hedging</em> result (variance reduction), never alpha or a Sharpe ratio. Includes the paper's dynamic hedge-cost parabola in the coupling c — an exact affine identity whose vertex the paper no longer reads as a covariance-aware hedge ratio: netting the oil futures leg's own FX exposure shifts the vertex by exactly one unit to essentially zero, so the FX coupling is not a risk lever at all (the oil leg dominates the variance). The FX leg is instead sized to the structure's own carrying value, Δ_FX = V/S₂.</li>
         </ul>
         <h2>The position spine</h2>
         <p>

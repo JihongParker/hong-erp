@@ -243,15 +243,12 @@ export const KO_DECISION: Record<string, string> = {
   'Value (KRW / unit)': '가치 (KRW / 단위)',
   'Δ WTI (regression-grid FD)': 'Δ WTI (회귀격자 FD)',
   'Δ FX = V/S₂ (homogeneity thm)': 'Δ FX = V/S₂ (동차성 정리)',
-  'c* covariance multiplier': 'c* 공분산 승수',
-  'paper §c* — vs c=1 naive': '논문 §c* · 단순 c=1 대비',
   'Value across the corridor — the barrier squeeze': '두 배리어 사이의 가치 — 배리어 스퀴즈',
   'Knock-out probability': '녹아웃 확률',
   'European value (KRW / unit)': '유러피언 가치 (KRW / 단위)',
   'Δ WTI — monotone': 'Δ WTI — 단조',
   'Barrier destroys': '배리어 파괴분',
   'European vs barrier — what the knock-outs destroy': '유러피언 vs 배리어 — 녹아웃이 깎아 먹는 가치',
-  'Where c* comes from': 'c*는 어디서 오는가',
 
   // ── Accounting ──
   'American KO structure selected upstream': '앞 단계에서 아메리칸 KO 구조 선택됨',
