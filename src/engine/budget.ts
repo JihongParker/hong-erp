@@ -2,8 +2,9 @@
 // Equations transcribed verbatim from §3 (eq. gmvp, costeu, costam, constraints)
 // and Table 1 inputs. Anchors: European risk-min optimum (0.970486, 0.029514),
 // European: sigma_res 0.09160, budget binds at KRW 45bn -> (0.9705, 0.0295).
-// American (FX share scaled by Q_oil, corrected): (0.9453, 0.0547), budget
-// slack ~KRW 7bn -> the simplex w1+w2<=1 binds, not the cash budget.
+// American: (0.9660, 0.0340), budget slack ~KRW 8.9bn -> the simplex w1+w2<=1
+// binds, not the cash budget. Both regimes share one unconstrained optimum and
+// separate only through the budget.
 
 export type Regime = 'european' | 'american'
 
@@ -19,8 +20,8 @@ export const P1_INPUTS = {
   T2: 0.5,
   stressWTI: 113,
   stressKRW: 1550,
-  sigma1EU: 0.39455,
-  sigma1AM: 0.32419,
+  sigma1EU: 0.39455, // sigma_res takes the raw historical volatility in both
+  sigma1AM: 0.32419, // regimes; the diffusive figure is a pricing-engine input
   sigma2: 0.09258,
   rho: 0.08763,
   P_B76: 12.6524, // USD/bbl
@@ -29,18 +30,18 @@ export const P1_INPUTS = {
   P_Sh_FX: 2_038.72, // KRW/bbl (Shapley share of the per-barrel joint premium — Paper 2 §8.1)
   // §7-8: stress-conditional KO survival analysis
   p_KO_stress: 0.8925, // measured stress KO probability (200k paths)
-  p_KO_breakeven: 0.0616, // p̄ above which vanilla dominates KO
+  p_KO_breakeven: 0.0424, // p̄ above which vanilla dominates KO
 } as const
 
 // §7–8 — the survival haircut and the instrument switch. The knock-out
 // discount is a loan against the states in which the hedge is needed: worth
 // taking only while the probability of the protection being dead when needed
-// (p) stays below the paper's break-even p̄ = 6.16%. The per-unit economics
+// (p) stays below the paper's break-even p̄ = 4.24%. The per-unit economics
 // are linear in the mix, so the optimum is bang-bang: below p̄ the WTI book
 // holds the knock-out, above it the optimizer walks the book to all-vanilla.
 // KRW anchors from the frozen inputs: full-book stress loss ≈ ₩105.6bn, so
-// the discount is worth p̄ × 105.6 ≈ ₩6.5bn — and measured stress mortality
-// 89.25% ≈ 14× the break-even (§7).
+// the discount is worth p̄ × 105.6 ≈ ₩4.5bn — and measured stress mortality
+// 89.25% ≈ 21× the break-even (§7).
 export interface SurvivalSwitch {
   pBar: number // break-even mortality p̄
   koShare: 0 | 1 // optimal KO fraction of the WTI book at mortality p (bang-bang)
@@ -75,8 +76,9 @@ export interface BudgetParams {
   stressKRW: number
 }
 
-export function sigmaRes(w1: number, w2: number, regime: Regime): number {
-  const s1 = regime === 'european' ? P1_INPUTS.sigma1EU : P1_INPUTS.sigma1AM
+export function sigmaRes(w1: number, w2: number, _regime: Regime): number {
+  // the uncovered exposure carries the jumps whichever instrument was priced
+  const s1 = P1_INPUTS.sigma1EU
   const s2 = P1_INPUTS.sigma2
   const u = 1 - w1
   const v = 1 - w2
