@@ -137,7 +137,7 @@ export default function Accounting() {
         <div className="tile">
           <span className="tile-label">{t('Economic σ — A vs B')}</span>
           <span className="tile-value small">{(S.sigmaEconA / 1e9).toFixed(1)} / {(S.sigmaEconB / 1e9).toFixed(1)} bn</span>
-          <span className="tile-badge">{t('≈ same economics')}</span>
+          <span className="tile-badge">{t('econ σ within 1.3%')}</span>
         </div>
         <div className="tile">
           <span className="tile-label">{t('KO probability (engine)')}</span>
@@ -234,8 +234,9 @@ export default function Accounting() {
               비유효 부분을 {(S.ineffA / S.ineffB1).toFixed(1)}배 줄입니다. 다만 이
               격차는 경제적 위험의 차이가 아니라, IFRS 9이 요구하는 가상파생상품이
               곱셈형 페이오프를 복제할 수 없어서 생기는 <em>회계적 착시</em>에
-              가깝습니다 (논문 §논의). 두 구조의 전 기간 경제적 σ는 통계적으로
-              구분되지 않습니다. 실제로 옮겨지는 위험은 다른 곳에 있습니다: KO 레그가
+              가깝습니다 (논문 §논의). 두 구조의 전 기간 경제적 σ는 1.3%밖에
+              차이나지 않는데, B는 최초 인식 시점에 ₩7.79bn(22.7%) 더
+              비쌉니다. 실제로 옮겨지는 위험은 다른 곳에 있습니다: KO 레그가
               녹아웃되면(확률 {(S.koProb * 100).toFixed(0)}%) B2가 FVTPL로 재분류되어{' '}
               {bn(S.postKoFvtplStdB)} 규모의 손익 노이즈가 남습니다. 비유효 라인은
               위험 지표가 아니라 지정 구조에 대한 진단으로 읽으십시오.
@@ -247,8 +248,11 @@ export default function Accounting() {
               that gap is closer to an <em>accounting artifact</em> than to a
               difference in economic risk: it arises because IFRS 9's hypothetical
               derivative cannot replicate a multiplicative payoff, and full-horizon
-              economic σ is statistically indistinguishable across the two
-              architectures (paper §Discussion). The risk that does move sits
+              economic σ differs by only 1.3% of level across the two
+              architectures, against an accounting gap of several hundred
+              percent (paper §Discussion). Structure B also costs ₩7.79bn
+              (22.7%) more at inception, so the quieter ineffectiveness line
+              is bought, not earned. The risk that does move sits
               elsewhere: if the KO leg dies ({(S.koProb * 100).toFixed(0)}%
               probability), B2 is reclassified to FVTPL and injects{' '}
               {bn(S.postKoFvtplStdB)} of earnings noise. Read the ineffectiveness

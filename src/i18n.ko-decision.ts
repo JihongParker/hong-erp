@@ -260,7 +260,7 @@ export const KO_DECISION: Record<string, string> = {
   'Mean |ineffectiveness| — B split': '평균 |비유효| — B 분리',
   'vs the B1 leg (paper headline)': 'B1 레그 대비 (논문 헤드라인)',
   'Economic σ — A vs B': '경제적 σ — A vs B',
-  '≈ same economics': '경제 실질은 사실상 동일',
+  'econ σ within 1.3%': '경제적 σ 차이 1.3%',
   'KO probability (engine)': '녹아웃 확률 (엔진)',
   'Trade blotter': '딜 블로터',
   'Export CSV': 'CSV 내보내기',

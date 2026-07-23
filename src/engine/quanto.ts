@@ -1,9 +1,17 @@
-// European quanto call — the barrier-free ablation baseline for the Double-KO
-// quanto. Same jump-diffusion calibration as the paper's surface, priced in
-// closed form (Merton jump series over a quanto-adjusted Black-Scholes), so the
-// difference Double-KO − European isolates what the two knock-out barriers
-// take away. The quanto drift carries the −ρσ₁σ₂ correction — the covariance
-// term the paper's c* normalises — so this desk shows where c* ≠ 1 comes from.
+// European call on WTI settled in won — the barrier-free ablation baseline for
+// the Double-KO structure. Same jump-diffusion calibration as the paper's
+// surface, priced in closed form (Merton jump series), so the difference
+// Double-KO − European isolates what the two knock-out barriers take away.
+//
+// NOTE (paper revision 2026-07-23, Proposition 1). This payoff converts at the
+// REALIZED terminal rate, so a change of numeraire to the USD money-market
+// account gives V(0) = S2(0)·e^(−r_US·T)·E^Q_US[(S1−K)+], in which ρ does not
+// appear: the structure factorizes and is not a quanto in the technical sense
+// of carrying a correlation-dependent drift adjustment. The −ρσ₁σ₂ term below
+// is the KRW-numeraire drift correction that makes the joint simulation agree
+// with that factorization; it is not a price effect of correlation. The
+// correlation remains economically real on the HEDGING side, which is where
+// the paper's c* lives.
 //
 // Convention: the asset (WTI, USD) pays max(S_T − K, 0) converted to KRW at the
 // fixed quanto rate S₂₀; value is "KRW per quanto unit at S₂₀", matching the
