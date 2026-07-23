@@ -12,6 +12,7 @@ const S = cfh.stats as {
   premium: number
   ineffA: number
   ineffB: number
+  ineffB1: number
   sigmaEconA: number
   sigmaEconB: number
   koProb: number
@@ -129,7 +130,9 @@ export default function Accounting() {
         <div className="tile">
           <span className="tile-label">{t('Mean |ineffectiveness| — B split')}</span>
           <span className="tile-value" style={{ color: C_B }}>{bn(S.ineffB)}</span>
-          <span className="tile-badge">{t('3.7× cleaner in P&L')}</span>
+          <span className="tile-badge">
+            {(S.ineffA / S.ineffB1).toFixed(1)}× {t('vs the B1 leg (paper headline)')}
+          </span>
         </div>
         <div className="tile">
           <span className="tile-label">{t('Economic σ — A vs B')}</span>
@@ -227,19 +230,29 @@ export default function Accounting() {
         <p className="ac-note">
           {lang === 'ko' ? (
             <>
-              경제적 실질은 거의 같아도 회계 결과는 다릅니다. 분리(B)는 손익에 잡히는
-              비유효 부분을 3.7배 줄이지만, KO 레그가 녹아웃되면(확률{' '}
-              {(S.koProb * 100).toFixed(0)}%) 대체 딜이 FVTPL로 분류되어{' '}
-              {bn(S.postKoFvtplStdB)} 규모의 손익 노이즈가 생깁니다. 지정은 서류
-              작업이 아니라 리스크에 관한 의사결정입니다.
+              경제적 실질은 거의 같은데 회계 결과만 다릅니다. 분리(B)는 손익에 잡히는
+              비유효 부분을 {(S.ineffA / S.ineffB1).toFixed(1)}배 줄입니다. 다만 이
+              격차는 경제적 위험의 차이가 아니라, IFRS 9이 요구하는 가상파생상품이
+              곱셈형 페이오프를 복제할 수 없어서 생기는 <em>회계적 착시</em>에
+              가깝습니다 (논문 §논의). 두 구조의 전 기간 경제적 σ는 통계적으로
+              구분되지 않습니다. 실제로 옮겨지는 위험은 다른 곳에 있습니다: KO 레그가
+              녹아웃되면(확률 {(S.koProb * 100).toFixed(0)}%) B2가 FVTPL로 재분류되어{' '}
+              {bn(S.postKoFvtplStdB)} 규모의 손익 노이즈가 남습니다. 비유효 라인은
+              위험 지표가 아니라 지정 구조에 대한 진단으로 읽으십시오.
             </>
           ) : (
             <>
               The economics barely differ; the accounting does. Splitting (B)
-              cuts P&L ineffectiveness 3.7×, but if the KO leg dies (
-              {(S.koProb * 100).toFixed(0)}% probability), its replacement
-              trades at FVTPL and injects {bn(S.postKoFvtplStdB)} of earnings
-              noise. Designation is a risk decision, not paperwork.
+              cuts P&L ineffectiveness {(S.ineffA / S.ineffB1).toFixed(1)}× — but
+              that gap is closer to an <em>accounting artifact</em> than to a
+              difference in economic risk: it arises because IFRS 9's hypothetical
+              derivative cannot replicate a multiplicative payoff, and full-horizon
+              economic σ is statistically indistinguishable across the two
+              architectures (paper §Discussion). The risk that does move sits
+              elsewhere: if the KO leg dies ({(S.koProb * 100).toFixed(0)}%
+              probability), B2 is reclassified to FVTPL and injects{' '}
+              {bn(S.postKoFvtplStdB)} of earnings noise. Read the ineffectiveness
+              line as a designation-architecture diagnostic, not a risk metric.
             </>
           )}
         </p>
@@ -293,8 +306,8 @@ export default function Accounting() {
               </li>
               <li>
                 <strong>Decision Dashboard →</strong> 헤지회계 채택 여부는 ESG 논문의
-                결과 변수입니다. 공시 의무 효과의 정밀 null 추정도 바로 이 지정 선택
-                위에서 측정됩니다.
+                결과 변수입니다. 시행된 공시 의무에 대한 좁게 추정된 영(null) 결과도
+                이 지정 선택 위에서 측정됩니다.
               </li>
             </>
           ) : (
@@ -310,8 +323,8 @@ export default function Accounting() {
               </li>
               <li>
                 <strong>Decision Dashboard →</strong> hedge-accounting adoption is
-                the ESG paper's outcome variable: the precisely-estimated null on
-                disclosure mandates was measured on exactly this designation
+                the ESG paper's outcome variable: the tightly bounded null on the
+                realized disclosure mandates was measured on this designation
                 choice.
               </li>
             </>

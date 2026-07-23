@@ -5,7 +5,7 @@
 //   • no Brownian-bridge continuity correction (barriers checked only at nodes)
 //
 // It exists to show, on the same screen as the paper's jump-diffusion quanto MC
-// surface, exactly where the standard desk lattice diverges: it undershoots the
+// surface, where the standard desk lattice diverges: it undershoots the
 // knock-out probability (it cannot see the jump variance), its price/KO odds
 // oscillate as the barriers straddle lattice nodes, and its delta never reverses
 // sign — it is blind to the barrier squeeze. Do not price the real structure with it.
