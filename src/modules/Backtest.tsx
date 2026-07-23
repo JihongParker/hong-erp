@@ -168,7 +168,7 @@ export default function Backtest() {
               <li><strong>철저한 워크포워드.</strong> Σ는 <em>과거</em> 월간 수익률만 담는 롤링 윈도로 추정하고, 거기서 나온 배분을 다음 달 실현 수익률에 적용합니다. 앞날의 데이터는 어디에도 쓰지 않습니다. 유일한 예외가 오라클인데, 도달 가능한 상한이 어디인지 보여 주려고 일부러 넣은 가상의 정책입니다.</li>
               <li><strong>비용 반영.</strong> 매달 리밸런싱 회전량에 거래 비용을 물립니다. 워크포워드의 비용({pct(wf.totalCost, 2)})은 그 덕에 추가로 줄어드는 변동성 {pct(wf.varReduction - naive.varReduction, 0)}에 비하면 미미합니다.</li>
               <li><strong>수익이 아니라 변동성 축소.</strong> 여기 있는 숫자는 전부, 헤지를 하고 난 뒤 수입 대금이 얼마나 덜 출렁이는지를 잰 것입니다. 수익률 곡선도 샤프 비율도 아닙니다.</li>
-              <li><strong>이 데이터가 확인해 주는 것.</strong> 전체 표본으로 계산한 배분은 {out.oracleSplit.w1.toFixed(2)} / {out.oracleSplit.w2.toFixed(2)}(원유 / FX) — 변동성이 큰 원유 쪽으로 커버리지가 몰리며, 논문의 구조적 97/3 그대로입니다. 상관계수 ρ는 전체 기간의 {pct(out.negShare, 0)} 동안 음수여서 환 포지션이 원유 손실을 얼마간 알아서 메워 주는데, 논문의 반직관적인 c* &lt; 0과 맞아떨어지는 실데이터 결과입니다.</li>
+              <li><strong>이 데이터가 확인해 주는 것.</strong> 전체 표본으로 계산한 배분은 {out.oracleSplit.w1.toFixed(2)} / {out.oracleSplit.w2.toFixed(2)}(원유 / FX) — 변동성이 큰 원유 쪽으로 커버리지가 몰리며, 논문의 구조적 97/3 그대로입니다. 상관계수 ρ는 전체 기간의 {pct(out.negShare, 0)} 동안 음수여서 환 포지션이 원유 손실을 얼마간 알아서 메워 주는데, 이 때문에 최적 FX 커버리지가 작게 유지됩니다(논문 1의 w₂ ≈ 3%).</li>
             </>
           ) : (
             <>
@@ -182,8 +182,8 @@ export default function Backtest() {
                 no return stream, no Sharpe.</li>
               <li><strong>What it confirms.</strong> The full-sample split is {out.oracleSplit.w1.toFixed(2)} / {out.oracleSplit.w2.toFixed(2)}
                 (oil / FX): coverage concentrates on the high-variance oil leg, the paper's structural 97/3. And ρ
-                is negative {pct(out.negShare, 0)} of the time, so the FX leg partially self-hedges oil: the real-data
-                analogue of the paper's counterintuitive c* &lt; 0.</li>
+                is negative {pct(out.negShare, 0)} of the time, so the FX leg partially self-hedges oil, which keeps the
+                optimal FX coverage small: the real-data analogue of Paper 1's w₂ ≈ 3%.</li>
             </>
           )}
         </ul>
@@ -234,10 +234,13 @@ function CumChart({ paths }: { paths: Record<string, { month: string; cum: numbe
   )
 }
 
-// P2 dynamic-hedging result: the exact hedge-cost parabola in the coupling c,
-// reconstructed from the paper's own 200k-path exact-engine numbers
-// (c* = -0.548, std 51.90bn at c=1, 48.76bn at c*). Var(c) = VarA + 2c·Cov +
-// c²·VarB. Solving those three reported numbers gives the moments below.
+// P2 dynamic-hedging result: the exact hedge-cost parabola in the coupling c.
+// The affine identity Var(c) = VarA + 2c·Cov + c²·VarB is real; reconstructed
+// here from the paper's certified GROSS-ledger numbers (gross vertex -0.548,
+// std 51.90bn at c=1, 48.76bn at the vertex). The paper retracts the reading of
+// that vertex as a covariance-aware ratio: netting the oil futures leg's own FX
+// exposure shifts it by exactly 1.0 to ~0 (see the panel prose). The curve is
+// kept because the identity and the "c=1 is up the expensive arm" point stand.
 const P2 = (() => {
   const cstar = -0.548, s1 = 51.90, sc = 48.76, k = -cstar
   const VarB = (s1 * s1 - sc * sc) / (2 * k + 1 + k * k)
@@ -262,30 +265,33 @@ function ParabolaPanel() {
   const armPath = arm.map((c, i) => `${i ? 'L' : 'M'}${x(c).toFixed(1)},${y(stdOf(c)).toFixed(1)}`).join('')
   return (
     <figure className="bt-panel bt-cstar">
-      <h3>{t('P2 — the dynamic hedge-cost parabola, and why naive c = 1 is off-optimum')}</h3>
+      <h3>{lang === 'ko' ? 'P2 — 헤지비용 포물선은 항등식, 그 꼭짓점은 회계적 잔재' : 'P2 — the hedge-cost parabola is an identity; its vertex is a netting artifact'}</h3>
       <p className="bt-cstar-sub">
         {lang === 'ko' ? (
           <>
             FX 헤지를 WTI 델타에 δ<sub>FX</sub> = c · δ<sub>WTI</sub>로 묶으면 경로별 헤지 비용이
-            c에 대해 정확히 아핀(affine)이 되고, 그 분산은 꼭짓점 c* = −Cov(A,B)/Var(B)를 갖는
-            포물선이 됩니다. 논문의 20만 경로 정밀 엔진에서 Cov(A,B)가 <strong>양수</strong>라서
-            꼭짓점은 <strong>음수(c* = −0.548)</strong>입니다. 즉 FX 레그를 양의 방향으로 묶으면 비용
-            분산이 줄기는커녕 오히려 늘어나고, 관행적인 1대1 전가(c = 1)는 포물선의 비싼 쪽에 한참
-            올라가 있는 셈입니다. 다만 이 레버의 효과는 부차적입니다. 표준편차는 51.90억에서 48.76억
-            KRW로 6%쯤 내려갈 뿐인데, Var(A)를 WTI 레그가 지배하고 있어 c를 어떻게 잡아도 거기에는
-            손을 못 대기 때문입니다. 결론은 위의 정적 배분과 같습니다. FX 레그는 헤지의 작은
-            일부입니다.
+            c에 대해 정확히 아핀(affine)이 되고, 그 분산은 포물선이 됩니다. 여기까지는
+            엔진이 강제하는 <strong>항등식</strong>으로 6×10⁻¹⁶까지 성립합니다. 문제는 그
+            꼭짓점의 <em>해석</em>입니다. WTI 헤지는 달러로 사는 선물이라 원유 레그가 이미
+            달러 포지션을 들고 있고, 분산을 최소화하는 승수는 대부분 그 포지션을 상계하는
+            데 쓰입니다. 원유 선물 레그의 환 익스포저를 상계하면 꼭짓점은 정확히 1만큼
+            왼쪽으로 밀려 c ≈ <strong>−0.12</strong>, 즉 사실상 0이 됩니다. 커플링을 아예 안
+            한 것 대비 실제 이득은 <strong>0.14%</strong>일 뿐입니다(원래 표시하던 ~6%가
+            아니라). 결론은 오히려 더 분명해집니다. FX 커플링은 헤지비용 리스크의
+            레버가 아니고, Var(A)를 WTI 레그가 지배해 어떤 c로도 거기엔 손을 못 댑니다.
           </>
         ) : (
           <>
             Coupling the FX hedge to the WTI delta as δ<sub>FX</sub> = c · δ<sub>WTI</sub> makes per-path hedge
-            cost affine in c, so its variance is a parabola with closed-form vertex
-            c* = −Cov(A,B)/Var(B). On the paper's 200k-path exact engine Cov(A,B) is <strong>positive</strong>,
-            so the vertex is <strong>negative (c* = −0.548)</strong>: a positively-coupled FX leg adds cost
-            variance rather than offsetting it, and naive one-for-one pass-through (c = 1) sits well up the
-            expensive right arm. Honestly, though, the lever is second-order: std falls only from 51.90 to
-            48.76 bn KRW (~6%), because the WTI leg dominates Var(A) and no c can touch it. Same verdict as the
-            static split above: the FX leg is a small part of the hedge.
+            cost affine in c, so its variance is a parabola — that far is an <strong>identity</strong> the
+            engine forces, holding to 6×10⁻¹⁶. What does not hold is the <em>reading</em> of its vertex. The
+            WTI hedge is carried as dollar-denominated futures, so the oil leg already holds an FX position,
+            and the variance-minimising multiplier mostly cancels that. Netting the oil futures leg's own FX
+            exposure slides the whole curve left by exactly 1.000, to a vertex at c ≈ <strong>−0.12</strong> —
+            economically zero — and the honest gain over not coupling the FX leg at all is <strong>0.14%</strong>,
+            not the ~6% the raw vertex suggested. The verdict is only sharper: the FX coupling is not a lever
+            on hedge-cost risk; the WTI leg dominates Var(A) and no c reaches it. Same verdict as the static
+            split above: the FX leg is a small part of the hedge.
           </>
         )}
       </p>
@@ -299,7 +305,7 @@ function ParabolaPanel() {
         ))}
         {/* c ticks */}
         {[-1.5, -1, -0.548, 0, 0.5, 1, 1.5].map((c) => (
-          <text key={c} x={x(c)} y={PH - PP.bottom + 16} textAnchor="middle" className="tick">{c === -0.548 ? 'c*' : c}</text>
+          <text key={c} x={x(c)} y={PH - PP.bottom + 16} textAnchor="middle" className="tick">{c === -0.548 ? '−0.55' : c}</text>
         ))}
         <text x={(PP.left + PW - PP.right) / 2} y={PH - 6} textAnchor="middle" className="axis-title">coupling multiplier c  (δ_FX = c · δ_WTI)</text>
         {/* full parabola */}
@@ -309,7 +315,7 @@ function ParabolaPanel() {
         {/* vertex c* */}
         <line x1={x(P2.cstar)} y1={y(P2.stdStar)} x2={x(P2.cstar)} y2={PH - PP.bottom} stroke="#2f6db4" strokeWidth={1} strokeDasharray="3 3" />
         <circle cx={x(P2.cstar)} cy={y(P2.stdStar)} r={5} fill="#2f6db4" stroke="var(--panel)" strokeWidth={2} />
-        <text x={x(P2.cstar)} y={y(P2.stdStar) - 10} textAnchor="middle" className="bt-slabel" fill="#2f6db4">c* = −0.548 · {P2.stdStar}bn</text>
+        <text x={x(P2.cstar)} y={y(P2.stdStar) - 10} textAnchor="middle" className="bt-slabel" fill="#2f6db4">{lang === 'ko' ? '그로스 꼭짓점 −0.55 (잔재)' : 'gross vertex −0.55 (artifact)'}</text>
         {/* naive c=1 */}
         <line x1={x(1)} y1={y(P2.std1)} x2={x(1)} y2={PH - PP.bottom} stroke="#b3610f" strokeWidth={1} strokeDasharray="3 3" />
         <circle cx={x(1)} cy={y(P2.std1)} r={5} fill="#b3610f" stroke="var(--panel)" strokeWidth={2} />
@@ -319,29 +325,33 @@ function ParabolaPanel() {
         {lang === 'ko' ? (
           <>
             <span className="bt-lg"><span className="bt-dot" style={{ background: '#b3610f' }} /> 스윕 구간 [0.5, 1.5] — 포물선의 오른쪽 팔</span>
-            <span className="bt-lg"><span className="bt-dot" style={{ background: '#2f6db4' }} /> 닫힌 해 꼭짓점 c* (분산 최소화)</span>
+            <span className="bt-lg"><span className="bt-dot" style={{ background: '#2f6db4' }} /> 그로스 원장 꼭짓점 (상계 전 · 회계적 잔재)</span>
           </>
         ) : (
           <>
             <span className="bt-lg"><span className="bt-dot" style={{ background: '#b3610f' }} /> swept window [0.5, 1.5] — the parabola's right arm</span>
-            <span className="bt-lg"><span className="bt-dot" style={{ background: '#2f6db4' }} /> closed-form vertex c* (variance minimiser)</span>
+            <span className="bt-lg"><span className="bt-dot" style={{ background: '#2f6db4' }} /> gross-ledger vertex (pre-netting; an artifact)</span>
           </>
         )}
       </figcaption>
       <p className="bt-src">
         {lang === 'ko' ? (
           <>
-            포물선은 논문에서 인증된 모멘트로 정확히 재구성한 것입니다 (Park_quanto §c*: c* = −0.548,
-            c = 1에서 std 51.90억, c*에서 48.76억, 20만 점프-적응 정밀 경로, 아핀 항등식 6×10⁻¹⁶까지).
-            동결 엔진의 독립 델타 헤지도 같은 방향을 가리킵니다. c = 1은 포물선의 비싼 쪽에 있으므로,
-            "c = 1이 최적"이라는 통념은 성립하지 않습니다.
+            포물선은 논문에서 인증된 그로스 원장 모멘트로 정확히 재구성한 것입니다 (Park_quanto §c*:
+            그로스 꼭짓점 −0.548, c = 1에서 std 51.90억, 꼭짓점에서 48.76억, 아핀 항등식 6×10⁻¹⁶까지).
+            항등식 자체는 유효하지만, 논문은 이 꼭짓점을 공분산 반영 헤지비율로 읽던 해석을 철회했습니다.
+            원유 선물 레그의 환 익스포저를 상계하면 꼭짓점은 정확히 1만큼 밀려 c ≈ −0.12(사실상 0)가 되고,
+            남는 이득은 0.14%뿐입니다. 결론은 c = 1이 최적이 아니라는 것이 아니라, 커플링 자체가 리스크
+            레버가 아니라는 것입니다.
           </>
         ) : (
           <>
-            Parabola reconstructed from the paper's reported moments (Park_quanto §c*: c* = −0.548,
-            std 51.90bn at c = 1, 48.76bn at c*, 200k jump-adapted exact paths, affine identity to 6×10⁻¹⁶).
-            An independent frozen-engine delta-hedge here confirms the direction: c = 1 sits on the expensive
-            arm, so the naive "c = 1 is optimal" reading is wrong.
+            Parabola reconstructed from the paper's certified gross-ledger moments (Park_quanto §c*: gross
+            vertex −0.548, std 51.90bn at c = 1, 48.76bn at the vertex, affine identity to 6×10⁻¹⁶). The
+            identity holds, but the paper has withdrawn the reading of that vertex as a covariance-aware hedge
+            ratio: netting the oil futures leg's own FX exposure slides the vertex by exactly one unit to
+            c ≈ −0.12 (essentially zero), leaving a 0.14% gain. The conclusion is not that "c = 1 is
+            sub-optimal" but that the coupling is not a risk lever at all.
           </>
         )}
       </p>
@@ -363,22 +373,26 @@ function CStarPanel({ rolling, negShare }: { rolling: { month: string; w1: numbe
   const ticks = [0, Math.floor(n / 4), Math.floor(n / 2), Math.floor((3 * n) / 4), n - 1]
   return (
     <figure className="bt-panel bt-cstar">
-      <h3>{lang === 'ko' ? '논문의 c* < 0이 데이터에서 드러나는 지점' : "Where the paper's c* < 0 shows up in the data"}</h3>
+      <h3>{lang === 'ko' ? '원유–환 음의 상관이 최적 FX 커버리지를 낮추는 지점' : 'Where negative oil–FX correlation shrinks the optimal FX cover'}</h3>
       <p className="bt-cstar-sub">
         {lang === 'ko' ? (
           <>
             원유와 FX의 월간 수익률은 전체 기간의 {pct(negShare, 0)} 동안 음의 상관입니다. 리스크오프
             국면에서는 유가가 빠지면서 원화도 같이 약해져, FX 익스포저가 원유 쪽 손실을 얼마간 알아서
             메워 줍니다. ρ가 음수로 내려가면 분산을 최소화하는 FX 커버리지 w<sub>2</sub>도 0 쪽으로
-            내려가고, 이때 1대1로 전부 헤지하면 오히려 과잉 헤지가 됩니다. 논문의 c* &lt; 0이 표본 밖
-            데이터에서 이렇게 드러납니다.
+            내려가, FX 레그를 작게 유지하라는 <strong>정적 배분(논문 1: w₂ ≈ 3%)</strong>과 같은 방향을
+            가리킵니다. 이것은 정적 최소분산 직관이 표본 밖 데이터에서 확인되는 것으로, 논문 2의 동적
+            커플링 승수와는 별개입니다. 후자는 원유 레그의 환 익스포저를 상계하면 사실상 0으로
+            수렴합니다.
           </>
         ) : (
           <>
             Oil and FX monthly returns are negatively correlated {pct(negShare, 0)} of the time: in risk-off months
             oil falls while the won weakens, so the FX exposure partly offsets oil on its own. When ρ dips negative
-            the variance-minimising FX coverage w<sub>2</sub> falls toward zero: naive one-for-one pass-through would
-            over-hedge. This is the covariance-aware c* &lt; 0, out of sample.
+            the variance-minimising FX coverage w<sub>2</sub> falls toward zero, pointing the same way as the
+            <strong> static allocation (Paper 1: w₂ ≈ 3%)</strong>: keep the FX leg small. This is the static
+            minimum-variance intuition confirmed out of sample — distinct from Paper 2's dynamic coupling
+            multiplier, which nets to essentially zero once the oil leg's own FX exposure is removed.
           </>
         )}
       </p>
