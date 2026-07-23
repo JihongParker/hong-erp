@@ -381,11 +381,11 @@ export default function ExoticDesk() {
       <p className="ins-strat-blurb ex-estnote">
         {lang === 'ko' ? (
           <>
-            <strong>측정된 두 가지 유의점.</strong> 첫째, 논문의 회귀 델타는
-            상태의존성 면에서는 배리어를 인식하지만 <em>수준</em>에서는 아닙니다.
-            직접 측정 결과 기울기가 구조의 실제 가격민감도보다 8.5~20.5배 큽니다.
-            상단 배리어 아래에서 가치곡선이 꺾이기 때문에 등가격 델타는 작습니다.
-            여기 표시되는 델타는 &part;V/&part;S&#8321;가 아니라 헤지 규칙으로 읽으십시오.
+            <strong>측정된 두 가지 유의점.</strong> 첫째, 동반 논문을 적대적으로
+            재검정한 결과 회귀면 델타는 내가격 구간에서 사실상 <em>상수</em>이며
+            (변동폭 0.03, Black-76은 0.36), 배리어 무지 델타 대비 우위가 상수
+            0.70으로 전부 재현됩니다. 여기 표시되는 델타는 &part;V/&part;S&#8321;가
+            아니라 헤지 규칙으로 읽으시고, 배리어 인식의 증거로 읽지 마십시오.
             둘째, 이 화면의 수치는 고정된 모수 벡터를 조건으로 합니다. 점프는 드물기 때문에 (λ, θ_J, δ_J)는 약 1,300일 수익률 중 극히
             일부에서만 식별되고, 표준오차가 넓으며, 저빈도·대진폭과 고빈도·소진폭
             조합이 비슷한 적률을 만들어 우도면이 평평합니다. 시뮬레이션 엔진의 정밀도와
@@ -394,13 +394,14 @@ export default function ExoticDesk() {
           </>
         ) : (
           <>
-            <strong>Two measured caveats.</strong> First, the paper's regression
-            delta is barrier-aware in <em>state dependence</em> but not in level:
-            direct measurement puts its gradient 8.5&times;&ndash;20.5&times; above the
-            structure's true price sensitivity, which is small at the money because
-            the value curve turns over below the upper barrier. Read the delta shown
-            here as a hedging rule, not as &part;V/&part;S&#8321;. Second, everything on
-            this screen is conditional on a fixed parameter vector. Jumps are rare, so (λ, θ_J, δ_J) are
+            <strong>Two measured caveats.</strong> First, adversarial re-testing of
+            the companion paper found the fitted surface delta is close to
+            <em>constant</em> over the in-the-money domain (spanning 0.03 against
+            Black-76's 0.36), and that its hedging advantage over a barrier-blind
+            delta is reproduced in full by a constant ratio of 0.70. Read the delta
+            shown here as a hedging rule, not as &part;V/&part;S&#8321;, and not as
+            evidence of barrier awareness. Second, everything on this screen is
+            conditional on a fixed parameter vector. Jumps are rare, so (λ, θ_J, δ_J) are
             identified from a small subset of ~1,300 daily returns, carry wide
             standard errors, and sit on a flat likelihood ridge where low-intensity /
             large-amplitude and high-intensity / small-amplitude fits generate similar
