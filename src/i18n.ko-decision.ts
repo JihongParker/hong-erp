@@ -65,7 +65,7 @@ export const KO_DECISION: Record<string, string> = {
     '프리미엄 예산이 정해져 있을 때, 원유 레그와 FX 레그를 각각 얼마나 커버해야 할까요?',
   'Vertex optimum 97.0% / 2.9% reproduced live, budget-exact at ₩45bn':
     '논문의 97.0 / 2.9 배분이 눈앞에서 그대로 나옵니다. ₩45bn 예산도 딱 맞게 씁니다',
-  'Covariance-aware delta hedging of a double-KO quanto': '더블 녹아웃 퀀토의 공분산 반영 델타 헤지',
+  'The currency leg of a double-KO quanto: factorization, netting, and the limits of a fitted LSMC delta': '더블 녹아웃 퀀토의 통화 레그 — 분해정리·상계·적합 LSMC 델타의 한계',
   'Run a dynamic hedge on an exotic barrier option written on that same exposure, then watch where textbook deltas break.':
     '같은 익스포저에 걸린 배리어 옵션을 동적으로 헤지하면서, 교과서 델타가 무너지는 지점을 보여 줍니다.',
   'Paper engine surfaces, KO probability anchored 43.5% vs 43.7%':
