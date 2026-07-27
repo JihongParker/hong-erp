@@ -20,7 +20,7 @@ const PAPERS = [
   },
   {
     n: 'P2',
-    title: 'Covariance-aware delta hedging of a double-KO quanto',
+    title: 'The currency leg of a double-KO quanto: factorization, netting, and the limits of a fitted LSMC delta',
     plain: 'Run a dynamic hedge on an exotic barrier option written on that same exposure, then watch where textbook deltas break.',
     result: 'Paper engine surfaces, KO probability anchored 43.5% vs 43.7%',
     module: 'instruments',
