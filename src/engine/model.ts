@@ -1,4 +1,4 @@
-// FROZEN ENGINE — Park, "ESG Disclosure Mandates and Corporate Hedging" §3
+// FROZEN ENGINE — Park, "Mandatory ESG Disclosure and Corporate Hedging: Evidence from Korea" §3
 // (revision 2026-07-23). Equations transcribed verbatim:
 //
 //   Σ = [[σf², ρσfσc], [ρσfσc, σc²]],  u ≡ 1 − h,  R = uᵀΣu

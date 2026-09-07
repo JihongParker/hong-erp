@@ -60,22 +60,28 @@ export const KO_DECISION: Record<string, string> = {
   'Start': '시작',
   'open the Decision Dashboard': '의사결정 대시보드 열기',
   'Source on GitHub →': 'GitHub 소스 →',
-  'Optimal WTI–FX hedge ratios under a fixed budget': '고정 예산 하 최적 WTI–FX 헤지비율',
+  'Optimal WTI–FX hedge ratios under a fixed budget: a maturity-matched strip program with a tail objective': '고정 예산 하 최적 WTI–FX 헤지비율 — 만기 정합 스트립과 꼬리 목적함수',
+  'Maturity-matched strip — the annual ledger': '만기 정합 스트립 — 연간 원장',
+  'WTI strip K₁ˢ': 'WTI 스트립 K₁ˢ',
+  'FX strip K₂ˢ': 'FX 스트립 K₂ˢ',
+  'Matching saving / yr': '만기 정합 절감 / 년',
+  'Annual authority': '연간 권한',
+  'Per-slice full-coverage premiums': '조각별 전량 커버 프리미엄',
   'Given a fixed premium budget, how much of the oil leg and the currency leg should a Korean importer actually cover?':
     '프리미엄 예산이 정해져 있을 때, 원유 레그와 FX 레그를 각각 얼마나 커버해야 할까요?',
-  'Vertex optimum 97.0% / 2.9% reproduced live, budget-exact at ₩45bn':
-    '논문의 97.0 / 2.9 배분이 눈앞에서 그대로 나옵니다. ₩45bn 예산도 딱 맞게 씁니다',
+  'Matched strip saves ₩95bn/yr; CVaR optimum 100/0 in one envelope, ₩540bn spent exactly at w₂ 83.6% with separate books':
+    '만기 정합 스트립만으로 연 ₩95bn 절감. 단일 포락선에서는 CVaR 최적이 100/0 코너, 별도 북에서는 ₩540bn 권한을 정확히 소진하며 w₂ 83.6%',
   'The currency leg of a double-KO quanto: factorization, netting, and the limits of a fitted LSMC delta': '더블 녹아웃 퀀토의 통화 레그 — 분해정리·상계·적합 LSMC 델타의 한계',
   'Run a dynamic hedge on an exotic barrier option written on that same exposure, then watch where textbook deltas break.':
     '같은 익스포저에 걸린 배리어 옵션을 동적으로 헤지하면서, 교과서 델타가 무너지는 지점을 보여 줍니다.',
   'Paper engine surfaces, KO probability anchored 43.5% vs 43.7%':
     '논문 엔진 표면을 그대로 올렸습니다. 녹아웃 확률 43.5%, 논문의 43.7%와 거의 일치',
-  'IFRS 9 cash-flow-hedge accounting: combined vs split': 'IFRS 9 현금흐름위험회피 회계: 통합 vs 분리',
+  'IFRS 9 hedge accounting for a quanto knock-out structure': '퀀토 낙아웃 구조의 IFRS 9 위험회피회계',
   'Book the resulting hedge two legal ways. Same economics, very different earnings.':
     '같은 헤지를 두 가지 회계 방식으로 장부에 올립니다. 경제적 실질은 같지만 손익은 크게 달라집니다.',
   'Designation ledgers verbatim: ineffectiveness ₩23.4bn vs ₩6.4bn':
     '장부도 논문 그대로입니다. 비유효 부분이 ₩23.4bn vs ₩6.4bn으로 갈립니다',
-  'ESG disclosure mandates and corporate hedging': 'ESG 공시 의무와 기업 헤지',
+  'Mandatory ESG disclosure and corporate hedging: evidence from Korea': 'ESG 공시 의무화와 기업 헤지 — 한국의 증거',
   'Ask what sets the decision to hedge in the first place, and prove disclosure moves it only through the price of risk.':
     '애초에 헤지 결정을 무엇이 정하는지 묻고, 공시는 오직 리스크 가격을 움직여서만 그 결정에 닿는다는 점을 보입니다.',
   'Closed form cross-checked vs independent minimizer, 200 draws, gap ≤3×10⁻⁶':

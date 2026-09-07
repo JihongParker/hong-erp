@@ -7,6 +7,7 @@
 //   (b) collar zero-cost parity smoke      — solveZeroCostFloor, |netPremium|<1e-10
 //   (c) walk-forward backtest parity smoke — runBacktest vs backtest.json summary
 //   (d) P3 CFH accounting anchors          — scripts/verify-cfh.mjs
+//   (e) P1 strip ledger + mixed program    — stripLedger/mixedProgram vs paper anchors
 //
 // (a) and (d) are standalone scripts (they own their process + exit codes), so
 // we run them as subprocesses via `npx tsx` and read the status — mirroring how
@@ -18,6 +19,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { solveZeroCostFloor } from '../src/engine/instruments.ts'
 import { runBacktest } from '../src/engine/backtest.ts'
+import { stripLedger, mixedProgram, P1_STRIP } from '../src/engine/budget.ts'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const results = []
@@ -69,6 +71,47 @@ process.stdout.write('\n=== c. walk-forward backtest parity ===\n')
 
 // ── (d) CFH anchors ─────────────────────────────────────────────────────────
 runScript('d. CFH anchors', 'scripts/verify-cfh.mjs')
+
+// ── (e) P1 strip ledger + mixed program ─────────────────────────────────────
+{
+  console.log('\n=== e. P1 strip ledger + mixed program (closed form vs paper) ===')
+  const L = stripLedger()
+  const rel = (a, b) => (b === 0 ? Math.abs(a) : Math.abs(a - b) / Math.abs(b))
+  const checks = [
+    ['K1S', L.K1S, P1_STRIP.K1S, 1e-4],
+    ['K2S', L.K2S, P1_STRIP.K2S, 1e-4],
+    ['matching saving', L.matchingSaving, P1_STRIP.matchingSaving, 2e-3],
+    ['B_year', L.B_year, P1_STRIP.B_year, 0],
+  ]
+  let ok = true
+  for (const [label, got, exp, tol] of checks) {
+    const r = rel(got, exp)
+    const pass = r <= tol
+    ok &&= pass
+    console.log(`  ${pass ? 'ok  ' : 'FAIL'} ${label.padEnd(16)} = ${(got / 1e9).toFixed(3)}bn (exp ${(exp / 1e9).toFixed(3)}bn, rel ${(r * 100).toFixed(4)}%)`)
+  }
+  const m0 = mixedProgram(0.02)
+  const thr = [
+    ['p̄ (eq. pbar)', m0.pBar, 0.0424, 2e-3],
+    ['p* (eq. pstar)', m0.pStar, 0.1096, 2e-3],
+    ['p† (eq. pdagger)', m0.pDagger, 0.6974, 2e-3],
+    ['σ floor (eq. linegmvp)', m0.sigmaFloor, 0.091585, 1e-3],
+  ]
+  for (const [label, got, exp, tol] of thr) {
+    const r = rel(got, exp)
+    const pass = r <= tol
+    ok &&= pass
+    console.log(`  ${pass ? 'ok  ' : 'FAIL'} ${label.padEnd(24)} = ${got.toFixed(4)} (exp ${exp}, rel ${(r * 100).toFixed(3)}%)`)
+  }
+  const regimes = [[0.02, 'floor'], [0.041, 'pinned'], [0.05, 'vanilla'], [0.4901, 'vanilla']]
+  for (const [p, exp] of regimes) {
+    const m = mixedProgram(p)
+    const pass = m.regime === exp
+    ok &&= pass
+    console.log(`  ${pass ? 'ok  ' : 'FAIL'} regime(p=${p}) = ${m.regime} (exp ${exp}), ledger ${(m.ledger / 1e9).toFixed(2)}bn`)
+  }
+  results.push(['e. P1 strip + mixed program', ok])
+}
 
 // ── verdict ─────────────────────────────────────────────────────────────────
 console.log('\n=== numerical-check summary ===')

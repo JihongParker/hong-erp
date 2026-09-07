@@ -12,9 +12,9 @@ import './Overview.css'
 const PAPERS = [
   {
     n: 'P1',
-    title: 'Optimal WTI–FX hedge ratios under a fixed budget',
+    title: 'Optimal WTI–FX hedge ratios under a fixed budget: a maturity-matched strip program with a tail objective',
     plain: 'Given a fixed premium budget, how much of the oil leg and the currency leg should a Korean importer actually cover?',
-    result: 'Vertex optimum 97.0% / 2.9% reproduced live, budget-exact at ₩45bn',
+    result: 'Matched strip saves ₩95bn/yr; CVaR optimum 100/0 in one envelope, ₩540bn spent exactly at w₂ 83.6% with separate books',
     module: 'budget',
     moduleName: 'Hedge Budget',
   },
@@ -28,7 +28,7 @@ const PAPERS = [
   },
   {
     n: 'P3',
-    title: 'IFRS 9 cash-flow-hedge accounting: combined vs split',
+    title: 'IFRS 9 hedge accounting for a quanto knock-out structure',
     plain: 'Book the resulting hedge two legal ways. Same economics, very different earnings.',
     result: 'Designation ledgers verbatim: ineffectiveness ₩23.4bn vs ₩6.4bn',
     module: 'accounting',
@@ -36,7 +36,7 @@ const PAPERS = [
   },
   {
     n: 'P4',
-    title: 'ESG disclosure mandates and corporate hedging',
+    title: 'Mandatory ESG disclosure and corporate hedging: evidence from Korea',
     plain: 'Ask what sets the decision to hedge in the first place, and prove disclosure moves it only through the price of risk.',
     result: 'Closed form cross-checked vs independent minimizer, 200 draws, gap ≤3×10⁻⁶',
     module: 'decision',

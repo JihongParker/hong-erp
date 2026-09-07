@@ -293,3 +293,88 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── strip ledger panel ── */
+.bg-strip {
+  margin-top: 16px;
+}
+
+.bg-strip-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 20px;
+  align-items: start;
+  margin-top: 14px;
+}
+
+.bg-strip-grid svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ── mixed-program readout ── */
+.bg-mix {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--muted);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+.bg-mix-floor { border-left-color: #2e7d52; }
+.bg-mix-pinned { border-left-color: #b3610f; }
+.bg-mix-vanilla { border-left-color: #2f6db4; }
+
+.bg-mix-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.bg-mix-tag {
+  font-size: 10px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.bg-mix-kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 10px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.bg-mix-kv dt {
+  color: var(--muted);
+}
+
+.bg-mix-kv dd {
+  margin: 0;
+}
+
+.bg-mix-kv--wide {
+  font-size: 12px;
+}
+
+.bg-mix-sub {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.bg-mix-note {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+@media (max-width: 900px) {
+  .bg-strip-grid {
+    grid-template-columns: 1fr;
+  }
+}

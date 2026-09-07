@@ -44,7 +44,7 @@
         <p><em>Decision layer:</em></p>
         <ul>
           <li><strong>Decision Dashboard</strong> — d*, h_f*, h_c* live from a frozen transcription of the ESG-disclosure paper's §3: hedges solve 2Λ(d)Σu = p with KKT corner handling; the voluntary d* solves 2ad = kλe<sup>−kd</sup>R; a mandate is a floor d ≥ d̲ (binding floors crowd out hedging). Closed form certified against an independent numerical minimizer on 200 random draws, worst objective gap 3×10⁻⁶.</li>
-          <li><strong>Hedge Budget</strong> — the budget-allocation paper's convex program verbatim: min σ_res subject to premium + stress ledger ≤ ₩45bn. Reproduces the paper's vertex optimum (97.05% WTI / 2.95% FX coverage, σ 0.0916, budget-exact).</li>
+          <li><strong>Hedge Budget</strong> — the budget-allocation paper's benchmark ledger live (min σ_res under the premium + stress ledger) plus the paper's headline strip results: maturity matching saves ₩95bn/yr; the CVaR₉₅ optimum is the 100/0 corner in one envelope (authority slack) and spends the ₩540bn annual authority exactly at w₂ 83.6% with separate books.</li>
           <li><strong>Hedge Instruments</strong> — two tabs. The <em>Vanilla desk</em> is a strategy library refiners actually run — swap, cap, zero-cost collar, three-way collar, and seagull — all priced on Black-76 (put–call parity residual 10⁻¹⁴, the zero-cost structures self-financing to 10⁻¹⁵), plus a crack-spread and FX benchmark. The <em>Quanto desk</em> is the research side: a double knock-out quanto priced on surfaces precomputed from the paper's own jump-diffusion engine (KO probability anchored 43.5% vs the paper's 43.7%), with a Barrier Risk Monitor, a European-quanto ablation, and a textbook lattice (CRR) foil that shows where closed-form deltas break.</li>
           <li><strong>Hedge Accounting</strong> — IFRS 9 cash-flow-hedge designation, combined vs split, on the paper engine's 218-step ledgers: mean ineffectiveness ₩23.4bn (combined) vs ₩6.4bn (split), with the split structure's post-knock-out FVTPL noise of ₩71.9bn as the counterweight.</li>
         </ul>
@@ -67,10 +67,10 @@
         </p>
         <h2>The four papers</h2>
         <ol>
-          <li>Optimal WTI–FX hedge ratios under a fixed budget (budget allocation)</li>
+          <li>Optimal WTI–FX hedge ratios under a fixed budget: a maturity-matched strip program with a tail objective (budget allocation)</li>
           <li>The currency leg of a knock-out quanto: factorization, netting, and the limits of a fitted LSMC delta (delta hedging)</li>
-          <li>IFRS 9 cash-flow-hedge accounting: combined vs split designation</li>
-          <li>ESG disclosure mandates and corporate hedging (Korea / KSSB, staggered DiD)</li>
+          <li>IFRS 9 hedge accounting for a quanto knock-out structure (combined vs split designation)</li>
+          <li>Mandatory ESG disclosure and corporate hedging: evidence from Korea (KSSB, staggered DiD)</li>
         </ol>
         <p>Values shown are illustrative, never advice.</p>
       </main>

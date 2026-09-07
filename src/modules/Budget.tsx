@@ -6,6 +6,9 @@ import {
   totalCost,
   unconstrainedSplit,
   type Regime,
+  stripLedger,
+  mixedProgram,
+  P1_STRIP,
 } from '../engine/budget'
 import { Chip, useSpine } from '../state/spine'
 import { usePersistentState } from '../state/persist'
@@ -193,16 +196,16 @@ export default function Budget() {
           <div className="bg-ko">
             {lang === 'ko' ? (
               <>
-                <strong>상품 규칙 (§7–8):</strong> 스트레스 KO 확률{' '}
-                {(P1_INPUTS.p_KO_stress * 100).toFixed(0)}% ≫ 손익분기{' '}
+                <strong>상품 규칙 (§7–8):</strong> 보유계약의 스트레스 도달 조건부
+                소멸률 {(P1_INPUTS.p_KO_held * 100).toFixed(0)}% ≫ 손익분기{' '}
                 {(P1_INPUTS.p_KO_breakeven * 100).toFixed(1)}% — 스트레스 상황에서는
                 WTI 장부를 <em>바닐라</em>로 유지합니다. 아래 스위치 패널에서 직접
                 움직여 보세요.
               </>
             ) : (
               <>
-                <strong>Instrument rule (§7–8):</strong> stress KO odds{' '}
-                {(P1_INPUTS.p_KO_stress * 100).toFixed(0)}% ≫{' '}
+                <strong>Instrument rule (§7–8):</strong> held-contract stress
+                mortality {(P1_INPUTS.p_KO_held * 100).toFixed(0)}% ≫{' '}
                 {(P1_INPUTS.p_KO_breakeven * 100).toFixed(1)}% break-even — under
                 stress, keep the WTI book <em>vanilla</em>. Try it on the switch
                 panel below.
@@ -265,21 +268,20 @@ export default function Budget() {
             <figcaption className="bg-muted">
               {lang === 'ko' ? (
                 <>
-                  빨간 곡선은 총비용 경계 C = B, 점선은 배분 포락선입니다. 최적해(점)는
-                  제약에 붙들려 꼭짓점에 고정되어 있습니다. 그래서 두 변동성을 함께 10%
-                  잘못 재더라도 분산비가 보존되어 배분{' '}<em>자체</em>는 그대로이고,
-                  배분이 <em>가져다주는 결과</em>만 달라집니다 (논문 §6.5). 이 불변성은
-                  상관계수 위험에 대한 견고함이 아닙니다: ρ가 움직이면 꼭짓점도
-                  움직입니다.
+                  빨간 곡선은 총비용 경계 C = B, 점선은 배분 포락선입니다. 이 패널은
+                  논문의 분산·시나리오 <em>벤치마크</em> 원장을 라이브로 재현합니다.
+                  논문의 헤드라인은 스트립+CVaR 결과입니다: 단일 포락선에서는 100/0
+                  코너(권한 여유), 별도 북에서는 ₩540bn 권한을 정확히 소진하며 w₂
+                  83.6%. 분산 벤치마크의 내부해는 ρ가 움직이면 함께 움직입니다.
                 </>
               ) : (
                 <>
                   Red curve: total-cost boundary C = B. Dashed: allocation envelope.
-                  The optimum (dot) sits at the vertex, constraint-pinned, so
-                  inflating both volatilities by 10% preserves the variance ratio and
-                  leaves the allocation <em>itself</em> unchanged while re-pricing
-                  what it <em>delivers</em> (paper §6.5). That invariance is not
-                  robustness to correlation risk: move ρ and the vertex moves.
+                  This panel reproduces the paper's variance/scenario
+                  <em> benchmark</em> ledger live. The paper's headline is the strip
+                  + CVaR result: the 100/0 corner in one envelope (authority slack),
+                  and the ₩540bn authority spent exactly at w₂ 83.6% with separate
+                  books. The variance benchmark's interior solution moves with ρ.
                 </>
               )}
             </figcaption>
@@ -332,6 +334,7 @@ export default function Budget() {
         </div>
       </div>
 
+      <StripPanel />
       <SurvivalSwitchPanel liveKo={spine.exoticKo} />
     </div>
   )
@@ -349,7 +352,14 @@ function SurvivalSwitchPanel({ liveKo }: { liveKo: number }) {
   // loads at the desk's live odds; the slider then explores freely
   const [p, setP] = useState(() => Math.min(0.95, Math.max(0, liveKo)))
   const sw = survivalSwitch(p)
+  const mix = useMemo(() => mixedProgram(p), [p])
   const bnv = (v: number) => `₩${(v / 1e9).toFixed(1)}bn`
+  const regimeLabel =
+    mix.regime === 'floor'
+      ? lang === 'ko' ? '바닥 구간 · 전량 KO, 예산 여유' : 'floor · all-KO, budget slack'
+      : mix.regime === 'pinned'
+        ? lang === 'ko' ? '예산 고정 구간 · 전량 KO, 예산 소진' : 'budget-pinned · all-KO, budget binding'
+        : lang === 'ko' ? '바닐라 구간 · 전량 바닐라' : 'vanilla · all-vanilla book'
 
   const yMax = sw.fullBookStressLoss
   const x = (q: number) => SP.left + q * (SW - SP.left - SP.right)
@@ -396,9 +406,33 @@ function SurvivalSwitchPanel({ liveKo }: { liveKo: number }) {
             <button onClick={() => setP(Math.min(0.95, Math.max(0, liveKo)))}>
               {lang === 'ko' ? `데스크 실시간 ${(liveKo * 100).toFixed(1)}%` : `desk live ${(liveKo * 100).toFixed(1)}%`}
             </button>
-            <button onClick={() => setP(P1_INPUTS.p_KO_stress)}>
-              {lang === 'ko' ? `스트레스 실측 ${(P1_INPUTS.p_KO_stress * 100).toFixed(1)}%` : `stress-measured ${(P1_INPUTS.p_KO_stress * 100).toFixed(1)}%`}
+            <button onClick={() => setP(P1_INPUTS.p_KO_held)}>
+              {lang === 'ko' ? `보유계약 실측 ${(P1_INPUTS.p_KO_held * 100).toFixed(1)}%` : `held-contract ${(P1_INPUTS.p_KO_held * 100).toFixed(1)}%`}
             </button>
+            <button onClick={() => setP(P1_INPUTS.p_KO_stress)}>
+              {lang === 'ko' ? `신규계약 스트레스 ${(P1_INPUTS.p_KO_stress * 100).toFixed(1)}%` : `fresh-at-stress ${(P1_INPUTS.p_KO_stress * 100).toFixed(1)}%`}
+            </button>
+          </div>
+          <div className={`bg-mix bg-mix-${mix.regime}`}>
+            <div className="bg-mix-head">
+              <span className="bg-mix-tag">{lang === 'ko' ? '혼합 프로그램 (§8)' : 'mixed program (§8)'}</span>
+              <strong>{regimeLabel}</strong>
+            </div>
+            <dl className="bg-mix-kv">
+              <dt>{lang === 'ko' ? '장부 (w₁ / w₂)' : 'book (w₁ / w₂)'}</dt>
+              <dd>{(mix.w1 * 100).toFixed(2)}% / {(mix.w2 * 100).toFixed(2)}%</dd>
+              <dt>σ_res</dt>
+              <dd>{mix.sigma.toFixed(5)} <span className="bg-mix-sub">({lang === 'ko' ? '바닥' : 'floor'} {mix.sigmaFloor.toFixed(5)})</span></dd>
+              <dt>{lang === 'ko' ? '생존조정 원장' : 'survival-adjusted ledger'}</dt>
+              <dd>{bnv(mix.ledger)} <span className="bg-mix-sub">/ ₩45.0bn</span></dd>
+              <dt>{lang === 'ko' ? '순수 KO 장부' : 'pure-KO book'}</dt>
+              <dd>{bnv(mix.pureKoLedger)} <span className="bg-mix-sub">{mix.p > mix.pStar ? (lang === 'ko' ? '권한 초과' : 'over authority') : ''}</span></dd>
+            </dl>
+            <p className="bg-mix-note">
+              {lang === 'ko'
+                ? `p* = ${(mix.pStar * 100).toFixed(1)}% 넘으면 어떤 배분도 순수 KO 장부를 권한 안에 못 넣고, p† = ${(mix.pDagger * 100).toFixed(1)}% 넘으면 커버 자체가 손해입니다.`
+                : `Past p* = ${(mix.pStar * 100).toFixed(1)}% no allocation keeps the pure-KO ledger inside the authority; past p† = ${(mix.pDagger * 100).toFixed(1)}% coverage stops paying for itself.`}
+            </p>
           </div>
 
           <div className={sw.allVanilla ? 'bg-verdict vanilla' : 'bg-verdict ko'}>
@@ -481,23 +515,143 @@ function SurvivalSwitchPanel({ liveKo }: { liveKo: number }) {
       <p className="bg-muted bg-switch-note">
         {lang === 'ko' ? (
           <>
-            2008년 KIKO가 정확히 이 그림의 오른쪽 끝이었습니다. 스트레스 상태에서
-            실측한 소멸 확률 {(P1_INPUTS.p_KO_stress * 100).toFixed(1)}%는 손익분기의{' '}
-            {(P1_INPUTS.p_KO_stress / P1_INPUTS.p_KO_breakeven).toFixed(0)}배 —
-            그래서 이 모형은 위기 상황에서 낙아웃을 거들떠보지 않고 바닐라로
-            대피합니다. 실시간 소멸 확률은 퀀토 데스크의 배리어 모니터에서 옵니다.
+            2008년 KIKO가 정확히 이 그림의 오른쪽 끝이었습니다. 논문이 원장에 넣는
+            수치는 보유계약이 스트레스 구간에 닿았을 때의 소멸률{' '}
+            {(P1_INPUTS.p_KO_held * 100).toFixed(1)}%로, 손익분기의{' '}
+            {(P1_INPUTS.p_KO_held / P1_INPUTS.p_KO_breakeven).toFixed(0)}배입니다.
+            스트레스 현물에서 새로 체결하는 계약은{' '}
+            {(P1_INPUTS.p_KO_stress * 100).toFixed(1)}%까지 올라갑니다. 어느 쪽이든
+            이 모형은 위기 상황에서 낙아웃을 거들떠보지 않고 바닐라로 대피합니다.
+            실시간 소멸 확률은 퀀토 데스크의 배리어 모니터에서 옵니다.
           </>
         ) : (
           <>
-            The 2008 KIKO book lived at the far right of this chart: mortality
-            measured from the stress state is {(P1_INPUTS.p_KO_stress * 100).toFixed(1)}%,{' '}
-            {(P1_INPUTS.p_KO_stress / P1_INPUTS.p_KO_breakeven).toFixed(0)}× the
-            break-even — which is why this program refuses the knock-out under
-            stress and walks to vanilla. Live mortality comes from the quanto
-            desk's barrier monitor.
+            The 2008 KIKO book lived at the far right of this chart. The figure the
+            paper's ledger takes is the held contract's mortality once its path
+            reaches the stress band, {(P1_INPUTS.p_KO_held * 100).toFixed(1)}%,{' '}
+            {(P1_INPUTS.p_KO_held / P1_INPUTS.p_KO_breakeven).toFixed(0)}× the
+            break-even; a contract struck fresh at the stress spot dies with
+            probability {(P1_INPUTS.p_KO_stress * 100).toFixed(1)}%. Either way the
+            program refuses the knock-out under stress and walks to vanilla. Live
+            mortality comes from the quanto desk's barrier monitor.
           </>
         )}
       </p>
+    </div>
+  )
+}
+
+// ── P1 §2–5: the maturity-matched strip, priced live slice by slice ──────────
+const STW = 660
+const STH = 200
+const STP = { top: 22, right: 16, bottom: 30, left: 52 }
+
+function StripPanel() {
+  const t = useT()
+  const [lang] = useLang()
+  const L = useMemo(() => stripLedger(), [])
+  const bnv = (v: number) => `₩${(v / 1e9).toFixed(1)}bn`
+  const maxSlice = Math.max(...L.slices.map((q) => q.wtiPremium))
+  const uniformSlice = L.uniformK1 / 12
+  const yMax = Math.max(maxSlice, uniformSlice) * 1.08
+  const colW = (STW - STP.left - STP.right) / 12
+  const y = (v: number) => STH - STP.bottom - (v / yMax) * (STH - STP.top - STP.bottom)
+  const k2 = P1_STRIP.cvar95.kappa2
+
+  return (
+    <div className="bg-panel bg-strip">
+      <h3>
+        {t('Maturity-matched strip — the annual ledger')}{' '}
+        <span className="bg-switch-tag">{lang === 'ko' ? '논문 §2–5' : 'paper §2–5'}</span>
+      </h3>
+      <p className="bg-muted bg-switch-lede">
+        {lang === 'ko' ? (
+          <>
+            월별 조달분마다 그 달 결제일에 만기가 오는 옵션을 붙이면 열두 조각의
+            스트립이 됩니다. 조각별 프리미엄은 그 만기의 Black-76·Garman–Kohlhagen
+            닫힌 해로 여기서 직접 계산합니다. 열두 장을 모두 10개월물로 사는 것보다
+            WTI 레그에서만 연 {bnv(L.matchingSaving)}({(L.matchingSavingPct * 100).toFixed(1)}%)이
+            절약됩니다.
+          </>
+        ) : (
+          <>
+            Match each month's procurement with an option expiring at that month's
+            settlement and the program becomes a twelve-slice strip. Every slice
+            premium is priced here in closed form (Black-76, Garman–Kohlhagen) at its
+            own tenor. Against twelve uniform ten-month contracts the matching alone
+            saves {bnv(L.matchingSaving)} ({(L.matchingSavingPct * 100).toFixed(1)}%) a
+            year on the WTI leg.
+          </>
+        )}
+      </p>
+      <div className="bg-tiles">
+        <div className="tile">
+          <span className="tile-label">{t('WTI strip K₁ˢ')}</span>
+          <span className="tile-value" style={{ color: C_WTI }}>{bnv(L.K1S)}</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">{t('FX strip K₂ˢ')}</span>
+          <span className="tile-value" style={{ color: C_FX }}>{bnv(L.K2S)}</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">{t('Matching saving / yr')}</span>
+          <span className="tile-value">{bnv(L.matchingSaving)}</span>
+        </div>
+        <div className="tile">
+          <span className="tile-label">{t('Annual authority')}</span>
+          <span className="tile-value">{bnv(L.B_year)}</span>
+          <span className="tile-badge">12 × ₩45bn</span>
+        </div>
+      </div>
+      <div className="bg-strip-grid">
+        <svg viewBox={`0 0 ${STW} ${STH}`} role="img" aria-label={t('Per-slice full-coverage premiums')}>
+          {[0.25, 0.5, 0.75, 1].map((f) => (
+            <g key={f}>
+              <line x1={STP.left} x2={STW - STP.right} y1={y(yMax * f)} y2={y(yMax * f)} stroke="var(--line)" strokeWidth={1} />
+              <text x={STP.left - 6} y={y(yMax * f) + 4} className="bg-sw-lbl" fill="var(--muted)" textAnchor="end">
+                {(yMax * f / 1e9).toFixed(0)}
+              </text>
+            </g>
+          ))}
+          {L.slices.map((q) => {
+            const x0 = STP.left + (q.m - 1) * colW
+            return (
+              <g key={q.m}>
+                <rect x={x0 + 4} width={colW * 0.42} y={y(q.wtiPremium)} height={y(0) - y(q.wtiPremium)} fill={C_WTI} opacity={0.9} rx={2} />
+                <rect x={x0 + 4 + colW * 0.46} width={colW * 0.42} y={y(q.fxPremium)} height={y(0) - y(q.fxPremium)} fill={C_FX} opacity={0.9} rx={2} />
+                <text x={x0 + colW / 2} y={STH - STP.bottom + 14} className="bg-sw-lbl" fill="var(--muted)" textAnchor="middle">
+                  {q.m}m
+                </text>
+              </g>
+            )
+          })}
+          <line x1={STP.left} x2={STW - STP.right} y1={y(uniformSlice)} y2={y(uniformSlice)} stroke="#b3610f" strokeWidth={1.2} strokeDasharray="5 3" />
+          <text x={STP.left + 6} y={y(uniformSlice) - 5} className="bg-sw-lbl" fill="#b3610f" textAnchor="start">
+            {lang === 'ko' ? '10개월물 균일 계약' : 'uniform 0.833y contract'} {bnv(uniformSlice)}
+          </text>
+          <text x={STP.left - 6} y={9} className="bg-sw-lbl" fill="var(--muted)" textAnchor="end">KRW bn</text>
+        </svg>
+        <div className="bg-verdict">
+          <div className="bg-verdict-head">
+            <span className="bg-verdict-label">{lang === 'ko' ? 'CVaR₉₅ 프로그램 (논문 동결값, 20만 경로)' : 'CVaR₉₅ program (paper-frozen, 200k paths)'}</span>
+          </div>
+          <dl className="bg-mix-kv bg-mix-kv--wide">
+            <dt>{lang === 'ko' ? '단일 포락선 (κ=1)' : 'one envelope (κ=1)'}</dt>
+            <dd>w = (1, 0) · CVaR {bnv(P1_STRIP.cvar95.kappa1.cvar)} · {lang === 'ko' ? '권한 여유' : 'authority slack'}</dd>
+            <dt>{lang === 'ko' ? '별도 북 (κ=2)' : 'separate books (κ=2)'}</dt>
+            <dd>w = (1, {k2.w2.toFixed(4)}) · CVaR {bnv(k2.cvar)} · {lang === 'ko' ? '권한 정확 소진' : 'authority spent exactly'}</dd>
+            <dt>{lang === 'ko' ? '권한 섀도가격' : 'shadow price of authority'}</dt>
+            <dd>{bnv(P1_STRIP.cvar95.shadowPerBn)} / ₩1bn</dd>
+            <dt>{lang === 'ko' ? 'FX 0.5y 캡 판정' : 'FX 0.5y cap verdict'}</dt>
+            <dd>{lang === 'ko' ? '동일만기 유지' : 'co-term'} · {bnv(P1_STRIP.fxMaturity.capSavingMax)} {lang === 'ko' ? '절감' : 'saving'} vs {bnv(P1_STRIP.fxMaturity.capTailCost)} {lang === 'ko' ? '꼬리비용' : 'tail cost'}</dd>
+          </dl>
+          <p className="bg-mix-note">
+            {lang === 'ko'
+              ? '꼬리 목적함수는 20만 경로 은행 위에서 풀리므로 브라우저에서 재계산하지 않고 논문 결과를 그대로 고정합니다. 위 스트립 프리미엄은 그 프로그램의 가격 입력이며 여기서 라이브로 재현됩니다.'
+              : "The tail objective is solved on the 200k-path bank, so it is pinned from the paper rather than recomputed here. The strip premiums above are that program's price inputs and are reproduced live."}
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
