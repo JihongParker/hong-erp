@@ -73,7 +73,7 @@ No single role can both file a figure and sign it off; nothing reaches the model
 
 ## 4. Data schema
 
-`src/state/erp.tsx` is the ledger layer (client-side; persisted to `localStorage` under a versioned key, `hongerp-v1`).
+`src/state/erp.tsx` is the ledger layer (client-side, in-memory per visit; every reload starts from the seed so one visitor's approvals and bookings never carry into the next visit. Only the chosen role persists, under `hongerp-role`).
 
 | Store | Shape | Rules |
 | --- | --- | --- |

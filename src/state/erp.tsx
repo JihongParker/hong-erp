@@ -16,7 +16,7 @@ export const ROLE_LABEL: Record<Role, string> = {
 export const ROLES: Role[] = ['division', 'treasury', 'audit', 'cfo']
 
 // The ERP data layer: divisions, a metric-submission ledger, a trade blotter,
-// and an append-only audit trail. Client-side only, persisted to localStorage,
+// and an append-only audit trail. Client-side only, in-memory per visit,
 // seeded with realistic synthetic history so the system feels lived-in on
 // first load. Every state change appends an audit event — the ERP heartbeat.
 
@@ -152,7 +152,7 @@ function log(s: ErpState, actor: string, action: string, detail: string): ErpEve
 }
 
 // Ledgers are capped so a demo visitor mashing Book/Submit can't grow
-// localStorage without bound — oldest records fall off, audit trail included.
+// memory without bound — oldest records fall off, audit trail included.
 const MAX_TRADES = 40
 const MAX_METRICS = 60
 
@@ -255,16 +255,14 @@ function initRole(): Role {
   return 'treasury'
 }
 
+// Demo ledgers are in-memory only: every reload starts from the seed so a visitor's
+// approvals, rejections, and bookings never leak into the next visit. Older builds
+// persisted the ledger under KEY; drop that record so returning visitors reset too.
 function init(): ErpState {
   try {
-    const raw = localStorage.getItem(KEY)
-    if (raw) {
-      const parsed = JSON.parse(raw)
-      // closes defaults in for ledgers persisted before the period-close feature
-      if (parsed && parsed.divisions?.length === 3) return { closes: [], ...parsed }
-    }
+    localStorage.removeItem(KEY)
   } catch {
-    /* fall through to seed */
+    /* storage may be unavailable */
   }
   return seed()
 }
@@ -279,14 +277,7 @@ const ErpContext = createContext<{
 export function ErpProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, init)
   const [role, setRole] = useState<Role>(initRole)
-  useEffect(() => {
-    try {
-      localStorage.setItem(KEY, JSON.stringify(state))
-    } catch {
-      /* storage may be unavailable; demo still works in-memory */
-    }
-  }, [state])
-  // role lives under its own key so resetting the demo ledgers leaves it alone
+  // role lives under its own key and survives reloads; ledgers do not (see init)
   useEffect(() => {
     try {
       localStorage.setItem(ROLE_KEY, role)
