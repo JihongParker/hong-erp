@@ -1,0 +1,56 @@
+{
+  "model": "grok-imagine-image-2.0",
+  "style": "flat vector illustration, soft pastel palette (dusty blue, sand, sage, warm orange accent), clean simple shapes, subtle grain, no outlines, no text, no watermark, no people. The object is fully isolated and centered on a SOLID FLAT pure green background (#00FF00) with nothing else",
+  "layers": [
+    {
+      "file": "terminal",
+      "prompt": "a small coastal oil import terminal seen from the sea: two slim distillation towers, four round storage tanks, a flare stack with a tiny flame, a jetty with a loading arm, a small lighthouse at the end; wide horizontal composition, everything standing on a thin strip of grey quay",
+      "width": 1600
+    },
+    {
+      "file": "tanker",
+      "prompt": "a crude oil tanker ship in side view, dark blue hull with red waterline, white superstructure at the stern, wide horizontal composition",
+      "width": 900
+    },
+    {
+      "file": "turbine_tower",
+      "prompt": "an offshore wind turbine tower and nacelle only, WITHOUT blades and without rotor, tall slender white tower on a small grey base, front view",
+      "width": 400
+    },
+    {
+      "file": "turbine_rotor",
+      "prompt": "only the three-blade rotor of a wind turbine with its round hub at the exact center, front view, the three white blades evenly spaced at 120 degrees, no tower, no nacelle",
+      "width": 600
+    },
+    {
+      "file": "grass_a",
+      "prompt": "a wide low clump of tall dune grass and reeds, sage and olive green with a few sand-colored stalks, front view, wide horizontal composition",
+      "width": 1200
+    },
+    {
+      "file": "grass_b",
+      "prompt": "a wide low clump of tall coastal grass, slightly bluish green, a few seed heads, front view, wide horizontal composition",
+      "width": 1200
+    },
+    {
+      "file": "water",
+      "prompt": "a vertical stream of water pouring down from a short grey outfall pipe at the top into a small splash at the bottom, pale blue and white water with a few droplets, tall vertical composition",
+      "width": 360
+    },
+    {
+      "file": "cloud_a",
+      "prompt": "a single soft white cumulus cloud, wide and flat, simple shape",
+      "width": 520
+    },
+    {
+      "file": "cloud_b",
+      "prompt": "a single small soft white cloud, simple rounded shape",
+      "width": 360
+    },
+    {
+      "file": "gull",
+      "prompt": "a small seagull in flight seen from the side, wings spread, simple shape, grey and white",
+      "width": 220
+    }
+  ]
+}

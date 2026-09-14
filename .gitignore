@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# generated illustration sources (WebP plates are tracked)
+public/scene/raw/
