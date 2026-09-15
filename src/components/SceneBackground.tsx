@@ -36,11 +36,28 @@ export default function SceneBackground() {
         el.style.setProperty('--sy', String(Math.min(1, window.scrollY / 600)))
       })
     }
-    // pointer parallax: -1..1 across the viewport, eased by the CSS transition
+    // pointer parallax: the pointer only sets a target; one rAF loop eases the
+    // three depth groups toward it and writes whole-pixel transforms, so the
+    // layers never re-rasterise on fractional offsets or restart a transition
+    const groups = Array.from(el.querySelectorAll<HTMLElement>('.sc-plx'))
+    const depth = [[-10, -6], [12, 4], [30, 10]]
+    let tx = 0, ty = 0, cx = 0, cy = 0, praf = 0
+    const ease = () => {
+      praf = 0
+      cx += (tx - cx) * 0.06
+      cy += (ty - cy) * 0.06
+      const sy = parseFloat(el.style.getPropertyValue('--sy') || '0')
+      groups.forEach((g, i) => {
+        const [kx, ky] = depth[i] ?? [0, 0]
+        g.style.transform = `translate3d(${Math.round(cx * kx)}px, ${Math.round(cy * ky + (i === 0 ? sy * 18 : i === 1 ? sy * 6 : 0))}px, 0)`
+      })
+      if (Math.abs(tx - cx) > 0.002 || Math.abs(ty - cy) > 0.002) praf = requestAnimationFrame(ease)
+    }
     const onMove = (e: PointerEvent) => {
       if (e.pointerType === 'touch') return
-      el.style.setProperty('--mx', String((e.clientX / window.innerWidth) * 2 - 1))
-      el.style.setProperty('--my', String((e.clientY / window.innerHeight) * 2 - 1))
+      tx = (e.clientX / window.innerWidth) * 2 - 1
+      ty = (e.clientY / window.innerHeight) * 2 - 1
+      if (!praf) praf = requestAnimationFrame(ease)
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('pointermove', onMove, { passive: true })
@@ -49,6 +66,7 @@ export default function SceneBackground() {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('pointermove', onMove)
       cancelAnimationFrame(raf)
+      cancelAnimationFrame(praf)
     }
   }, [])
 
