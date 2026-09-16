@@ -1,3 +1,10 @@
+/* the page never scrolls sideways at any width: decorative layers may bleed past
+   the content column, and clip (not hidden) keeps sticky rails working. Wide
+   tables and charts keep their own overflow-x wrappers, so nothing is masked. */
+body {
+  overflow-x: clip;
+}
+
 .app {
   display: flex;
   min-height: 100vh;
@@ -398,13 +405,6 @@ nav {
 @media (max-width: 860px) {
   .app {
     flex-direction: column;
-  }
-
-  /* last-resort guard: root causes are fixed above, but clip pins the page body
-     so no future wide element can ever produce a horizontal page scroll. Wide
-     tables/charts keep their own overflow-x wrappers, so nothing is masked. */
-  body {
-    overflow-x: clip;
   }
 
   .mobile-bar {

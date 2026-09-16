@@ -105,6 +105,7 @@
 /* ── 1 · hero: copy centred over the open water, clear of the machinery ── */
 .ov-hero {
   position: relative;
+  overflow-x: clip; /* the copy's soft backdrop bleeds past the column; keep it off the page width */
   min-height: 82vh;
   display: flex;
   flex-direction: column;
