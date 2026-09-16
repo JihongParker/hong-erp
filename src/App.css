@@ -8,6 +8,9 @@ body {
 .app {
   display: flex;
   min-height: 100vh;
+  /* clip on a non-root box: the root/body clip propagates to the viewport and
+     Chrome keeps stale scrollable overflow there until a relayout */
+  overflow-x: clip;
 }
 
 .sidebar {
