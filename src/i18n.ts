@@ -16,24 +16,29 @@ const LANG_KEY = 'hongerp-lang'
 // choice — there is no context provider, the window event keeps them in sync.
 const LANG_EVENT = 'hongerp-lang-change'
 
-// Resolution order: ?lang= in the URL (the portfolio site opens the app with
-// ?lang=ko from its Korean pages and ?lang=en from the English CV) → the saved
-// choice → the browser language → English. A URL choice is written to storage
-// so a reload inside the same session keeps it.
-function readLang(): Lang {
+// A ?lang= in the URL (the portfolio site opens the app with ?lang=ko from its
+// Korean pages, ?lang=en from the English CV) decides the language for that
+// page open only: it is applied once at module load, written to storage, and
+// then removed from the URL so the in-app toggle is free to change it.
+;(() => {
   try {
-    const q = new URLSearchParams(window.location.search).get('lang')
-    if (q === 'ko' || q === 'en') {
-      try {
-        localStorage.setItem(LANG_KEY, q)
-      } catch {
-        /* storage blocked; the URL still decides */
-      }
-      return q
+    const u = new URL(window.location.href)
+    const q = u.searchParams.get('lang')
+    if (q !== 'ko' && q !== 'en') return
+    try {
+      localStorage.setItem(LANG_KEY, q)
+    } catch {
+      /* storage blocked; the default below still sees the navigator language */
     }
+    u.searchParams.delete('lang')
+    history.replaceState(null, '', u.pathname + (u.search || '') + u.hash)
   } catch {
     /* no window / malformed URL */
   }
+})()
+
+// Resolution order: the saved choice → the browser language → English.
+function readLang(): Lang {
   try {
     const raw = localStorage.getItem(LANG_KEY)
     if (raw === 'ko' || raw === 'en') return raw

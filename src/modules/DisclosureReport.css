@@ -389,7 +389,39 @@
 
 @media (max-width: 640px) {
   .dr-page {
-    padding: 28px 18px;
+    padding: 28px 14px;
+  }
+  /* no sideways scroll on a phone: let every cell wrap, drop the nowraps,
+     and clip whatever still bleeds */
+  .dr-filing {
+    overflow-x: clip;
+    word-break: normal;
+    overflow-wrap: anywhere;
+    font-size: 12px;
+  }
+  .dr-filing .num,
+  .dr-filing .code,
+  .dr-toc-no {
+    white-space: normal;
+  }
+  .dr-filing td,
+  .dr-filing th {
+    padding: 4px 5px;
+  }
+  .dart-cover-tbl,
+  .tenk-cover-tbl,
+  .tenk-sig {
+    width: 100%;
+  }
+  .dart-cover-tbl th,
+  .dart-grid.kv th {
+    width: 34%;
+  }
+  .dr-toc-no {
+    width: 48px;
+  }
+  .tenk-form {
+    font-size: 22px;
   }
   .dr-toolbar {
     flex-direction: column;
