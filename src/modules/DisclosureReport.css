@@ -1,56 +1,27 @@
-/* Disclosure report — read as a document, not a cockpit. Centered column,
-   numbered sections, the same uppercase-tracked table headers as the rest of
-   the ERP. The @media print block at the bottom strips the app shell so the
-   browser's Save-as-PDF produces the document alone. */
+/* Disclosure report — typeset as a filing, not a cockpit. Two forms share one
+   body: `.tenk` (SEC Form 10-K: Times, rule-only tables, PART/Item headings,
+   signatures) and `.dart` (DART 사업보고서: 고딕, full-grid tables with a grey
+   header strip, 로마숫자 장, 작성책임자). On screen the document sits on a
+   white sheet regardless of theme; @media print strips the app shell and lets
+   the browser's Save-as-PDF paginate the same markup. */
 
 .dr {
   margin-top: 8px;
 }
 
-.dr-doc {
-  max-width: 880px;
-  margin: 0 auto;
-}
-
-/* header */
-.dr-header {
-  border-bottom: 2px solid var(--text);
-  padding-bottom: 18px;
-  margin-bottom: 8px;
-}
-
-.dr-title-row {
+/* toolbar above the sheet */
+.dr-toolbar {
+  max-width: 860px;
+  margin: 0 auto 12px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
 }
 
-.dr-title {
-  font-size: 24px;
-  letter-spacing: -0.015em;
-  line-height: 1.2;
-  margin-bottom: 4px;
-}
-
-.dr-entity {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.dr-subtitle {
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--muted);
-  margin-top: 10px;
-  max-width: 620px;
-}
-
-.dr-meta {
+.dr-form-note {
   font-size: 12px;
   color: var(--muted);
-  margin-top: 6px;
 }
 
 .dr-print {
@@ -72,211 +43,421 @@
   color: #fff;
 }
 
-/* sections */
-.dr-section {
-  padding: 22px 0;
-  border-bottom: 1px solid var(--line);
-  break-inside: avoid;
+/* the sheet */
+.dr-filing {
+  max-width: 860px;
+  margin: 0 auto;
+  background: #fff;
+  color: #111;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 8px 28px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
 }
 
-.dr-h2 {
-  font-size: 18px;
-  letter-spacing: -0.01em;
-  margin-bottom: 12px;
+.dr-page {
+  padding: 56px 64px;
+  border-bottom: 1px dashed #ccc; /* page edge on screen */
 }
 
-.dr-num {
-  color: var(--muted);
-  margin-right: 8px;
-  font-variant-numeric: tabular-nums;
+.dr-page:last-child {
+  border-bottom: 0;
 }
 
-.dr-h3 {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-  margin: 20px 0 10px;
-}
-
-.dr-lead {
-  font-size: 14px;
+.dr-filing p {
+  margin: 0 0 10px;
   line-height: 1.6;
-  color: var(--text);
-  max-width: 760px;
 }
 
-.dr-body {
-  font-size: 13.5px;
-  line-height: 1.6;
-  color: var(--text);
-  max-width: 760px;
-  margin-top: 14px;
-}
-
-/* stat row */
-.dr-stat-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.dr-stat {
-  flex: 1 1 120px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--panel);
-  padding: 12px 14px;
-}
-
-.dr-stat-val {
-  display: block;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-}
-
-.dr-stat-lbl {
-  display: block;
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 4px;
-}
-
-/* material issue list */
-.dr-material-list {
-  margin: 14px 0 0;
-  padding-left: 22px;
-  display: grid;
-  gap: 8px;
-}
-
-.dr-material-list li {
-  font-size: 13.5px;
-  line-height: 1.4;
-}
-
-.dr-mat-name {
-  font-weight: 600;
-}
-
-.dr-mat-meta {
-  display: block;
-  font-size: 11.5px;
-  color: var(--muted);
-  margin-top: 2px;
-}
-
-/* designation chips */
-.dr-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.dr-desig {
-  font-size: 12px;
-  padding: 5px 10px;
-  border-radius: 8px;
-  border: 1px solid var(--line);
-  background: var(--panel);
-  color: var(--text);
-}
-
-/* tables — shared visual language with the rest of the ERP */
-.dr-table-wrap {
-  overflow-x: auto;
-  margin-top: 4px;
-}
-
-.dr-table {
-  width: 100%;
+.dr-filing table {
   border-collapse: collapse;
-  font-size: 13px;
+  width: 100%;
+  margin: 6px 0 16px;
 }
 
-.dr-table th,
-.dr-table td {
-  text-align: left;
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--line);
+.dr-filing td,
+.dr-filing th {
   vertical-align: top;
+  padding: 5px 8px;
 }
 
-.dr-table th {
-  font-size: 10.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.dr-table th.num,
-.dr-table td.num {
+.dr-filing .num {
   text-align: right;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-.dr-table td code {
-  font-size: 11px;
-  color: var(--muted);
+.dr-filing .c {
+  text-align: center;
+}
+
+.dr-filing .code {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.85em;
   white-space: nowrap;
 }
 
-.dr-unit {
-  color: var(--muted);
-  font-size: 11px;
-  white-space: nowrap;
+.dr-filing .refs {
+  font-size: 0.85em;
 }
 
 .dr-nomap {
-  color: var(--muted);
-  font-size: 11px;
+  color: #777;
 }
 
-/* footer */
-.dr-footer {
-  margin-top: 22px;
-  font-size: 12px;
-  color: var(--muted);
+.dr-cover-tag {
+  font-size: 11px;
+  color: #666;
+  margin: 0 0 18px;
+}
+
+/* ---------- table of contents (both forms) ---------- */
+.dr-toc-h {
+  text-align: center;
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  margin: 0 0 20px;
+}
+
+.dr-toc-tbl td {
+  padding: 4px 6px;
+  border-bottom: 1px dotted #bbb;
+}
+
+.dr-toc-no {
+  width: 70px;
+  white-space: nowrap;
+}
+
+.dr-toc-part {
+  font-weight: 700;
+  padding-top: 12px !important;
+  border-bottom: 0 !important;
+}
+
+.dr-toc-tbl a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.dr-toc-tbl a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- 10-K ---------- */
+.tenk {
+  font-family: 'Times New Roman', Times, 'Nimbus Roman', serif;
+  font-size: 13.5px;
+}
+
+.tenk .dr-cover {
+  text-align: center;
+}
+
+.tenk-sec {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.tenk-form {
+  font-size: 26px;
+  letter-spacing: 0.08em;
+  margin: 8px 0 14px;
+}
+
+.tenk-check {
+  font-weight: 700;
+  font-size: 12.5px;
+  margin: 4px 0;
+}
+
+.tenk-center {
+  margin: 4px 0 10px;
+}
+
+.tenk-rule {
+  border: 0;
+  border-top: 1.5px solid #000;
+  margin: 16px 0;
+}
+
+.tenk-registrant {
+  font-size: 20px;
+  letter-spacing: 0.04em;
+  margin: 4px 0 0;
+}
+
+.tenk-caption,
+.tenk .cap {
+  font-size: 11px;
+  color: #444;
+  margin: 0 0 12px;
+}
+
+.tenk-cover-tbl {
+  margin: 10px auto 6px;
+  width: 90%;
+}
+
+.tenk-cover-tbl td {
+  text-align: center;
+  padding: 2px 8px;
+}
+
+.tenk-cover-tbl tr:first-child td {
+  border-bottom: 1px solid #000;
+}
+
+.tenk-cover-tbl tr.cap td {
+  border-bottom: 0;
+  font-size: 11px;
+  color: #444;
+}
+
+.tenk-cover-tbl.grid th,
+.tenk-cover-tbl.grid td {
+  border: 1px solid #000;
+  font-size: 12.5px;
+  padding: 4px 8px;
+}
+
+.tenk-cover-tbl.grid th {
+  font-weight: 700;
+}
+
+.tenk-left {
+  text-align: left;
+  font-size: 12.5px;
+}
+
+.tenk-boxes {
+  margin: 6px 0 14px;
+}
+
+.tenk-part {
+  text-align: center;
+  font-size: 15px;
+  letter-spacing: 0.15em;
+  margin: 28px 0 14px;
+}
+
+.tenk .dr-item {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 22px 0 8px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #000;
+}
+
+.tenk-sub {
+  font-weight: 700;
+  font-style: italic;
+  margin: 14px 0 4px;
+}
+
+.tenk-tbl th,
+.tenk-tbl td {
+  border-bottom: 1px solid #999;
+  text-align: left;
+  font-size: 12.5px;
+}
+
+.tenk-tbl thead th {
+  border-top: 1.5px solid #000;
+  border-bottom: 1.5px solid #000;
+  font-weight: 700;
+}
+
+.tenk-tbl tr.sum td {
+  border-top: 1px solid #000;
+  border-bottom: 2px double #000;
+  font-weight: 700;
+}
+
+.tenk-sig {
+  width: 80%;
+  margin: 18px auto;
+}
+
+.tenk-sig td {
+  padding: 10px 8px;
   line-height: 1.5;
 }
 
+.tenk-sig td:first-child {
+  width: 35%;
+}
+
+.sigline {
+  font-style: italic;
+  border-bottom: 1px solid #000;
+  padding: 0 24px 0 4px;
+}
+
+/* ---------- DART 사업보고서 ---------- */
+.dart {
+  font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+}
+
+.dart .dr-cover {
+  text-align: center;
+}
+
+.dart-title {
+  font-size: 34px;
+  letter-spacing: 0.3em;
+  margin: 60px 0 12px;
+}
+
+.dart-term {
+  font-size: 15px;
+  margin-bottom: 40px;
+}
+
+.dart-to {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.7;
+  margin: 40px 0;
+}
+
+.dart-cover-tbl {
+  width: 80%;
+  margin: 0 auto 10px;
+}
+
+.dart-cover-tbl th,
+.dart-cover-tbl td {
+  border: 1px solid #000;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.dart-cover-tbl th {
+  width: 32%;
+  background: #f1f1f1;
+  font-weight: 700;
+  text-align: center;
+}
+
+.dart .dr-item {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 26px 0 10px;
+  padding: 6px 10px;
+  background: #e9eef4;
+  border-left: 5px solid #35526e;
+}
+
+.dart-sub {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin: 16px 0 6px;
+}
+
+.dart-unit {
+  text-align: right;
+  font-size: 11.5px;
+  color: #444;
+  margin: 0 0 2px !important;
+}
+
+.dart-grid th,
+.dart-grid td {
+  border: 1px solid #000;
+  font-size: 12.5px;
+}
+
+.dart-grid thead th {
+  background: #ececec;
+  text-align: center;
+  font-weight: 700;
+}
+
+.dart-grid.kv th {
+  background: #f4f4f4;
+  width: 30%;
+  text-align: center;
+  font-weight: 600;
+}
+
+.dart-grid tr.sum td {
+  background: #f7f7f7;
+  font-weight: 700;
+}
+
 @media (max-width: 640px) {
-  .dr-title-row {
+  .dr-page {
+    padding: 28px 18px;
+  }
+  .dr-toolbar {
     flex-direction: column;
+    align-items: flex-start;
+  }
+  .dart-title {
+    font-size: 26px;
   }
 }
 
-/* -------- print: strip the app shell, keep the document -------- */
+/* -------- print: strip the app shell, paginate the sheet -------- */
 @media print {
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+  }
   .sidebar,
   .mobile-bar,
   .nav-scrim,
   .toast-stack,
-  .content > header {
+  .content > header,
+  .skip-link,
+  .dr-toolbar {
     display: none !important;
+  }
+  /* the screen-in fade must not leave a half-faded page on paper */
+  .screen,
+  .content {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  body,
+  .app,
+  .content {
+    background: #fff !important;
+    display: block !important;
+    min-height: 0 !important;
   }
   .content {
     padding: 0 !important;
   }
-  .dr-print {
-    display: none !important;
+  .dr {
+    margin: 0;
   }
-  .dr-doc {
+  .dr-filing {
     max-width: none;
+    box-shadow: none;
+    border: 0;
   }
-  .dr-section {
+  .dr-page {
+    padding: 0;
+    border-bottom: 0;
+    break-after: page;
+  }
+  .dr-page:last-child {
+    break-after: auto;
+  }
+  .dr-item,
+  .tenk-part,
+  .dart-sub {
+    break-after: avoid;
+  }
+  .dr-filing table,
+  .dr-filing tr {
     break-inside: avoid;
   }
-  /* white paper regardless of the on-screen theme */
-  .dr-stat,
-  .dr-desig,
-  .dr-print {
-    background: #fff;
+  .dr-filing thead {
+    display: table-header-group;
   }
 }

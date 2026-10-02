@@ -321,8 +321,12 @@ export default function App() {
   // URL by a previous visit (e.g. #decision) must not drop a fresh load straight
   // into a sub-screen — clear it on mount. In-session navigation still syncs the
   // hash below, so the current screen shows in the URL and back/forward work.
+  // An explicit ?screen=<id> query is different from a stale hash: it is a
+  // deliberate deep link (the portfolio site, a PDF export job), so honour it.
   useEffect(() => {
     if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search)
+    const screen = new URLSearchParams(window.location.search).get('screen')
+    if (screen && ALL.some((m) => m.id === screen)) setActive(screen)
     const fromHash = () => {
       const id = window.location.hash.replace('#', '')
       if (id && ALL.some((m) => m.id === id)) setActive(id)
