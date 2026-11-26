@@ -1,12 +1,12 @@
 {
   "wti": {
-    "value": 89.53,
-    "date": "2026-11-17"
+    "value": 82.24,
+    "date": "2026-11-24"
   },
   "usdkrw": {
     "value": 1342.41,
     "date": "2026-11-20"
   },
-  "fetchedAt": "2026-11-25T17:30:22.318Z",
+  "fetchedAt": "2026-11-26T17:12:27.041Z",
   "source": "FRED (Federal Reserve Bank of St. Louis)"
 }
